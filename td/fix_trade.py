@@ -14,13 +14,17 @@ class fix_trade:
         self.__initfile = initfile
     
     def create(self):
-        settings = fix.SessionSettings( self.__initfile )
-        application = fix_app.Application()
-        factory = fix.FileStoreFactory( "store" )
-        log = fix.FileLogFactory("log")
-        self.__initiator = fix.SocketInitiator( application,factory, settings ,log )
-        self.__initiator.start()
-        time.sleep( 4 )
+        try:
+            self.__settings = fix.SessionSettings( self.__initfile )
+            self.__application = fix_app.Application()
+            self.__factory = fix.FileStoreFactory( self.__settings )
+            self.__log = fix.FileLogFactory(self.__settings)
+            self.__initiator = fix.SocketInitiator( self.__application,self.__factory, self.__settings ,self.__log )
+            self.__initiator.start()
+            time.sleep( 4 )
+        except e:
+            self.__log.
+            
         
     def close(self):
         self.__initiator.stop()
