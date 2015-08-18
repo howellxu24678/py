@@ -39,11 +39,11 @@ class Application(fix.Application):
 	    if( msgType.getValue() == fix.MsgType_Logon ):
 				#RawData="Z:110000000572:135790:"
 				message.setField( fix.RawData("Z:110000000572:135790:") )
-	    print "toAdmin...", sessionID, message
+	    #print "toAdmin...", sessionID, message
 	    return
 
 	def fromAdmin(self, message, sessionID):
-	    print "fromAdmin...", sessionID, message
+	    #print "fromAdmin...", sessionID, message
 	    return
 
 	def toApp(self, message, sessionID):
@@ -51,7 +51,7 @@ class Application(fix.Application):
 	    return
 
 	def fromApp(self, message, sessionID):
-	    print "fromApp...", sessionID, message
+	    #print "fromApp...", sessionID, message
 	    msgType = fix.MsgType()
 	    clOrdID = fix.ClOrdID()
 	    orderStatus=fix.OrdStatus()

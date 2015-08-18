@@ -4,9 +4,7 @@ import sys
 import time
 import quickfix as fix
 import fix_app
-#import wx
 
-#print wx.VERSION_STRING
 
 file = "./quickfix_it.ini"
 
@@ -25,7 +23,7 @@ Msg.setString("8=FIX.4.29=18235=D34=1549=FIXTest12952=20141110-00:53:51.638
 	
 sessionID = fix.SessionID( "FIX.4.2","FIXTest129" ,"SERVER")
 
-#print(sessionID)
+print(sessionID)
 
 fix.Session.sendToTarget( Msg,sessionID)
 #fix.Session.sendToTarget( Msg)
