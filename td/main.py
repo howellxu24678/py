@@ -46,11 +46,21 @@ import logging
 import logging.config
 import trade
 
+#import quickfix as fix
+#import fix_app
+
 logging.config.fileConfig(loggingconfpath)
 logger = logging.getLogger("example01")
 
+#settings = fix.SessionSettings( quickfixconfpath )
+#application = fix_app.Application()
+#application.setLogger(logger)
+#factory = fix.FileStoreFactory(settings )
+#log = fix.FileLogFactory(settings)
+#initiator = fix.SocketInitiator( application,factory, settings, log )
+#initiator.start()
+
 trader = trade.fix_trade(quickfixconfpath, logger)
 trader.create()
-
 
 

@@ -10,11 +10,39 @@ import logging
 #import curses
 
 
+class apptest(fix.Application):
+    def __init__(self, logger):
+        self.__logger = logger
+        
+    def onCreate(self, sessionID):
+        #self.__logger.info(sessionID + "onCreate")
+        return
+
+    def onLogon(self, sessionID):
+        return
+
+    def onLogout(self, sessionID):
+        return
+
+    def toAdmin(self, message, sessionID):
+        return
+
+    def fromAdmin(self, message, sessionID):
+        return
+
+    def toApp(self, message, sessionID):
+        return
+
+    def fromApp(self, message, sessionID):
+        return
+
+
 class Application(fix.Application):
     orderIDs = {}
      
-    def setLogger(self, logger):
+    def setParm(self, logger, RawData):
         self.__logger = logger
+        self.__RawData = RawData
          
     def reset( self ):
         self.orderIDs = {}
@@ -40,16 +68,16 @@ class Application(fix.Application):
         return
 
     def toAdmin(self, message, sessionID):
-        self.__logger.info("toAdmin: " + sessionID.__str__() + " " + message.__str__())
+        
         msgType = fix.MsgType()
-        RawData = fix.RawData()
+        #RawData = fix.RawData()
+        
         message.getHeader().getField( msgType )
         if( msgType.getValue() == fix.MsgType_Logon ):
             #RawData="Z:110000000572:135790:"
-            message.setField( fix.RawData("Z:110000000572:135790:") )
+            message.setField( fix.RawData(self.__RawData) )
             #print "toAdmin...", sessionID, message
-            
-            return
+        self.__logger.info("toAdmin: " + sessionID.__str__() + " " + message.__str__())
 
     def fromAdmin(self, message, sessionID):
         #print "fromAdmin...", sessionID, message
@@ -74,7 +102,7 @@ class Application(fix.Application):
             if(orderStatus.getString()=="8"):
                 print "reject"
             elif(orderStatus.getString()=="0"):
-                    print "new"
+                print "new"
 
             else:
                 raise fix.UnsupportedMessageType()
