@@ -57,11 +57,11 @@ class Application(fix.Application):
     def onLogon(self, sessionID):
         #print "*****************************************************************"
         #print "onLogon...", sessionID
-        self.__logger.info(" onLogon: " + sessionID.__str__())
+        self.__logger.info("onLogon: " + sessionID.__str__())
         return
 
     def onLogout(self, sessionID):
-        self.__logger.info(" onLogout: " + sessionID.__str__())        
+        self.__logger.info("onLogout: " + sessionID.__str__())        
         #print "onLogout...", sessionID
         #print "*****************************************************************"
         #curses.beep()
@@ -73,7 +73,9 @@ class Application(fix.Application):
         #RawData = fix.RawData()
         
         message.getHeader().getField( msgType )
-        if( msgType.getValue() == fix.MsgType_Logon ):
+        if(msgType.getValue() == fix.MsgType_Heartbeat):
+            return 
+        elif( msgType.getValue() == fix.MsgType_Logon ):
             #RawData="Z:110000000572:135790:"
             message.setField( fix.RawData(self.__RawData) )
             #print "toAdmin...", sessionID, message
@@ -81,6 +83,10 @@ class Application(fix.Application):
 
     def fromAdmin(self, message, sessionID):
         #print "fromAdmin...", sessionID, message
+        msgType = fix.MsgType()        
+        message.getHeader().getField( msgType )
+        if(msgType.getValue() == fix.MsgType_Heartbeat):
+            return 
         self.__logger.info("fromAdmin: " + sessionID.__str__() + " " + message.__str__())
         return
 
@@ -104,7 +110,7 @@ class Application(fix.Application):
             elif(orderStatus.getString()=="0"):
                 print "new"
 
-            else:
-                raise fix.UnsupportedMessageType()
+            #else:
+                #raise fix.UnsupportedMessageType()
 
 

@@ -62,5 +62,6 @@ logger = logging.getLogger("example01")
 
 trader = trade.fix_trade(quickfixconfpath, logger)
 trader.create()
+#trader.NewStockOrder()
 
-
+trader.UAN(0)

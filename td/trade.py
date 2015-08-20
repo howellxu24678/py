@@ -59,6 +59,7 @@ class fix_trade(object):
 #            self.__initiator = fix.SocketInitiator( self.__application,self.__factory, self.__settings, self.__log )
 #            self.__initiator.start()
             
+            self.__sessionID = fix.SessionID( "FIX.4.2",self.__SenderCompID ,self.__TargetCompID)
             self.__logger.debug('fix_trade create')
             time.sleep( 4 )
         except BaseException,e:
@@ -69,11 +70,32 @@ class fix_trade(object):
         
     def close(self):
         self.__initiator.stop()
-        
+    #新订单        
     def NewStockOrder(self):
         msg = fix.Message()
         msg.getHeader().setField(fix.MsgType(fix.MsgType_NewOrderSingle))
+        msg.setField(fix.ClOrdID(self.genOrderID()))
+        msg.setField(fix.HandlInst('1'))
+        msg.setField(fix.OrdType(fix.OrdType_MARKET))
+        msg.setField(fix.Side('1'))
+        msg.setField(fix.Symbol("000001"))
+        msg.setField(fix.TransactTime())
+        msg.setField(fix.OrderQty(12500))
+        msg.setField(fix.Currency("CNY"))
+        msg.setField(fix.SecurityExchange("XSHE"))
+        
         #msg.setField(fix.m)
+        
+        fix.Session.sendToTarget(msg, self.__sessionID)
+    # 资金股份查询
+    def UAN(self, reqType):
+        msg = fix.Message()
+        msg.getHeader().setField(fix.MsgType("UAN"))
+        msg.setField(fix.PosReqID(self.genOrderID()))
+        msg.setField(fix.PosReqType(reqType))
+        msg.setField(fix.Currency("CNY"))
+        
+        fix.Session.sendToTarget(msg, self.__sessionID)
         
     def CancleOrder(self):
         pass
