@@ -6,7 +6,8 @@ Created on Sat Aug 15 21:35:47 2015
 """
 
 import quickfix as fix
-import logging
+#import logging
+import quickfix42
 #import curses
 
 
@@ -36,6 +37,19 @@ class apptest(fix.Application):
     def fromApp(self, message, sessionID):
         return
 
+class NoUap(quickfix42.Message):
+	def __init__(self):
+		quickfix42.Message.__init__(self)
+		self.getHeader().setField( fix.MsgType("UAP"))
+  
+	class NoCustom(fix.Group):
+		def __init__(self):
+			order = fix.IntArray(4)
+			order[0] = 703
+			order[1] = 704
+			order[2] = 705
+			order[3] = 0
+			fix.Group.__init__(self, 702, 703, order)
 
 class Application(fix.Application):
     orderIDs = {}
@@ -87,6 +101,7 @@ class Application(fix.Application):
         message.getHeader().getField( msgType )
         if(msgType.getValue() == fix.MsgType_Heartbeat):
             return 
+            
         self.__logger.info("fromAdmin: " + sessionID.__str__() + " " + message.__str__())
         return
 
@@ -109,7 +124,35 @@ class Application(fix.Application):
                 print "reject"
             elif(orderStatus.getString()=="0"):
                 print "new"
+                
+        elif (msgType.getValue() ==  "UAP"):
+            PosReqType = fix.PosReqType()
+            message.getField(PosReqType)
+            self.__logger.info( "PosReqType.getValue():" + PosReqType.getString())
+            if(PosReqType.getValue() == 0):
+                symbol = fix.Symbol()
+                exch = fix.SecurityExchange()
+                message.getField(symbol)
+                message.getField(exch)
+                groupRead = NoUap.NoCustom()
+                PosType = fix.PosType()
+                LongQty = fix.LongQty()
+                ShortQty = fix.ShortQty()
+                
+                
+                NoPos = fix.NoPositions()
+                message.getField(NoPos)
+                self.__logger.info( "NoPos:" + NoPos.getString() + "symbol:" + symbol.getString() + "exch:" + exch.getString())                
+                for i in range(NoPos.getValue()):
+                    message.getGroup(i+1,groupRead)
+                    groupRead.getFieldIfSet(PosType)
+                    groupRead.getFieldIfSet(LongQty)
+                    groupRead.getFieldIfSet(ShortQty)
+                    self.__logger.info("PosType:" +  PosType.getString() + " LongQty:" + LongQty.getString())
 
+                    
+#            elif(PosReqType.getValue() == 9):
+#                pass
             #else:
                 #raise fix.UnsupportedMessageType()
 
