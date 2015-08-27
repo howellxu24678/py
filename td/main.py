@@ -64,4 +64,4 @@ trader = trade.fix_trade(quickfixconfpath, logger)
 trader.create()
 #trader.NewStockOrder()
 
-trader.UAN(0)
+trader.UAN(9)
