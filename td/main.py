@@ -65,3 +65,4 @@ trader.create()
 #trader.NewStockOrder()
 
 trader.UAN(9)
+
