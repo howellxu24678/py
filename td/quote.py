@@ -8,6 +8,7 @@ Created on Mon Aug 17 17:11:33 2015
 import tushare as ts
 import datetime,time
 from apscheduler.schedulers.background import BackgroundScheduler
+import talib as ta
 import logging
 logging.basicConfig()
 
@@ -29,16 +30,32 @@ def GetRealTimeQuote(code):
     print df[['code','name','price','bid','ask','volume','amount','time']]
     print 'time:',time.strftime("%H:%M:%S",time.localtime())
     
+    
+def GetHistData(code,_ktype):
+    df = ts.get_hist_data(code, ktype=_ktype)
+    return df[['open','high','close','low','volume']]
+    
+    
 #GetRehabGene('600783')
 
 
-sched = BackgroundScheduler()
+#sched = BackgroundScheduler()
+#
+## Schedule job_function to be called every two hours
+#sched.add_job(GetRealTimeQuote, 'interval', args=('600000',),  seconds=3)
+#
+#sched.start()
+#print "hello"
 
-# Schedule job_function to be called every two hours
-sched.add_job(GetRealTimeQuote, 'interval', args=('600000',),  seconds=3)
 
-sched.start()
-print "hello"
+df = GetHistData('000001','5')
+ma60 = ta.SMA(df['close'].values, 60)
+ma60 = ma60.round(2)
+
+
+
+
+
 
 #import time, os, sched 
 #    
