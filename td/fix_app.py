@@ -94,6 +94,7 @@ class Application(fix.Application):
         return
 
     def OnNoPositions(self, message):
+        self.__logger.info("OnNoPositions")
         symbol = fix.Symbol()
         exch = fix.SecurityExchange()
         message.getField(symbol)
@@ -130,6 +131,7 @@ class Application(fix.Application):
             #self.__logger.info("PosType:" +  PosType.getString() + " LongQty:" + LongQty.getString())
            
     def OnNoPosAmt(self, message):
+        self.__logger.info("OnNoPositions")
         groupRead = UapGroup.NoPosAmtCus()
         PosAmtType = fix.PosAmtType()
         PosAmt = fix.PosAmt()

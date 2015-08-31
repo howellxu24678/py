@@ -10,6 +10,7 @@ import datetime,time
 from apscheduler.schedulers.background import BackgroundScheduler
 import talib as ta
 import logging
+import pandas as pd
 logging.basicConfig()
 
 
@@ -51,6 +52,15 @@ def GetHistData(code,_ktype):
 df = GetHistData('000001','5')
 ma60 = ta.SMA(df['close'].values, 60)
 ma60 = ma60.round(2)
+df['ma60'] = ma60
+
+strlastimestamp = df.index.values[-1]
+lastimestamp = datetime.datetime.strptime(strlastimestamp, "%Y-%m-%d %H:%M:%S")
+timenew = lastimestamp + datetime.timedelta(minutes=5)
+
+print timenew.strftime("%Y-%m-%d %H:%M:%S")
+df2 = pd.DataFrame({'open':1.1, 'high':1.2, 'low':1.3, 'close':1.4, 'volume':1.5, 'ma60':1.6}, 
+                   index=timenew)
 
 
 
