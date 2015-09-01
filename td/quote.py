@@ -27,9 +27,9 @@ def GetRehabGene(code):
     print rate
     
 def GetRealTimeQuote(code):
-    df = ts.get_realtime_quotes(code)
-    print df[['code','name','price','bid','ask','volume','amount','time']]
     print 'time:',time.strftime("%H:%M:%S",time.localtime())
+    df = ts.get_realtime_quotes(code)
+    return df[['code','name','price','bid','ask','volume','amount','time']]    
     
     
 def GetHistData(code,_ktype):
@@ -37,6 +37,39 @@ def GetHistData(code,_ktype):
     return df[['open','high','close','low','volume']]
     
     
+    
+class Quote5mKline(object):
+    def __init__(self,code):
+        self.__code = code
+        self.__df5mKline = GetHistData(code, '5')
+        ma60 = ta.SMA(df['close'].values, 60)
+        ma60 = ma60.round(2)
+        self.__df5mKline['ma60'] = ma60
+        print self.__df5mKline
+        
+    def OnTick(self, tick):
+        strLastTimeStamp = self.__df5mKline.index.values[-1]
+        lastTimeStamp = datetime.datetime.strptime(strLastTimeStamp, "%Y-%m-%d %H:%M:%S")
+        #下一个时间片        
+        nextTimeSlice = lastTimeStamp + datetime.timedelta(minutes=5)
+        
+        #当前传过来的Tick价格
+        curTickPrice = float(tick['price'].values[0])
+        #当前传过来的Tick时间
+        curTickTime = datetime.datetime.strptime(tick['time'].values[0], "%H:%M:%S")
+        if(curTickTime.time() > lastTimeStamp.time()):
+            self.__df5mKline.loc[nextTimeSlice] = {'open':curTickPrice,'close':curTickPrice, 'high':curTickPrice, 'low':curTickPrice}
+            
+        else:
+            self.__df5mKline.loc[lastTimeStamp, 'close'] = curTickPrice
+            lastHigh = self.__df5mKline.loc[lastTimeStamp, 'high']
+            lastLow = self.__df5mKline.loc[lastTimeStamp, 'low']
+            self.__df5mKline.loc[lastTimeStamp, 'high'] = max(curTickPrice, lastHigh) 
+            self.__df5mKline.loc[lastTimeStamp, 'low'] = min(curTickPrice, lastLow)
+            
+        print self.__df5mKline
+            
+        
 #GetRehabGene('600783')
 
 
@@ -59,10 +92,9 @@ lastimestamp = datetime.datetime.strptime(strlastimestamp, "%Y-%m-%d %H:%M:%S")
 timenew = lastimestamp + datetime.timedelta(minutes=5)
 
 print timenew.strftime("%Y-%m-%d %H:%M:%S")
-df2 = pd.DataFrame({'open':1.1, 'high':1.2, 'low':1.3, 'close':1.4, 'volume':1.5, 'ma60':1.6}, 
-                   index=timenew)
+#df.loc[timenew]=[1.1,1.1,1.1,1.1,1.1,600]
 
-
+#df.loc[timenew]={'close':125,'open':112,'high':113,'low':114,'volume':60000,'ma60':10.21}
 
 
 
