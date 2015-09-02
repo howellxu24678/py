@@ -36,36 +36,55 @@ def GetHistData(code,_ktype):
     df = ts.get_hist_data(code, ktype=_ktype)
     return df[['open','high','close','low','volume']]
     
+def Datetime2Str(_datetime):
+    return datetime.datetime.strftime(_datetime, "%Y-%m-%d %H:%M:%S")
     
+def Str2Datetime(strtime):
+    return datetime.datetime.strptime(strtime, "%Y-%m-%d %H:%M:%S")
+    
+# 当前时间所在的段
+def GetTimeSlice(curTickDatetime, min_offset):
+    curTimeTuple = curTickDatetime.timetuple()
+    minSlice = ((curTimeTuple.tm_min / min_offset) + 1) * min_offset
+    return datetime.datetime(curTimeTuple.tm_year, curTimeTuple.tm_mon, 
+                      curTimeTuple.tm_mday, curTimeTuple.tm_hour, 
+                      minSlice, 0)
+    
+#将传入的时间加上当前的日期返回
+def GetDatetimeFromTime(strTime):
+    return Str2Datetime(datetime.datetime.strftime(datetime.date.today(),'%Y-%m-%d') + ' ' + strTime)
     
 class Quote5mKline(object):
     def __init__(self,code):
         self.__code = code
         self.__df5mKline = GetHistData(code, '5')
-        ma60 = ta.SMA(df['close'].values, 60)
+        ma60 = ta.SMA(self.__df5mKline['close'].values, 60)
         ma60 = ma60.round(2)
         self.__df5mKline['ma60'] = ma60
         print self.__df5mKline
         
     def OnTick(self, tick):
-        strLastTimeStamp = self.__df5mKline.index.values[-1]
-        lastTimeStamp = datetime.datetime.strptime(strLastTimeStamp, "%Y-%m-%d %H:%M:%S")
-        #下一个时间片        
-        nextTimeSlice = lastTimeStamp + datetime.timedelta(minutes=5)
-        
+        print 'onTick'
         #当前传过来的Tick价格
         curTickPrice = float(tick['price'].values[0])
-        #当前传过来的Tick时间
-        curTickTime = datetime.datetime.strptime(tick['time'].values[0], "%H:%M:%S")
-        if(curTickTime.time() > lastTimeStamp.time()):
-            self.__df5mKline.loc[nextTimeSlice] = {'open':curTickPrice,'close':curTickPrice, 'high':curTickPrice, 'low':curTickPrice}
+        #当前传过来的Tick时间（加上当前日期）
+        curTickDatetime = GetDatetimeFromTime(tick['time'].values[0])
+        
+        curTimeSlice = GetTimeSlice(curTickDatetime, 5)        
+        strTimeSlice = Datetime2Str(curTimeSlice)
+        
+        strLastTimeStamp = self.__df5mKline.index.values[-1]
+        lastTimeStamp = Str2Datetime(strLastTimeStamp)
+        
+        if(curTimeSlice > lastTimeStamp):
+            self.__df5mKline.loc[strTimeSlice] = {'open':curTickPrice,'high':curTickPrice, 'close':curTickPrice, 'low':curTickPrice, 'volume': 0.0, 'ma60':0.0}
             
         else:
-            self.__df5mKline.loc[lastTimeStamp, 'close'] = curTickPrice
-            lastHigh = self.__df5mKline.loc[lastTimeStamp, 'high']
-            lastLow = self.__df5mKline.loc[lastTimeStamp, 'low']
-            self.__df5mKline.loc[lastTimeStamp, 'high'] = max(curTickPrice, lastHigh) 
-            self.__df5mKline.loc[lastTimeStamp, 'low'] = min(curTickPrice, lastLow)
+            self.__df5mKline.loc[strLastTimeStamp, 'close'] = curTickPrice
+            lastHigh = self.__df5mKline.loc[strLastTimeStamp, 'high']
+            lastLow = self.__df5mKline.loc[strLastTimeStamp, 'low']
+            self.__df5mKline.loc[strLastTimeStamp, 'high'] = max(curTickPrice, lastHigh) 
+            self.__df5mKline.loc[strLastTimeStamp, 'low'] = min(curTickPrice, lastLow)
             
         print self.__df5mKline
             
@@ -82,18 +101,24 @@ class Quote5mKline(object):
 #print "hello"
 
 
-df = GetHistData('000001','5')
-ma60 = ta.SMA(df['close'].values, 60)
-ma60 = ma60.round(2)
-df['ma60'] = ma60
+#df = GetHistData('000001','5')
+#ma60 = ta.SMA(df['close'].values, 60)
+#ma60 = ma60.round(2)
+#df['ma60'] = ma60
+#
+#strlastimestamp = df.index.values[-1]
+#lastimestamp = datetime.datetime.strptime(strlastimestamp, "%Y-%m-%d %H:%M:%S")
+#timenew = lastimestamp + datetime.timedelta(minutes=5)
+#
+#print timenew.strftime("%Y-%m-%d %H:%M:%S")
 
-strlastimestamp = df.index.values[-1]
-lastimestamp = datetime.datetime.strptime(strlastimestamp, "%Y-%m-%d %H:%M:%S")
-timenew = lastimestamp + datetime.timedelta(minutes=5)
-
-print timenew.strftime("%Y-%m-%d %H:%M:%S")
+q5mk = Quote5mKline('000001')
+q5mk.OnTick(GetRealTimeQuote('000001'))
+q5mk.OnTick(GetRealTimeQuote('000001'))
 #df.loc[timenew]=[1.1,1.1,1.1,1.1,1.1,600]
 
+#newQuote = GetRealTimeQuote('000001')
+#curdatetime = datetime.datetime.strptime(datetime.datetime.strftime(datetime.date.today(),'%Y-%m-%d') + ' ' + newQuote['time'].values[0], "%Y-%m-%d %H:%M:%S")
 #df.loc[timenew]={'close':125,'open':112,'high':113,'low':114,'volume':60000,'ma60':10.21}
 
 
