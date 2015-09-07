@@ -45,6 +45,8 @@ quickfixconfpath= baseconfdir + "/quickfix.ini"
 import logging 
 import logging.config
 import trade
+import quote
+import strategy
 
 #import quickfix as fix
 #import fix_app
@@ -62,7 +64,14 @@ logger = logging.getLogger("example01")
 
 trader = trade.fix_trade(quickfixconfpath, logger)
 trader.create()
+#trader.UAN(9)
 #trader.NewStockOrder()
 
-trader.UAN(9)
+code = '000609'
+q5mk = quote.Quote5mKline(code)
+
+stgtd = strategy.Stg_td(q5mk, trader)
+stgtd.start()
+
+#stgtd.stop()
 

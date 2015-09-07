@@ -96,50 +96,14 @@ class Quote5mKline(object):
             self.__df5mKline.loc[strLastTimeStamp, 'high'] = max(curTickPrice, lastHigh) 
             self.__df5mKline.loc[strLastTimeStamp, 'low'] = min(curTickPrice, lastLow)
             
-        print self.__df5mKline
-            
-        
-#GetRehabGene('600783')
+        #print self.__df5mKline
+    
+    def TimerToDo(self, calback):
+        self.OnTick(GetRealTimeQuote(self.__code))
+        calback(self.__df5mKline)
 
-code = '000609'
-q5mk = Quote5mKline(code)
-#q5mk.OnTick(GetRealTimeQuote('000001'))
-#q5mk.OnTick(GetRealTimeQuote('000001'))
-
-def TimerToDo(_code):
-    q5mk.OnTick(GetRealTimeQuote(_code))
-
-sched = BackgroundScheduler()
-
-# Schedule job_function to be called every two hours
-#sched.add_job(TimerToDo, 'interval', args=(GetRealTimeQuote('000001'),),  seconds=3)
-sched.add_job(TimerToDo, 'interval', args=(code,),  seconds=3)
-#
-sched.start()
-print "hello"
-
-
-#df = GetHistData('000001','5')
+###test###
+#df = GetHistData('000609', '5')
 #ma60 = ta.SMA(df['close'].values, 60)
 #ma60 = ma60.round(2)
 #df['ma60'] = ma60
-#
-#strlastimestamp = df.index.values[-1]
-#lastimestamp = datetime.datetime.strptime(strlastimestamp, "%Y-%m-%d %H:%M:%S")
-#timenew = lastimestamp + datetime.timedelta(minutes=5)
-#
-#print timenew.strftime("%Y-%m-%d %H:%M:%S")
-
-
-#df.loc[timenew]=[1.1,1.1,1.1,1.1,1.1,600]
-
-#newQuote = GetRealTimeQuote('000001')
-#curdatetime = datetime.datetime.strptime(datetime.datetime.strftime(datetime.date.today(),'%Y-%m-%d') + ' ' + newQuote['time'].values[0], "%Y-%m-%d %H:%M:%S")
-#df.loc[timenew]={'close':125,'open':112,'high':113,'low':114,'volume':60000,'ma60':10.21}
-
-
-###test###
-df = GetHistData('000609', '5')
-ma60 = ta.SMA(df['close'].values, 60)
-ma60 = ma60.round(2)
-df['ma60'] = ma60
