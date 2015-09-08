@@ -65,11 +65,16 @@ def GetDatetimeFromTime(strTime):
 class Quote5mKline(object):
     def __init__(self,code):
         self.__code = code
-        self.__df5mKline = GetHistData(code, '5')
-        ma60 = ta.SMA(self.__df5mKline['close'].values, 60)
-        ma60 = ma60.round(2)
-        self.__df5mKline['ma60'] = ma60
-        print self.__df5mKline
+#        self.__df5mKline = GetHistData(code, '5')
+#        ma60 = ta.SMA(self.__df5mKline['close'].values, 60)
+#        ma60 = ma60.round(2)
+#        self.__df5mKline['ma60'] = ma60
+#        print self.__df5mKline
+        
+        rnames = ['time', 'open', 'high', 'low', 'close', 'volume']
+        self.__df5mKline = pd.read_table(r"D:\TdxW_HuaTai\T0002\export\000609htd.xls", sep = '\t', encoding='gbk', names=rnames, parse_dates = ['time'], index_col='time')
+        ma60_ = ta.SMA(self.__df5mKline['close'].values, 60)
+        self.__df5mKline['ma60'] = ma60_
         
     def OnTick(self, tick):
         print 'onTick'
@@ -102,8 +107,48 @@ class Quote5mKline(object):
         self.OnTick(GetRealTimeQuote(self.__code))
         calback(self.__df5mKline)
 
+
+def td(kline):
+    iCount = -1
+    isNeedBuy = False
+    isNeedSell = False
+        
+    curRow = kline.ix[iCount]
+    #{第n根，close > ma60 且为阳线，然后开始从后往前看是否满足要求}
+    if curRow['close'] > curRow['ma60'] and curRow['close'] >= curRow['open']:
+        iCount = iCount - 1
+        curRow = kline.ix[iCount]
+        #{从第n-1一直到倒数第2根，close > ma60}
+        while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
+            dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
+            #{第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)}
+            if abs(iCount) >= 3 and dMin < curRow['ma60'] and curRow['ma60'] < curRow['close']:
+                isNeedBuy = True
+                break
+            else:
+                iCount = iCount - 1
+                    
+    #{第n根，close < ma60 且为阴线，然后开始从后往前看是否满足要求}
+    elif curRow['close'] < curRow['ma60'] and curRow['close'] < curRow['open']:
+        iCount = iCount - 1
+        curRow = kline.ix[iCount]
+        #{从第n-1一直到倒数第2根，close < ma60}
+        while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
+            dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
+            #{第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)}
+            if abs(iCount) >= 3 and dMax > curRow['ma60'] and curRow['ma60'] > curRow['close']:
+                isNeedSell = True
+                break
+            else:
+                iCount = iCount - 1
+                    
+    return isNeedBuy,isNeedSell
+    
 ###test###
 #df = GetHistData('000609', '5')
 #ma60 = ta.SMA(df['close'].values, 60)
 #ma60 = ma60.round(2)
 #df['ma60'] = ma60
+#td(df[:'2015-09-07 13:45:00'])
+
+
