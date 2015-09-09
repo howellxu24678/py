@@ -4,8 +4,8 @@ Created on Mon Aug 17 18:13:52 2015
 
 @author: guosen
 """
-import trade
-import quote
+#import trade
+#import quote
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
