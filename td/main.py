@@ -67,11 +67,17 @@ trader.create()
 #trader.UAN(9)
 #trader.NewStockOrder()
 
-code = '002407'
-q5mk = quote.Quote5mKline(code)
+#code = '002407'
+#q5mk = quote.Quote5mKline(code)
 
-stgtd = strategy.Stg_td(q5mk, trader)
-stgtd.start()
+codelist = ['600807', '200152','002407']
+for code in codelist:
+    strategy.Stg_td(quote.Quote5mKline(code), trader).start()
+
+
+
+
+
 
 #stgtd.stop()
 

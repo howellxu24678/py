@@ -102,8 +102,9 @@ class Quote5mKline(object):
             lastLow = self.__df5mKline.loc[dt64LastTimeStamp, 'low']
             self.__df5mKline.loc[dt64LastTimeStamp, 'high'] = max(curTickPrice, lastHigh) 
             self.__df5mKline.loc[dt64LastTimeStamp, 'low'] = min(curTickPrice, lastLow)
-            
+                
         print self.__df5mKline
+        print self.__code
     
     def TimerToDo(self, calback):
         self.OnTick(GetRealTimeQuote(self.__code))

@@ -68,7 +68,13 @@ class Stg_td(object):
         isNeedBuy, isNeedSell = self.td(kline)
         if isNeedBuy:
             print "buy"
-            self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com','xujhaosysu@163.com'])
+            if self.__quote.GetCode() in ['600807', '200152']:
+                self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
+            else:
+                self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com',])
         if isNeedSell:
             print "sell"
-            self.__sendmail.send('code:%s, 5min sell'%(self.__quote.GetCode()), ['727513059@qq.com','xujhaosysu@163.com'])
+            if self.__quote.GetCode() in ['600807', '200152']:
+                self.__sendmail.send('code:%s, 5min sell'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
+            else:
+                self.__sendmail.send('code:%s, 5min sell'%(self.__quote.GetCode()), ['727513059@qq.com',])

@@ -51,3 +51,7 @@ class sendmail(object):
         server.login(self.__from_addr, self.__password)
         server.sendmail(self.__from_addr, to_addr, msg.as_string())
         server.quit()
+        
+#test
+#sm = sendmail('smtp.163.com', 'xujhaosysu@163.com', '465513')
+#sm.send('code:, 5min buy', ['727513059@qq.com',])
