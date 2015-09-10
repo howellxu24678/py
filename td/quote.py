@@ -78,6 +78,9 @@ class Quote5mKline(object):
         ma60_ = ta.SMA(self.__df5mKline['close'].values, 60)
         self.__df5mKline['ma60'] = ma60_
         
+    def GetCode(self):
+        return self.__code
+        
     def OnTick(self, tick):
         #print 'onTick'
         #当前传过来的Tick价格

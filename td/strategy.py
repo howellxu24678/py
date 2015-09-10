@@ -8,6 +8,7 @@ Created on Mon Aug 17 18:13:52 2015
 #import quote
 
 from apscheduler.schedulers.background import BackgroundScheduler
+import sendmail
 
 class Stg_td(object):
     def __init__(self, quote_, trade_):
@@ -15,6 +16,7 @@ class Stg_td(object):
         self.__trade = trade_
         
         self.__sched  = BackgroundScheduler()
+        self.__sendmail = sendmail.sendmail('smtp.163.com', 'xujhaosysu@163.com', '465513')
     
     def start(self):
         self.__sched.add_job(self.__quote.TimerToDo, 'interval', args=(self.OnNewKLine,),  seconds=3)
@@ -66,5 +68,7 @@ class Stg_td(object):
         isNeedBuy, isNeedSell = self.td(kline)
         if isNeedBuy:
             print "buy"
+            self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com','xujhaosysu@163.com'])
         if isNeedSell:
             print "sell"
+            self.__sendmail.send('code:%s, 5min sell'%(self.__quote.GetCode()), ['727513059@qq.com','xujhaosysu@163.com'])

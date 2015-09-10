@@ -67,7 +67,7 @@ trader.create()
 #trader.UAN(9)
 #trader.NewStockOrder()
 
-code = '000609'
+code = '002407'
 q5mk = quote.Quote5mKline(code)
 
 stgtd = strategy.Stg_td(q5mk, trader)
