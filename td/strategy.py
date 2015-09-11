@@ -9,6 +9,7 @@ Created on Mon Aug 17 18:13:52 2015
 
 from apscheduler.schedulers.background import BackgroundScheduler
 import sendmail
+import datetime
 
 class Stg_td(object):
     def __init__(self, quote_, trade_):
@@ -17,6 +18,10 @@ class Stg_td(object):
         
         self.__sched  = BackgroundScheduler()
         self.__sendmail = sendmail.sendmail('smtp.163.com', 'xujhaosysu@163.com', '465513')
+        
+        self.__buyNotifyList = []
+        self.__sellNotifyList = []
+        self.__notifyTimeDelta = datetime.timedelta(minutes=5)
     
     def start(self):
         self.__sched.add_job(self.__quote.TimerToDo, 'interval', args=(self.OnNewKLine,),  seconds=3)
@@ -67,13 +72,21 @@ class Stg_td(object):
     def OnNewKLine(self, kline):
         isNeedBuy, isNeedSell = self.td(kline)
         if isNeedBuy:
-            print "buy"
+            if len(self.__buyNotifyList) > 0 and datetime.datetime.now() - self.__buyNotifyList[-1] < self.__notifyTimeDelta:
+                return
+                
+            print 'sendmail code:%s, 5min buy'%self.__quote.GetCode()
+            self.__buyNotifyList.append(datetime.datetime.now())
             if self.__quote.GetCode() in ['600807', '200152']:
                 self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
             else:
                 self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com',])
         if isNeedSell:
-            print "sell"
+            if len(self.__sellNotifyList) > 0 and datetime.datetime.now() - self.__sellNotifyList[-1] < self.__notifyTimeDelta:
+                return
+               
+            print 'sendmail code:%s, 5min sell'%self.__quote.GetCode()
+            self.__sellNotifyList.append(datetime.datetime.now())
             if self.__quote.GetCode() in ['600807', '200152']:
                 self.__sendmail.send('code:%s, 5min sell'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
             else:
