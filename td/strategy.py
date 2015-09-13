@@ -19,9 +19,7 @@ class Stg_td(object):
         self.__sched  = BackgroundScheduler()
         self.__sendmail = sendmail.sendmail('smtp.163.com', 'xujhaosysu@163.com', '465513')
         
-        self.__buyNotifyList = []
-        self.__sellNotifyList = []
-        self.__notifyTimeDelta = datetime.timedelta(minutes=5)
+        self.__curNotifyStatus = 'init'
     
     def start(self):
         self.__sched.add_job(self.__quote.TimerToDo, 'interval', args=(self.OnNewKLine,),  seconds=3)
@@ -72,21 +70,23 @@ class Stg_td(object):
     def OnNewKLine(self, kline):
         isNeedBuy, isNeedSell = self.td(kline)
         if isNeedBuy:
-            if len(self.__buyNotifyList) > 0 and datetime.datetime.now() - self.__buyNotifyList[-1] < self.__notifyTimeDelta:
-                return
-                
+            #状态与之前一致，代表之前已经发送过信号，此时不需要再进行发送了
+            if self.__curNotifyStatus == 'buy':
+                return 
+            
+            #不一致则发送信号
+            self.__curNotifyStatus = 'buy'
             print 'sendmail code:%s, 5min buy'%self.__quote.GetCode()
-            self.__buyNotifyList.append(datetime.datetime.now())
             if self.__quote.GetCode() in ['600807', '200152']:
                 self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
             else:
                 self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com',])
         if isNeedSell:
-            if len(self.__sellNotifyList) > 0 and datetime.datetime.now() - self.__sellNotifyList[-1] < self.__notifyTimeDelta:
+            if self.__curNotifyStatus == 'sell':
                 return
-               
+                
+            self.__curNotifyStatus = 'sell'
             print 'sendmail code:%s, 5min sell'%self.__quote.GetCode()
-            self.__sellNotifyList.append(datetime.datetime.now())
             if self.__quote.GetCode() in ['600807', '200152']:
                 self.__sendmail.send('code:%s, 5min sell'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
             else:

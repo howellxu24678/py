@@ -81,7 +81,7 @@ class Quote5mKline(object):
     def GetCode(self):
         return self.__code
         
-    def OnTick(self, tick):
+    def OnTick(self, tick, calback):
         #print 'onTick'
         #当前传过来的Tick价格
         curTickPrice = float(tick['price'].values[0])
@@ -94,8 +94,13 @@ class Quote5mKline(object):
         curMa60 = GetSMA(self.__df5mKline['close'].values[-60:])
         
         if(dt64CurTimeSlice > dt64LastTimeStamp):
-            self.__df5mKline.loc[dt64CurTimeSlice] = {'open':curTickPrice,'high':curTickPrice, 'close':curTickPrice, 'low':curTickPrice, 'volume': 0.0, 'ma60':curMa60}
-            
+            calback(self.__df5mKline)
+            self.__df5mKline.loc[dt64CurTimeSlice] = {'open':curTickPrice, \
+             'high':curTickPrice, \
+             'close':curTickPrice, \
+             'low':curTickPrice, \
+             'volume': 0.0, \
+             'ma60':curMa60}
         else:
             self.__df5mKline.loc[dt64LastTimeStamp, 'close'] = curTickPrice
             lastHigh = self.__df5mKline.loc[dt64LastTimeStamp, 'high']
@@ -107,8 +112,8 @@ class Quote5mKline(object):
         print self.__code
     
     def TimerToDo(self, calback):
-        self.OnTick(GetRealTimeQuote(self.__code))
-        calback(self.__df5mKline)
+        self.OnTick(GetRealTimeQuote(self.__code), calback)
+        #calback(self.__df5mKline)
 
 
 #def td(kline):
