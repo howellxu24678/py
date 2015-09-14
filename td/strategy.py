@@ -19,9 +19,7 @@ class Stg_td(object):
         self.__sched  = BackgroundScheduler()
         #self.__sendmail = sendmail.sendmail('smtp.163.com', 'xujhaosysu@163.com', '465513')
         self.__sendmail = sendmail.sendmail('smtp.qq.com', '727513059@qq.com', '0730xujh')
-        self.__buyNotifyList = []
-        self.__sellNotifyList = []
-        self.__notifyTimeDelta = datetime.timedelta(minutes=5)
+        self.__curNotifyStatus = 'init'
     
     def start(self):
         self.__sched.add_job(self.__quote.TimerToDo, 'interval', args=(self.OnNewKLine,),  seconds=3)
@@ -37,28 +35,28 @@ class Stg_td(object):
         isNeedSell = False
         
         curRow = kline.ix[iCount]
-        #{第n根，close > ma60 且为阳线，然后开始从后往前看是否满足要求}
+        #{µÚn¸ù£¬close > ma60 ÇÒÎªÑôÏß£¬È»ºó¿ªÊ¼´ÓºóÍùÇ°¿´ÊÇ·ñÂú×ãÒªÇó}
         if curRow['close'] > curRow['ma60'] and curRow['close'] >= curRow['open']:
             iCount = iCount - 1
             curRow = kline.ix[iCount]
-            #{从第n-1一直到倒数第2根，close > ma60}
+            #{´ÓµÚn-1Ò»Ö±µ½µ¹ÊýµÚ2¸ù£¬close > ma60}
             while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
                 dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
-                #{第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)}
+                #{µÚ1¸ùKÏß open< ma60 < close (¼´µÚÒ»¸ùÎª±»ma60´©¹ýÊµÌåµÄÑôÏß)}
                 if abs(iCount) >= 3 and dMin < curRow['ma60'] and curRow['ma60'] < curRow['close']:
                     isNeedBuy = True
                     break
                 else:
                     iCount = iCount - 1
                     
-        #{第n根，close < ma60 且为阴线，然后开始从后往前看是否满足要求}
+        #{µÚn¸ù£¬close < ma60 ÇÒÎªÒõÏß£¬È»ºó¿ªÊ¼´ÓºóÍùÇ°¿´ÊÇ·ñÂú×ãÒªÇó}
         elif curRow['close'] < curRow['ma60'] and curRow['close'] < curRow['open']:
             iCount = iCount - 1
             curRow = kline.ix[iCount]
-            #{从第n-1一直到倒数第2根，close < ma60}
+            #{´ÓµÚn-1Ò»Ö±µ½µ¹ÊýµÚ2¸ù£¬close < ma60}
             while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
                 dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
-                #{第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)}
+                #{µÚ1¸ùKÏß open< ma60 < close (¼´µÚÒ»¸ùÎª±»ma60´©¹ýÊµÌåµÄÑôÏß)}
                 if abs(iCount) >= 3 and dMax > curRow['ma60'] and curRow['ma60'] > curRow['close']:
                     isNeedSell = True
                     break
@@ -72,21 +70,23 @@ class Stg_td(object):
     def OnNewKLine(self, kline):
         isNeedBuy, isNeedSell = self.td(kline)
         if isNeedBuy:
-            if len(self.__buyNotifyList) > 0 and datetime.datetime.now() - self.__buyNotifyList[-1] < self.__notifyTimeDelta:
-                return
-                
+            #ç¶æä¸ä¹åä¸è´ï¼ä»£è¡¨ä¹åå·²ç»åéè¿ä¿¡å·ï¼æ­¤æ¶ä¸éè¦åè¿è¡åéäº
+            if self.__curNotifyStatus == 'buy':
+                return 
+            
+            #ä¸ä¸è´ååéä¿¡å
+            self.__curNotifyStatus = 'buy'
             print 'sendmail code:%s, 5min buy'%self.__quote.GetCode()
-            self.__buyNotifyList.append(datetime.datetime.now())
             if self.__quote.GetCode() in ['600807', '200152']:
                 self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
             else:
                 self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com',])
         if isNeedSell:
-            if len(self.__sellNotifyList) > 0 and datetime.datetime.now() - self.__sellNotifyList[-1] < self.__notifyTimeDelta:
+            if self.__curNotifyStatus == 'sell':
                 return
-               
+                
+            self.__curNotifyStatus = 'sell'
             print 'sendmail code:%s, 5min sell'%self.__quote.GetCode()
-            self.__sellNotifyList.append(datetime.datetime.now())
             if self.__quote.GetCode() in ['600807', '200152']:
                 self.__sendmail.send('code:%s, 5min sell'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
             else:
