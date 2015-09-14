@@ -35,33 +35,35 @@ class Stg_td(object):
         isNeedSell = False
         
         curRow = kline.ix[iCount]
-        #{µÚn¸ù£¬close > ma60 ÇÒÎªÑôÏß£¬È»ºó¿ªÊ¼´ÓºóÍùÇ°¿´ÊÇ·ñÂú×ãÒªÇó}
+        #第n根，close > ma60 且为阳线，然后开始从后往前看是否满足要求
         if curRow['close'] > curRow['ma60'] and curRow['close'] >= curRow['open']:
             iCount = iCount - 1
             curRow = kline.ix[iCount]
-            #{´ÓµÚn-1Ò»Ö±µ½µ¹ÊýµÚ2¸ù£¬close > ma60}
+            #从第n-1一直到倒数第2根，close > ma60
             while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
                 dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
-                #{µÚ1¸ùKÏß open< ma60 < close (¼´µÚÒ»¸ùÎª±»ma60´©¹ýÊµÌåµÄÑôÏß)}
+                #第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)
                 if abs(iCount) >= 3 and dMin < curRow['ma60'] and curRow['ma60'] < curRow['close']:
                     isNeedBuy = True
                     break
                 else:
                     iCount = iCount - 1
+                    curRow = kline.ix[iCount]
                     
-        #{µÚn¸ù£¬close < ma60 ÇÒÎªÒõÏß£¬È»ºó¿ªÊ¼´ÓºóÍùÇ°¿´ÊÇ·ñÂú×ãÒªÇó}
+        #第n根，close < ma60 且为阴线，然后开始从后往前看是否满足要求
         elif curRow['close'] < curRow['ma60'] and curRow['close'] < curRow['open']:
             iCount = iCount - 1
             curRow = kline.ix[iCount]
-            #{´ÓµÚn-1Ò»Ö±µ½µ¹ÊýµÚ2¸ù£¬close < ma60}
+            #从第n-1一直到倒数第2根，close < ma60
             while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
                 dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
-                #{µÚ1¸ùKÏß open< ma60 < close (¼´µÚÒ»¸ùÎª±»ma60´©¹ýÊµÌåµÄÑôÏß)}
+                #第1根K线 open > ma60 > close (即第一根为被ma60穿过实体的阴线)
                 if abs(iCount) >= 3 and dMax > curRow['ma60'] and curRow['ma60'] > curRow['close']:
                     isNeedSell = True
                     break
                 else:
                     iCount = iCount - 1
+                    curRow = kline.ix[iCount]
                     
         return isNeedBuy,isNeedSell
                 
@@ -70,11 +72,9 @@ class Stg_td(object):
     def OnNewKLine(self, kline):
         isNeedBuy, isNeedSell = self.td(kline)
         if isNeedBuy:
-            #ç¶æä¸ä¹åä¸è´ï¼ä»£è¡¨ä¹åå·²ç»åéè¿ä¿¡å·ï¼æ­¤æ¶ä¸éè¦åè¿è¡åéäº
             if self.__curNotifyStatus == 'buy':
                 return 
             
-            #ä¸ä¸è´ååéä¿¡å
             self.__curNotifyStatus = 'buy'
             print 'sendmail code:%s, 5min buy'%self.__quote.GetCode()
             if self.__quote.GetCode() in ['600807', '200152']:
