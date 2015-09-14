@@ -75,9 +75,8 @@ for code in codelist:
     strategy.Stg_td(quote.Quote5mKline(code), trader).start()
 
 
-
-
-
+#while(True):
+#    pass
 
 #stgtd.stop()
 

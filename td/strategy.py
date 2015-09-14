@@ -17,8 +17,8 @@ class Stg_td(object):
         self.__trade = trade_
         
         self.__sched  = BackgroundScheduler()
-        self.__sendmail = sendmail.sendmail('smtp.163.com', 'xujhaosysu@163.com', '465513')
-        
+        #self.__sendmail = sendmail.sendmail('smtp.163.com', 'xujhaosysu@163.com', '465513')
+        self.__sendmail = sendmail.sendmail('smtp.qq.com', '727513059@qq.com', '0730xujh')
         self.__buyNotifyList = []
         self.__sellNotifyList = []
         self.__notifyTimeDelta = datetime.timedelta(minutes=5)
