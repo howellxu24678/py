@@ -6,7 +6,7 @@ Created on Mon Aug 17 17:11:33 2015
 """
 
 import tushare as ts
-import datetime,time
+import datetime
 #from apscheduler.schedulers.background import BackgroundScheduler
 import talib as ta
 #import logging
@@ -72,9 +72,16 @@ class Quote5mKline(object):
 #        ma60 = ma60.round(2)
 #        self.__df5mKline['ma60'] = ma60
 #        print self.__df5mKline
-        
-        rnames = ['time', 'open', 'high', 'low', 'close', 'volume']
-        self.__df5mKline = pd.read_table(r"%s\%s.xls"%(hqDataDir, self.__code), sep = '\t', encoding='gbk', names=rnames, parse_dates = ['time'], index_col='time')
+        rnames = ['d','t', 'open', 'high', 'low', 'close', 'volume', 'amt']
+        self.__df5mKline = pd.read_table(r"%s\%s.txt"%(hqDataDir, self.__code), 
+                                         engine='python', sep = ',', 
+                                         encoding='gbk', 
+                                         names=rnames, 
+                                         parse_dates = {'time':['d','t']},  
+                                         index_col='time', 
+                                         skiprows=2, 
+                                         skipfooter=1)
+                                         
         ma60_ = ta.SMA(self.__df5mKline['close'].values, 60)
         self.__df5mKline['ma60'] = ma60_
         
@@ -100,7 +107,8 @@ class Quote5mKline(object):
              'close':curTickPrice, \
              'low':curTickPrice, \
              'volume': 0.0, \
-             'ma60':curMa60}
+             'ma60':curMa60, \
+             'amt':0.0}
         else:
             self.__df5mKline.loc[dt64LastTimeStamp, 'close'] = curTickPrice
             lastHigh = self.__df5mKline.loc[dt64LastTimeStamp, 'high']
@@ -149,6 +157,44 @@ class Quote5mKline(object):
 #                break
 #            else:
 #                iCount = iCount - 1
+#                    
+#    return isNeedBuy,isNeedSell
+    
+#def td2(kline):
+#    iCount = -1
+#    isNeedBuy = False
+#    isNeedSell = False
+#        
+#    curRow = kline.ix[iCount]
+#    #{第n根，close > ma60 且为阳线，然后开始从后往前看是否满足要求}
+#    if curRow['close'] > curRow['ma60'] and curRow['close'] >= curRow['open']:
+#        iCount = iCount - 1
+#        curRow = kline.ix[iCount]
+#        #{从第n-1一直到倒数第2根，close > ma60}
+#        while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
+#            dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
+#            #{第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)}
+#            if abs(iCount) >= 3 and dMin < curRow['ma60'] and curRow['ma60'] < curRow['close']:
+#                isNeedBuy = True
+#                break
+#            else:
+#                iCount = iCount - 1
+#                curRow = kline.ix[iCount]
+#                    
+#    #{第n根，close < ma60 且为阴线，然后开始从后往前看是否满足要求}
+#    elif curRow['close'] < curRow['ma60'] and curRow['close'] < curRow['open']:
+#        iCount = iCount - 1
+#        curRow = kline.ix[iCount]
+#        #{从第n-1一直到倒数第2根，close < ma60}
+#        while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
+#            dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
+#            #{第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)}
+#            if abs(iCount) >= 3 and dMax > curRow['ma60'] and curRow['ma60'] > curRow['close']:
+#                isNeedSell = True
+#                break
+#            else:
+#                iCount = iCount - 1
+#                curRow = kline.ix[iCount]
 #                    
 #    return isNeedBuy,isNeedSell
     
