@@ -17,22 +17,6 @@ def _format_addr(s):
         Header(name, 'utf-8').encode(), \
         addr.encode('utf-8') if isinstance(addr, unicode) else addr))
 
-#from_addr = 'xujhaosysu@163.com'
-#password = '465513'
-#to_addr = ['727513059@qq.com','xujhaosysu@163.com']
-#smtp_server = 'smtp.163.com'
-#
-#msg = MIMEText('hello, send by Python...', 'plain', 'utf-8')
-#msg['From'] = _format_addr(u'Python爱好者 <%s>' % from_addr)
-#msg['To'] = ', '.join(to_addr)
-#msg['Subject'] = Header(u'来自SMTP的问候……', 'utf-8').encode()
-#
-#server = smtplib.SMTP(smtp_server, 25)
-#server.set_debuglevel(1)
-#server.login(from_addr, password)
-#server.sendmail(from_addr, to_addr, msg.as_string())
-#server.quit()
-
 
 class sendmail(object):
     def __init__(self, smtp_server, from_addr, password):
@@ -51,7 +35,3 @@ class sendmail(object):
         server.login(self.__from_addr, self.__password)
         server.sendmail(self.__from_addr, to_addr, msg.as_string())
         server.quit()
-        
-#test
-#sm = sendmail('smtp.163.com', 'xujhaosysu@163.com', '465513')
-#sm.send('code:, 5min buy', ['727513059@qq.com',])

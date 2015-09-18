@@ -9,7 +9,9 @@ Created on Mon Aug 17 18:13:52 2015
 
 from apscheduler.schedulers.background import BackgroundScheduler
 import sendmail
-import datetime
+
+import logging
+logger = logging.getLogger("example02")
 
 class Stg_td(object):
     def __init__(self, quote_, trade_):
@@ -24,7 +26,7 @@ class Stg_td(object):
     def start(self):
         self.__sched.add_job(self.__quote.TimerToDo, 'interval', args=(self.OnNewKLine,),  seconds=3)
         self.__sched.start()
-        print "Stg_td start"
+        logger.info('Stg_td start')
         
     def stop(self):
         self.__sched.shutdown()
@@ -76,7 +78,7 @@ class Stg_td(object):
                 return 
             
             self.__curNotifyStatus = 'buy'
-            print 'sendmail code:%s, 5min buy'%self.__quote.GetCode()
+            logger.info('sendmail code:%s, 5min buy', self.__quote.GetCode())
             if self.__quote.GetCode() in ['600807', '200152']:
                 self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
             else:
@@ -86,7 +88,7 @@ class Stg_td(object):
                 return
                 
             self.__curNotifyStatus = 'sell'
-            print 'sendmail code:%s, 5min sell'%self.__quote.GetCode()
+            logger.info('sendmail code:%s, 5min sell', self.__quote.GetCode())
             if self.__quote.GetCode() in ['600807', '200152']:
                 self.__sendmail.send('code:%s, 5min sell'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
             else:

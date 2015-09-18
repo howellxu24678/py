@@ -9,19 +9,16 @@ import datetime
 
 import quickfix as fix
 import fix_app
-#import logging
 import ConfigParser 
 
-
-
-#class Student(object):
-#    def 
+import logging
+logger = logging.getLogger("example02")
 
 
 class fix_trade(object):
-    def __init__(self, initfile, logger):
+    def __init__(self, initfile):
         self.__initfile = initfile
-        self.__logger = logger
+        #self.__logger = logger
         
 
     def GetConfig(self):
@@ -35,7 +32,7 @@ class fix_trade(object):
         self.__AccountType = cf.get("SESSION", "AccountType")
         self.__RawData = self.__AccountType + ":" + self.__UserName + ":" + self.__PassWord
         
-        self.__logger.info('__UserName:' + self.__UserName + \
+        logger.info('__UserName:' + self.__UserName + \
             " __SenderCompID:" + self.__SenderCompID + \
             " __TargetCompID:" + self.__TargetCompID + \
             "__clordid_prefix:" + self.__clordid_prefix + \
@@ -47,23 +44,17 @@ class fix_trade(object):
             
             self.__settings = fix.SessionSettings( self.__initfile )
             self.__application = fix_app.Application()
-            self.__application.setParm(self.__logger,  self.__RawData)
+            self.__application.setParm(self.__RawData)
             self.__factory = fix.FileStoreFactory( self.__settings )
             self.__log = fix.FileLogFactory(self.__settings)
             self.__initiator = fix.SocketInitiator( self.__application,self.__factory, self.__settings, self.__log )
             self.__initiator.start()
-#            self.__settings = fix.SessionSettings( self.__initfile )
-#            self.__application = fix_app.apptest(self.__logger)
-#            self.__factory = fix.FileStoreFactory( self.__settings )
-#            self.__log = fix.FileLogFactory(self.__settings)
-#            self.__initiator = fix.SocketInitiator( self.__application,self.__factory, self.__settings, self.__log )
-#            self.__initiator.start()
-            
             self.__sessionID = fix.SessionID( "FIX.4.2",self.__SenderCompID ,self.__TargetCompID)
-            self.__logger.debug('fix_trade create')
+            
+            logger.info('fix_trade create')
             time.sleep( 4 )
         except BaseException,e:
-             self.__logger.error(e)
+            logger.exception(e)
             
     def genOrderID(self):
         return self.__clordid_prefix + time.strftime("%H%M%S",time.localtime()) + str(datetime.datetime.now().microsecond/1000)    
@@ -83,8 +74,6 @@ class fix_trade(object):
         msg.setField(fix.OrderQty(12500))
         msg.setField(fix.Currency("CNY"))
         msg.setField(fix.SecurityExchange("XSHE"))
-        
-        #msg.setField(fix.m)
         
         fix.Session.sendToTarget(msg, self.__sessionID)
     # 资金股份查询

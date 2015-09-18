@@ -13,6 +13,8 @@ import talib as ta
 import pandas as pd
 import numpy as np
 #logging.basicConfig()
+import logging
+logger = logging.getLogger("example02")
 
 hqDataDir = "D:\TdxW_HuaTai\T0002\export"
 
@@ -30,6 +32,7 @@ def GetRehabGene(code):
     print rate
     
 def GetRealTimeQuote(code):
+    logger.info("GetRealTimeQuote %s", code)
     #print 'time:',time.strftime("%H:%M:%S",time.localtime())
     df = ts.get_realtime_quotes(code)
     return df[['code','name','price','bid','ask','volume','amount','time']]    
@@ -116,8 +119,7 @@ class Quote5mKline(object):
             self.__df5mKline.loc[dt64LastTimeStamp, 'high'] = max(curTickPrice, lastHigh) 
             self.__df5mKline.loc[dt64LastTimeStamp, 'low'] = min(curTickPrice, lastLow)
                 
-        print self.__df5mKline.tail()
-        print self.__code
+        logger.info("code:%s, kline:%s", self.__code, self.__df5mKline.tail().to_string())
     
     def TimerToDo(self, calback):
         self.OnTick(GetRealTimeQuote(self.__code), calback)
