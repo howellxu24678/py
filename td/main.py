@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-baseconfdir="./conf"
-loggingconfpath= baseconfdir + "/logging.config"
-quickfixconfpath= baseconfdir + "/quickfix.ini"
+baseconfdir="conf"
+loggingconf= "logging.config"
+quickfixconf= "quickfix.ini"
 
 #import sys
 #import time
@@ -47,11 +47,12 @@ import logging.config
 import trade
 import quote
 import strategy
+import os
 
 #import quickfix as fix
 #import fix_app
 
-logging.config.fileConfig(loggingconfpath)
+logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
 logger = logging.getLogger("example01")
 
 #settings = fix.SessionSettings( quickfixconfpath )
@@ -62,7 +63,7 @@ logger = logging.getLogger("example01")
 #initiator = fix.SocketInitiator( application,factory, settings, log )
 #initiator.start()
 
-trader = trade.fix_trade(quickfixconfpath, logger)
+trader = trade.fix_trade(os.path.join(os.getcwd(), baseconfdir, quickfixconf), logger)
 trader.create()
 #trader.UAN(9)
 #trader.NewStockOrder()
