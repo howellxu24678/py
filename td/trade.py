@@ -12,13 +12,77 @@ import fix_app
 import ConfigParser 
 
 import logging
-logger = logging.getLogger("example02")
+logger = logging.getLogger()
+
+from winguiauto import *
 
 
-class fix_trade(object):
+class trade(object):
+    def __init__(self, initfile):
+        self.__initfile = initfile;
+    
+    def buy(self, stock_code, stock_number, stock_price):
+        pass
+        
+    def sell(self, stock_code, stock_number, stock_price):
+        pass
+        
+class gui_trade(trade):
+    def __init__(self):
+        try:
+            self.__hwnd_parent = findSpecifiedTopWindow(wantedText = u'网上股票交易系统5.0')
+            if self.__hwnd_parent == 0:
+                logger.error(u'华泰交易软件没有运行！')
+            else:
+                logger.info('gui_trade init success')
+        except BaseException,e:
+            logger.exception(e)
+    
+    def buy(self, stock_code, stock_number, stock_price):
+        try:
+            pressKey(self.__hwnd_parent, win32con.VK_F6)
+            hwndControls = findWantedControls(self.__hwnd_parent)
+            if closePopupWindow(self.__hwnd_parent, wantedClass='Button'):
+                time.sleep(5)
+            click(hwndControls[2])
+            time.sleep(.5)
+            setEditText(hwndControls[2], stock_code)
+            time.sleep(.5)
+            click(hwndControls[7])
+            time.sleep(.5)
+            setEditText(hwndControls[7], stock_number)
+            time.sleep(.5)
+            clickButton(hwndControls[8])
+            time.sleep(1)
+            return not closePopupWindow(self.__hwnd_parent, wantedClass='Button')
+        except BaseException,e:
+            logger.exception(e)
+        
+    def sell(self, stock_code, stock_number, stock_price):
+        try:
+            pressKey(self.__hwnd_parent, win32con.VK_F6)
+            hwndControls = findWantedControls(self.__hwnd_parent)
+            if closePopupWindow(self.__hwnd_parent, wantedClass='Button'):
+                time.sleep(5)
+            click(hwndControls[11])
+            time.sleep(.5)
+            setEditText(hwndControls[11], stock_code)
+            time.sleep(.5)
+            click(hwndControls[16])
+            time.sleep(.5)
+            setEditText(hwndControls[16], stock_number)
+            time.sleep(.5)
+            clickButton(hwndControls[17])
+            time.sleep(1)
+            return not closePopupWindow(self.__hwnd_parent, wantedClass='Button')
+        except BaseException,e:
+            logger.exception(e)
+    
+
+        
+class fix_trade(trade):
     def __init__(self, initfile):
         self.__initfile = initfile
-        #self.__logger = logger
         
 
     def GetConfig(self):
@@ -87,4 +151,10 @@ class fix_trade(object):
         fix.Session.sendToTarget(msg, self.__sessionID)
         
     def CancleOrder(self):
+        pass
+    
+    def buy(self, stock_code, stock_number, stock_price):
+        pass
+        
+    def sell(self, stock_code, stock_number, stock_price):
         pass

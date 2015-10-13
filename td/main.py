@@ -2,37 +2,52 @@
 import logging 
 import logging.config
 import trade
-import quote
 import strategy
 import os
-import datetime
+import ConfigParser 
 
 baseconfdir="conf"
 loggingconf= "logging.config"
 quickfixconf= "quickfix.ini"
+businessconf= "business.ini"
 
-logdir='log'
-logfilepath = os.path.join(os.getcwd(), logdir, datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')+'td.log')
+try:
+    logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
+    logger = logging.getLogger()
 
-logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
-logger = logging.getLogger("example02")
+    cf = ConfigParser.ConfigParser()
+    cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
+    
+    logger.info("role:%s, ")
+    
+    role = cf.get("DEFAULT", "role")
+    codelist = cf.get(role, "codelist")
+    logger.info("role:%s, codelist:%s", *(role, codelist))
+    
+    
+    if role == "signal":
+        for code in codelist.split(','):
+            logger.info("begin to start Stg_td_signal with code:%s", code)
+            strategy.Stg_td_signal(cf, code).start()
+            
+    elif role == "trader":
+        logger.info("begin to start trader")
+        trader = trade.gui_trade()
+        
+        for code in codelist.split(','):
+            logger.info("begin to start Stg_td_trade with code:%s", code)
+            strategy.Stg_td_trade(cf, code, trader).start()
 
 
-trader = trade.fix_trade(os.path.join(os.getcwd(), baseconfdir, quickfixconf))
-trader.create()
+except BaseException,e:
+    print(e)
+
+#trader = trade.fix_trade(os.path.join(os.getcwd(), baseconfdir, quickfixconf))
+#trader.create()
 #trader.UAN(9)
 #trader.NewStockOrder()
-
-#code = '002407'
-#q5mk = quote.Quote5mKline(code)
-
-codelist = ['600807', '200152','002407']
-for code in codelist:
-    strategy.Stg_td(quote.Quote5mKline(code), trader).start()
-
 
 #while(True):
 #    pass
 
-#stgtd.stop()
 

@@ -9,18 +9,15 @@ Created on Mon Aug 17 18:13:52 2015
 
 from apscheduler.schedulers.background import BackgroundScheduler
 import sendmail
-
+import quote
 import logging
-logger = logging.getLogger("example02")
+logger = logging.getLogger()
 
 class Stg_td(object):
-    def __init__(self, quote_, trade_):
-        self.__quote = quote_
-        self.__trade = trade_
-        
-        self.__sched  = BackgroundScheduler()
-        #self.__sendmail = sendmail.sendmail('smtp.163.com', 'xujhaosysu@163.com', '465513')
-        self.__sendmail = sendmail.sendmail('smtp.qq.com', '727513059@qq.com', '0730xujh')
+    def __init__(self, cf, code):
+        self._code = code
+        self.__quote = quote.Quote5mKline(cf, code)
+        self.__sched  = BackgroundScheduler()      
         self.__curNotifyStatus = 'init'
     
     def start(self):
@@ -68,8 +65,6 @@ class Stg_td(object):
                     curRow = kline.ix[iCount]
                     
         return isNeedBuy,isNeedSell
-                
-        
         
     def OnNewKLine(self, kline):
         isNeedBuy, isNeedSell = self.td(kline)
@@ -78,18 +73,61 @@ class Stg_td(object):
                 return 
             
             self.__curNotifyStatus = 'buy'
-            logger.info('sendmail code:%s, 5min buy', self.__quote.GetCode())
-            if self.__quote.GetCode() in ['600807', '200152']:
-                self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
-            else:
-                self.__sendmail.send('code:%s, 5min buy'%(self.__quote.GetCode()), ['727513059@qq.com',])
+            self.DealBuy()
+
+            
         if isNeedSell:
             if self.__curNotifyStatus == 'sell':
                 return
                 
             self.__curNotifyStatus = 'sell'
-            logger.info('sendmail code:%s, 5min sell', self.__quote.GetCode())
-            if self.__quote.GetCode() in ['600807', '200152']:
-                self.__sendmail.send('code:%s, 5min sell'%(self.__quote.GetCode()), ['727513059@qq.com','6661651@qq.com'])
-            else:
-                self.__sendmail.send('code:%s, 5min sell'%(self.__quote.GetCode()), ['727513059@qq.com',])
+            self.DealSell()
+            
+    def DealBuy(self):
+        pass
+    
+    def DealSell(self):
+        pass
+        
+class Stg_td_signal(Stg_td):
+    def __init__(self, cf, code):
+        super(Stg_td_signal, self).__init__(cf, code)
+        self.__sendmail = sendmail.sendmail(cf.get("signal", "smtp_server"),
+                                            cf.get("signal", "from_addr"),
+                                            cf.get("signal", "password"))
+        
+        #初始化发给自己
+        self.__to_addr = cf.get("signal", "from_addr")
+        
+        toaddr_codelist = {}
+        reveivers = cf.get("signal", "reveiver")
+        reveivers = reveivers.split(',')
+        
+        for reveiver in reveivers:
+            toaddr_codelist[reveiver] = cf.get("signal", reveiver).split(',')
+            
+        for toaddr,codelist in toaddr_codelist.items():
+            if code in codelist:
+                self.__to_addr = toaddr
+                
+    def SendMail(self, status):
+        logger.info('sendmail code:%s, 5min %s, to_addr:%s', *(self._code, status, self.__to_addr))
+        self.__sendmail.send('code:%s, 5min %s'%(self._code, status), [self.__to_addr,])
+        
+    def DealBuy(self):
+        self.SendMail('buy')
+    
+    def DealSell(self):
+        self.SendMail('sell')
+        
+    
+class Stg_td_trade(Stg_td):
+    def __init__(self, cf, code, trade_):
+        super(Stg_td_trade, self).__init__(cf, code)
+        self.__trade = trade_
+        
+    def DealBuy(self):
+        pass
+    
+    def DealSell(self):
+        pass

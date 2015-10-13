@@ -509,3 +509,23 @@ class Bunch(object):
 
 class WinGuiAutoError(Exception):
     pass
+
+def findWantedControls(hwnd):
+    # 获取双向委托界面level3窗体下所有控件句柄
+    hwndChildLevel1 = dumpSpecifiedWindow(hwnd, wantedClass='AfxMDIFrame42s')
+    hwndChildLevel2 = dumpSpecifiedWindow(hwndChildLevel1[0])
+    for handler in hwndChildLevel2:
+        hwndChildLevel3 = dumpSpecifiedWindow(handler)
+        if len(hwndChildLevel3) == 70:  # 在hwndChildLevel3下，共有70个子窗体
+            return hwndChildLevel3
+
+
+def closePopupWindow(hwnd, wantedText=None, wantedClass=None):
+    # 如果有弹出式窗口，点击它的确定按钮
+    hwndPopup = findPopupWindow(hwnd)
+    if hwndPopup:
+        hwndControl = findControl(hwndPopup, wantedText, wantedClass)
+        clickButton(hwndControl)
+        time.sleep(1)
+        return True
+    return False
