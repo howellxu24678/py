@@ -4,16 +4,16 @@ Created on Tue Oct 13 17:11:30 2015
 
 @author: guosen
 """
-#import os
-#import ConfigParser
-#
-#baseconfdir="conf"
-#businessconf= "business.ini"
-#
-#
-#buconf = os.path.join(os.getcwd(), baseconfdir, businessconf)
-#cf = ConfigParser.ConfigParser()
-#cf.read(buconf)
+import os
+import ConfigParser
+
+baseconfdir="conf"
+businessconf= "business.ini"
+
+
+buconf = os.path.join(os.getcwd(), baseconfdir, businessconf)
+cf = ConfigParser.ConfigParser()
+cf.read(buconf)
 #
 #class Animal(object):
 #    def run(self):

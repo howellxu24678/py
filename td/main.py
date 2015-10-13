@@ -18,8 +18,6 @@ try:
     cf = ConfigParser.ConfigParser()
     cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
     
-    logger.info("role:%s, ")
-    
     role = cf.get("DEFAULT", "role")
     codelist = cf.get(role, "codelist")
     logger.info("role:%s, codelist:%s", *(role, codelist))

@@ -16,8 +16,6 @@ import numpy as np
 import logging
 logger = logging.getLogger()
 
-hqDataDir = "D:\TdxW_HuaTai\T0002\export"
-
 
 def GetDayBefore(dayoffset):
     return datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=dayoffset), '%Y-%m-%d')
@@ -70,8 +68,15 @@ def GetDatetimeFromTime(strTime):
 class Quote5mKline(object):
     def __init__(self,cf, code):
         self.__code = code
+        
+        markettime = cf.get("DEFAULT", "markettime").split(',')
+        self.__marketimerange = []
+        for i in range(len(markettime)):
+            self.__marketimerange.append(markettime[i].split('~'))
+        
+        hqdatadir = cf.get("DEFAULT", "hqdatadir")
         rnames = ['d','t', 'open', 'high', 'low', 'close', 'volume', 'amt']
-        self.__df5mKline = pd.read_table(r"%s\%s.txt"%(hqDataDir, self.__code), 
+        self.__df5mKline = pd.read_table(r"%s\%s.txt"%(hqdatadir, self.__code), 
                                          engine='python', sep = ',', 
                                          encoding='gbk', 
                                          names=rnames, 
@@ -86,8 +91,17 @@ class Quote5mKline(object):
     def GetCode(self):
         return self.__code
         
+    def CheckIfInTheMarketTimeRange(self, time):
+        for i in range(len(self.__marketimerange)):
+            if time >= self.__marketimerange[i][0] and time <= self.__marketimerange[i][1]:
+                return True
+        return False
+        
     def OnTick(self, tick, calback):
-        #print 'onTick'
+        if not self.CheckIfInTheMarketTimeRange(tick['time'].values[0]):
+            logger.warn("code:%s, time:%s is not in the market time range", *(self.__code, tick['time'].values[0]))            
+            return
+            
         #当前传过来的Tick价格
         curTickPrice = float(tick['price'].values[0])
         #当前传过来的Tick时间（加上当前日期）
