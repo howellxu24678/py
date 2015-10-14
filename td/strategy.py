@@ -13,20 +13,23 @@ import quote
 import logging
 logger = logging.getLogger()
 
-class Stg_td(object):
+class Strategy(object):
     def __init__(self, cf, code):
         self._code = code
-        self.__quote = quote.Quote5mKline(cf, code)
-        self.__sched  = BackgroundScheduler()      
-        self.__curNotifyStatus = 'init'
+        self._quote = quote.Quote5mKline(cf, code)
+        self._sched  = BackgroundScheduler()      
+        self._curNotifyStatus = 'init'
+        self._sendmail = sendmail.sendmail(cf.get("DEFAULT", "smtp_server"),
+                                    cf.get("DEFAULT", "from_addr"),
+                                    cf.get("DEFAULT", "password"))
     
     def start(self):
-        self.__sched.add_job(self.__quote.TimerToDo, 'interval', args=(self.OnNewKLine,),  seconds=3)
-        self.__sched.start()
-        logger.info('Stg_td start')
+        self._sched.add_job(self._quote.TimerToDo, 'interval', args=(self.OnNewKLine,),  seconds=3)
+        self._sched.start()
+        logger.info('Strategy start')
         
     def stop(self):
-        self.__sched.shutdown()
+        self._sched.shutdown()
     
     def td(self, kline):
         iCount = -1
@@ -69,18 +72,18 @@ class Stg_td(object):
     def OnNewKLine(self, kline):
         isNeedBuy, isNeedSell = self.td(kline)
         if isNeedBuy:
-            if self.__curNotifyStatus == 'buy':
+            if self._curNotifyStatus == 'buy':
                 return 
             
-            self.__curNotifyStatus = 'buy'
+            self._curNotifyStatus = 'buy'
             self.DealBuy()
 
             
         if isNeedSell:
-            if self.__curNotifyStatus == 'sell':
+            if self._curNotifyStatus == 'sell':
                 return
                 
-            self.__curNotifyStatus = 'sell'
+            self._curNotifyStatus = 'sell'
             self.DealSell()
             
     def DealBuy(self):
@@ -89,16 +92,13 @@ class Stg_td(object):
     def DealSell(self):
         pass
         
-class Stg_td_signal(Stg_td):
+class Stg_Signal(Strategy):
     def __init__(self, cf, code):
-        super(Stg_td_signal, self).__init__(cf, code)
-        self.__sendmail = sendmail.sendmail(cf.get("signal", "smtp_server"),
-                                            cf.get("signal", "from_addr"),
-                                            cf.get("signal", "password"))
-        
-        #初始化发给自己
-        self.__to_addr = cf.get("signal", "from_addr")
-        
+        super(Stg_Signal, self).__init__(cf, code)
+        self.GenToAddrList(cf)
+
+                
+    def GenToAddrList(self, cf):
         toaddr_codelist = {}
         reveivers = cf.get("signal", "reveiver")
         reveivers = reveivers.split(',')
@@ -106,13 +106,19 @@ class Stg_td_signal(Stg_td):
         for reveiver in reveivers:
             toaddr_codelist[reveiver] = cf.get("signal", reveiver).split(',')
             
+        self._to_addr_list = []
         for toaddr,codelist in toaddr_codelist.items():
-            if code in codelist:
-                self.__to_addr = toaddr
+            if self._code in codelist:
+                self._to_addr_list.append(toaddr)
                 
+        if len(self._to_addr_list) < 1:
+            logger.warn("code:%s cant find the to_addr, will send to the from_addr:%s",
+                        *(self._code, cf.get("signal", "from_addr")))
+            self._to_addr_list.append(cf.get("signal", "from_addr"))
+            
     def SendMail(self, status):
-        logger.info('sendmail code:%s, 5min %s, to_addr:%s', *(self._code, status, self.__to_addr))
-        self.__sendmail.send('code:%s, 5min %s'%(self._code, status), [self.__to_addr,])
+        logger.info('sendmail code:%s, 5min %s, to_addr:%s', *(self._code, status, self._to_addr_list))
+        self._sendmail.send('code:%s, 5min %s'%(self._code, status), self._to_addr_list)
         
     def DealBuy(self):
         self.SendMail('buy')
@@ -121,13 +127,27 @@ class Stg_td_signal(Stg_td):
         self.SendMail('sell')
         
     
-class Stg_td_trade(Stg_td):
+class Stg_Autotrader(Strategy):
     def __init__(self, cf, code, trade_):
-        super(Stg_td_trade, self).__init__(cf, code)
-        self.__trade = trade_
+        super(Stg_Autotrader, self).__init__(cf, code)
+        self._trade = trade_
+        self._todayHaveBuy = False
+        self._to_addr_list = []
+        
+        #需要将交易摘要发送给的接收者邮箱
+        for toaddr in cf.get("autotrader", "reveiver").split(','):
+            self._to_addr_list.append(toaddr)
+        
         
     def DealBuy(self):
+        if self._todayHaveBuy:
+            logger.info("code:%s today have buy, so dont want to buy again", 
+                        *(self._code,))            
+            return
+            
+        self._todayHaveBuy = True
         pass
     
     def DealSell(self):
+        #if self._todayHaveBuy
         pass

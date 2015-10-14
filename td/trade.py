@@ -19,7 +19,7 @@ from winguiauto import *
 
 class trade(object):
     def __init__(self, initfile):
-        self.__initfile = initfile;
+        self._initfile = initfile;
     
     def buy(self, stock_code, stock_number, stock_price):
         pass
@@ -30,8 +30,8 @@ class trade(object):
 class gui_trade(trade):
     def __init__(self):
         try:
-            self.__hwnd_parent = findSpecifiedTopWindow(wantedText = u'网上股票交易系统5.0')
-            if self.__hwnd_parent == 0:
+            self._hwnd_parent = findSpecifiedTopWindow(wantedText = u'网上股票交易系统5.0')
+            if self._hwnd_parent == 0:
                 logger.error(u'华泰交易软件没有运行！')
             else:
                 logger.info('gui_trade init success')
@@ -40,9 +40,9 @@ class gui_trade(trade):
     
     def buy(self, stock_code, stock_number, stock_price):
         try:
-            pressKey(self.__hwnd_parent, win32con.VK_F6)
-            hwndControls = findWantedControls(self.__hwnd_parent)
-            if closePopupWindow(self.__hwnd_parent, wantedClass='Button'):
+            pressKey(self._hwnd_parent, win32con.VK_F6)
+            hwndControls = findWantedControls(self._hwnd_parent)
+            if closePopupWindow(self._hwnd_parent, wantedClass='Button'):
                 time.sleep(5)
             click(hwndControls[2])
             time.sleep(.5)
@@ -54,15 +54,15 @@ class gui_trade(trade):
             time.sleep(.5)
             clickButton(hwndControls[8])
             time.sleep(1)
-            return not closePopupWindow(self.__hwnd_parent, wantedClass='Button')
+            return not closePopupWindow(self._hwnd_parent, wantedClass='Button')
         except BaseException,e:
             logger.exception(e)
         
     def sell(self, stock_code, stock_number, stock_price):
         try:
-            pressKey(self.__hwnd_parent, win32con.VK_F6)
-            hwndControls = findWantedControls(self.__hwnd_parent)
-            if closePopupWindow(self.__hwnd_parent, wantedClass='Button'):
+            pressKey(self._hwnd_parent, win32con.VK_F6)
+            hwndControls = findWantedControls(self._hwnd_parent)
+            if closePopupWindow(self._hwnd_parent, wantedClass='Button'):
                 time.sleep(5)
             click(hwndControls[11])
             time.sleep(.5)
@@ -74,7 +74,7 @@ class gui_trade(trade):
             time.sleep(.5)
             clickButton(hwndControls[17])
             time.sleep(1)
-            return not closePopupWindow(self.__hwnd_parent, wantedClass='Button')
+            return not closePopupWindow(self._hwnd_parent, wantedClass='Button')
         except BaseException,e:
             logger.exception(e)
     
@@ -82,38 +82,38 @@ class gui_trade(trade):
         
 class fix_trade(trade):
     def __init__(self, initfile):
-        self.__initfile = initfile
+        self._initfile = initfile
         
 
     def GetConfig(self):
         cf = ConfigParser.ConfigParser()
-        cf.read(self.__initfile)
-        self.__clordid_prefix = cf.get("DEFAULT", "clordid_prefix")
-        self.__UserName = cf.get("SESSION", "UserName")
-        self.__PassWord = cf.get("SESSION", "Password")
-        self.__SenderCompID = cf.get("SESSION", "SenderCompID")
-        self.__TargetCompID = cf.get("SESSION", "TargetCompID")
-        self.__AccountType = cf.get("SESSION", "AccountType")
-        self.__RawData = self.__AccountType + ":" + self.__UserName + ":" + self.__PassWord
+        cf.read(self._initfile)
+        self._clordid_prefix = cf.get("DEFAULT", "clordid_prefix")
+        self._UserName = cf.get("SESSION", "UserName")
+        self._PassWord = cf.get("SESSION", "Password")
+        self._SenderCompID = cf.get("SESSION", "SenderCompID")
+        self._TargetCompID = cf.get("SESSION", "TargetCompID")
+        self._AccountType = cf.get("SESSION", "AccountType")
+        self._RawData = self._AccountType + ":" + self._UserName + ":" + self._PassWord
         
-        logger.info('__UserName:' + self.__UserName + \
-            " __SenderCompID:" + self.__SenderCompID + \
-            " __TargetCompID:" + self.__TargetCompID + \
-            "__clordid_prefix:" + self.__clordid_prefix + \
-            "__AccountType:" + self.__AccountType)
+        logger.info('__UserName:' + self._UserName + \
+            " __SenderCompID:" + self._SenderCompID + \
+            " __TargetCompID:" + self._TargetCompID + \
+            "__clordid_prefix:" + self._clordid_prefix + \
+            "__AccountType:" + self._AccountType)
             
     def create(self):
         try:
             self.GetConfig()
             
-            self.__settings = fix.SessionSettings( self.__initfile )
-            self.__application = fix_app.Application()
-            self.__application.setParm(self.__RawData)
-            self.__factory = fix.FileStoreFactory( self.__settings )
-            self.__log = fix.FileLogFactory(self.__settings)
-            self.__initiator = fix.SocketInitiator( self.__application,self.__factory, self.__settings, self.__log )
-            self.__initiator.start()
-            self.__sessionID = fix.SessionID( "FIX.4.2",self.__SenderCompID ,self.__TargetCompID)
+            self._settings = fix.SessionSettings( self._initfile )
+            self._application = fix_app.Application()
+            self._application.setParm(self._RawData)
+            self._factory = fix.FileStoreFactory( self._settings )
+            self._log = fix.FileLogFactory(self._settings)
+            self._initiator = fix.SocketInitiator( self._application,self._factory, self._settings, self._log )
+            self._initiator.start()
+            self._sessionID = fix.SessionID( "FIX.4.2",self._SenderCompID ,self._TargetCompID)
             
             logger.info('fix_trade create')
             time.sleep( 4 )
@@ -121,10 +121,10 @@ class fix_trade(trade):
             logger.exception(e)
             
     def genOrderID(self):
-        return self.__clordid_prefix + time.strftime("%H%M%S",time.localtime()) + str(datetime.datetime.now().microsecond/1000)    
+        return self._clordid_prefix + time.strftime("%H%M%S",time.localtime()) + str(datetime.datetime.now().microsecond/1000)    
         
     def close(self):
-        self.__initiator.stop()
+        self._initiator.stop()
     #新订单        
     def NewStockOrder(self):
         msg = fix.Message()
@@ -139,7 +139,7 @@ class fix_trade(trade):
         msg.setField(fix.Currency("CNY"))
         msg.setField(fix.SecurityExchange("XSHE"))
         
-        fix.Session.sendToTarget(msg, self.__sessionID)
+        fix.Session.sendToTarget(msg, self._sessionID)
     # 资金股份查询
     def UAN(self, reqType):
         msg = fix.Message()
@@ -148,7 +148,7 @@ class fix_trade(trade):
         msg.setField(fix.PosReqType(reqType))
         msg.setField(fix.Currency("CNY"))
         
-        fix.Session.sendToTarget(msg, self.__sessionID)
+        fix.Session.sendToTarget(msg, self._sessionID)
         
     def CancleOrder(self):
         pass

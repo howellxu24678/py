@@ -25,16 +25,16 @@ try:
     
     if role == "signal":
         for code in codelist.split(','):
-            logger.info("begin to start Stg_td_signal with code:%s", code)
-            strategy.Stg_td_signal(cf, code).start()
+            logger.info("begin to start Stg_Signal with code:%s", code)
+            strategy.Stg_Signal(cf, code).start()
             
-    elif role == "trader":
+    elif role == "autotrader":
         logger.info("begin to start trader")
         trader = trade.gui_trade()
         
         for code in codelist.split(','):
-            logger.info("begin to start Stg_td_trade with code:%s", code)
-            strategy.Stg_td_trade(cf, code, trader).start()
+            logger.info("begin to start Stg_Autotrader with code:%s", code)
+            strategy.Stg_Autotrader(cf, code, trader).start()
 
 
 except BaseException,e:
