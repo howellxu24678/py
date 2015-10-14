@@ -29,14 +29,13 @@ class trade(object):
         
 class gui_trade(trade):
     def __init__(self):
-        try:
-            self._hwnd_parent = findSpecifiedTopWindow(wantedText = u'网上股票交易系统5.0')
-            if self._hwnd_parent == 0:
-                logger.error(u'华泰交易软件没有运行！')
-            else:
-                logger.info('gui_trade init success')
-        except BaseException,e:
-            logger.exception(e)
+        self._hwnd_parent = findSpecifiedTopWindow(wantedText = u'网上股票交易系统5.0')
+        if self._hwnd_parent == 0:
+            logger.critical(u'华泰交易软件没有运行！')
+            raise RuntimeError, 'gui_trade init failed'
+        else:
+            logger.info('gui_trade init success')
+
     
     def buy(self, stock_code, stock_number, stock_price):
         try:

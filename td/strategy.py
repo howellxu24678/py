@@ -13,12 +13,52 @@ import quote
 import logging
 logger = logging.getLogger()
 
+
+def td(kline):
+    iCount = -1
+    isNeedBuy = False
+    isNeedSell = False
+    
+    curRow = kline.ix[iCount]
+    #第n根，close > ma60 且为阳线，然后开始从后往前看是否满足要求
+    if curRow['close'] > curRow['ma60'] and curRow['close'] >= curRow['open']:
+        iCount = iCount - 1
+        curRow = kline.ix[iCount]
+        #从第n-1一直到倒数第2根，close > ma60
+        while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
+            dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
+            #第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)
+            if abs(iCount) >= 3 and dMin < curRow['ma60'] and curRow['ma60'] < curRow['close']:
+                isNeedBuy = True
+                break
+            else:
+                iCount = iCount - 1
+                curRow = kline.ix[iCount]
+                
+    #第n根，close < ma60 且为阴线，然后开始从后往前看是否满足要求
+    elif curRow['close'] < curRow['ma60'] and curRow['close'] < curRow['open']:
+        iCount = iCount - 1
+        curRow = kline.ix[iCount]
+        #从第n-1一直到倒数第2根，close < ma60
+        while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
+            dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
+            #第1根K线 open > ma60 > close (即第一根为被ma60穿过实体的阴线)
+            if abs(iCount) >= 3 and dMax > curRow['ma60'] and curRow['ma60'] > curRow['close']:
+                isNeedSell = True
+                break
+            else:
+                iCount = iCount - 1
+                curRow = kline.ix[iCount]
+                
+    return isNeedBuy,isNeedSell
+
+
 class Strategy(object):
     def __init__(self, cf, code):
         self._code = code
         self._quote = quote.Quote5mKline(cf, code)
         self._sched  = BackgroundScheduler()      
-        self._curNotifyStatus = 'init'
+        self._latestStatus = 'init'
         self._sendmail = sendmail.sendmail(cf.get("DEFAULT", "smtp_server"),
                                     cf.get("DEFAULT", "from_addr"),
                                     cf.get("DEFAULT", "password"))
@@ -30,60 +70,22 @@ class Strategy(object):
         
     def stop(self):
         self._sched.shutdown()
-    
-    def td(self, kline):
-        iCount = -1
-        isNeedBuy = False
-        isNeedSell = False
-        
-        curRow = kline.ix[iCount]
-        #第n根，close > ma60 且为阳线，然后开始从后往前看是否满足要求
-        if curRow['close'] > curRow['ma60'] and curRow['close'] >= curRow['open']:
-            iCount = iCount - 1
-            curRow = kline.ix[iCount]
-            #从第n-1一直到倒数第2根，close > ma60
-            while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
-                dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
-                #第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)
-                if abs(iCount) >= 3 and dMin < curRow['ma60'] and curRow['ma60'] < curRow['close']:
-                    isNeedBuy = True
-                    break
-                else:
-                    iCount = iCount - 1
-                    curRow = kline.ix[iCount]
-                    
-        #第n根，close < ma60 且为阴线，然后开始从后往前看是否满足要求
-        elif curRow['close'] < curRow['ma60'] and curRow['close'] < curRow['open']:
-            iCount = iCount - 1
-            curRow = kline.ix[iCount]
-            #从第n-1一直到倒数第2根，close < ma60
-            while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
-                dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
-                #第1根K线 open > ma60 > close (即第一根为被ma60穿过实体的阴线)
-                if abs(iCount) >= 3 and dMax > curRow['ma60'] and curRow['ma60'] > curRow['close']:
-                    isNeedSell = True
-                    break
-                else:
-                    iCount = iCount - 1
-                    curRow = kline.ix[iCount]
-                    
-        return isNeedBuy,isNeedSell
         
     def OnNewKLine(self, kline):
-        isNeedBuy, isNeedSell = self.td(kline)
+        isNeedBuy, isNeedSell = td(kline)
         if isNeedBuy:
-            if self._curNotifyStatus == 'buy':
+            if self._latestStatus == 'buy':
                 return 
             
-            self._curNotifyStatus = 'buy'
+            self._latestStatus = 'buy'
             self.DealBuy()
 
             
         if isNeedSell:
-            if self._curNotifyStatus == 'sell':
+            if self._latestStatus == 'sell':
                 return
                 
-            self._curNotifyStatus = 'sell'
+            self._latestStatus = 'sell'
             self.DealSell()
             
     def DealBuy(self):
@@ -96,7 +98,6 @@ class Stg_Signal(Strategy):
     def __init__(self, cf, code):
         super(Stg_Signal, self).__init__(cf, code)
         self.GenToAddrList(cf)
-
                 
     def GenToAddrList(self, cf):
         toaddr_codelist = {}
@@ -132,13 +133,75 @@ class Stg_Autotrader(Strategy):
         super(Stg_Autotrader, self).__init__(cf, code)
         self._trade = trade_
         self._todayHaveBuy = False
-        self._to_addr_list = []
+        self.GenToAddrList(cf)
+        self._iBuyIndex, self._iSellIndex = self.LookBackRealBuySellPoint()
         
+        self._lastBuyPoint = self._quote._df5mKline.index[self._iBuyIndex-1]
+        self._lastSellPoint = self._quote._df5mKline.index[self._iSellIndex-1]
+        logger.info("code:%s, lastBuyPoint:%s, lastSellPoint:%s", 
+                    *(self._code, self._lastBuyPoint, self._lastSellPoint))
+
+        
+    def GenToAddrList(self, cf):
+        self._to_addr_list = []
         #需要将交易摘要发送给的接收者邮箱
         for toaddr in cf.get("autotrader", "reveiver").split(','):
             self._to_addr_list.append(toaddr)
+            
+    #往前回溯获取上一个有效信号
+    def LookBackToGetSignal(self):
+        for i in xrange(self._quote._df5mKline.shape[0], 61, -1):
+            isNeedBuy, isNeedSell = td(self._quote._df5mKline[:i])
+            if isNeedBuy or isNeedSell:
+                break
+        if isNeedBuy:
+            self._latestStatus = 'buy'
+        elif isNeedSell:
+            self._latestStatus = 'sell'
+            
+    def LookBackRealBuySellPoint(self):
+        iBuyIndex = 0
+        iSellIndex = 0
+        isHaveFoundBuy = False
+        isHaveFoundSell = False
+        lastHitStatus = 'init'
         
-        
+        for i in xrange(self._quote._df5mKline.shape[0], 61, -1):
+            isNeedBuy, isNeedSell = td(self._quote._df5mKline[:i])
+            if isNeedBuy or isNeedSell:
+                if isNeedBuy:
+                    if lastHitStatus == 'sell':
+                        isHaveFoundSell = True
+                    
+                    lastHitStatus = 'buy'
+                    if not isHaveFoundBuy:
+                        iBuyIndex = i
+                    
+                if isNeedSell:
+                    if lastHitStatus == 'buy':
+                        isHaveFoundBuy = True
+                        
+                    lastHitStatus = 'sell'
+                    if not isHaveFoundSell:
+                        iSellIndex = i
+                    
+            if isHaveFoundBuy and isHaveFoundSell:
+                break
+            
+        return iBuyIndex,iSellIndex
+                
+#self._quote._df5mKline.index[]
+            
+    def LookBackToGetReverseSignal(self, startindex, status):
+        pass
+#        index = 0
+#        for i in xrange(startindex, 0, -1):
+#            isNeedBuy, isNeedSell = td(self._quote._df5mKline[:i])
+#            if isNeedBuy or isNeedSell:
+#                if (status == 'buy' and isNeedSell) or (status == 'sell' and isNeedBuy):
+#                    index = i
+            
+            
     def DealBuy(self):
         if self._todayHaveBuy:
             logger.info("code:%s today have buy, so dont want to buy again", 
