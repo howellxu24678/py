@@ -57,7 +57,7 @@ class Strategy(object):
     def __init__(self, cf, code):
         self._code = code
         self._quote = quote.Quote5mKline(cf, code)
-        self._sched  = BackgroundScheduler()      
+        self._sched  = BackgroundScheduler(logger = logging.getLogger("schedule"))
         self._latestStatus = 'init'
         self._sendmail = sendmail.sendmail(cf.get("DEFAULT", "smtp_server"),
                                     cf.get("DEFAULT", "from_addr"),
@@ -114,12 +114,12 @@ class Stg_Signal(Strategy):
                 
         if len(self._to_addr_list) < 1:
             logger.warn("code:%s cant find the to_addr, will send to the from_addr:%s",
-                        *(self._code, cf.get("signal", "from_addr")))
+                        self._code, cf.get("signal", "from_addr"))
             self._to_addr_list.append(cf.get("signal", "from_addr"))
             
     def SendMail(self, status):
-        logger.info('sendmail code:%s, 5min %s, to_addr:%s', *(self._code, status, self._to_addr_list))
-        self._sendmail.send('code:%s, 5min %s'%(self._code, status), self._to_addr_list)
+        logger.info('sendmail code:%s, 5min %s, to_addr:%s', self._code, status, self._to_addr_list)
+        self._sendmail.send('code:%s, 5min %s' % (self._code, status), self._to_addr_list)
         
     def DealBuy(self):
         self.SendMail('buy')
@@ -139,7 +139,9 @@ class Stg_Autotrader(Strategy):
         self._lastBuyPoint = self._quote._df5mKline.index[self._iBuyIndex-1]
         self._lastSellPoint = self._quote._df5mKline.index[self._iSellIndex-1]
         logger.info("code:%s, lastBuyPoint:%s, lastSellPoint:%s", 
-                    *(self._code, self._lastBuyPoint, self._lastSellPoint))
+                    self._code, self._lastBuyPoint, self._lastSellPoint)
+                    
+        self.LookBackToGetSignal()
 
         
     def GenToAddrList(self, cf):
@@ -158,6 +160,9 @@ class Stg_Autotrader(Strategy):
             self._latestStatus = 'buy'
         elif isNeedSell:
             self._latestStatus = 'sell'
+            
+        logger.info("LookBackToGetSignal and set the _latestStatus to %s", self._latestStatus)
+        
             
     def LookBackRealBuySellPoint(self):
         iBuyIndex = 0
@@ -189,18 +194,6 @@ class Stg_Autotrader(Strategy):
                 break
             
         return iBuyIndex,iSellIndex
-                
-#self._quote._df5mKline.index[]
-            
-    def LookBackToGetReverseSignal(self, startindex, status):
-        pass
-#        index = 0
-#        for i in xrange(startindex, 0, -1):
-#            isNeedBuy, isNeedSell = td(self._quote._df5mKline[:i])
-#            if isNeedBuy or isNeedSell:
-#                if (status == 'buy' and isNeedSell) or (status == 'sell' and isNeedBuy):
-#                    index = i
-            
             
     def DealBuy(self):
         if self._todayHaveBuy:

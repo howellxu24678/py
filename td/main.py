@@ -20,7 +20,7 @@ try:
     
     role = cf.get("DEFAULT", "role")
     codelist = cf.get(role, "codelist")
-    logger.info("role:%s, codelist:%s", *(role, codelist))
+    logger.info("role:%s, codelist:%s", role, codelist)
     
     
     if role == "signal":

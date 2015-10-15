@@ -5,16 +5,15 @@ Created on Mon Aug 17 17:11:33 2015
 @author: guosen
 """
 
+import os
 import tushare as ts
 import datetime
-#from apscheduler.schedulers.background import BackgroundScheduler
 import talib as ta
-#import logging
 import pandas as pd
 import numpy as np
-#logging.basicConfig()
 import logging
 logger = logging.getLogger()
+
 
 
 def GetDayBefore(dayoffset):
@@ -74,9 +73,17 @@ class Quote5mKline(object):
         for i in range(len(markettime)):
             self._marketimerange.append(markettime[i].split('~'))
         
-        hqdatadir = cf.get("DEFAULT", "hqdatadir")
+        self.GetHistDataFromFile(cf.get("DEFAULT", "hqdatadir"))
+        self.CheckHistoryData()
+        
+    def GetHistDataFromFile(self, hqdatadir):
+        filepath = r"%s\%s.txt"%(hqdatadir, self._code)
+        if not os.path.exists(filepath):
+            logger.critical("filepath %s does not exist", filepath)
+            raise RuntimeError, 'filepath does not exist'
+            
         rnames = ['d','t', 'open', 'high', 'low', 'close', 'volume', 'amt']
-        self._df5mKline = pd.read_table(r"%s\%s.txt"%(hqdatadir, self._code), 
+        self._df5mKline = pd.read_table(filepath, 
                                          engine='python', sep = ',', 
                                          encoding='gbk', 
                                          names=rnames, 
@@ -88,9 +95,18 @@ class Quote5mKline(object):
         ma60_ = ta.SMA(self._df5mKline['close'].values, 60)
         self._df5mKline['ma60'] = ma60_
         self._df5mKline.fillna(0.)
+
         
-    def GetCode(self):
-        return self._code
+    def CheckHistoryData(self):
+        dataLastDay = self._df5mKline.index[-1].date()
+        todayweekday = datetime.date.today().weekday()
+        
+        if (todayweekday == 0 and datetime.date.today() - dataLastDay > datetime.timedelta(days=3)) \
+            or (todayweekday != 0 and datetime.date.today() - dataLastDay > datetime.timedelta(days=1)):
+            logger.critical("code:%s the history data is out of date, lastday:%s", self._code, dataLastDay)
+            raise RuntimeError, 'the history data is out of date'
+            
+        #!!!这里后续要补上根据节假日的判断（需要每年的国务院放假时间安排）
         
     def CheckIfInTheMarketTimeRange(self, time):
         for i in range(len(self._marketimerange)):
@@ -100,7 +116,7 @@ class Quote5mKline(object):
         
     def OnTick(self, tick, calback):
         if not self.CheckIfInTheMarketTimeRange(tick['time'].values[0]):
-            logger.warn("code:%s, time:%s is not in the market time range", *(self._code, tick['time'].values[0]))            
+            logger.warn("code:%s, time:%s is not in the market time range", self._code, tick['time'].values[0])            
             return
             
         #当前传过来的Tick价格
