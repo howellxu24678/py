@@ -57,7 +57,8 @@ class Strategy(object):
     def __init__(self, cf, code):
         self._code = code
         self._quote = quote.Quote5mKline(cf, code)
-        self._sched  = BackgroundScheduler(logger = logging.getLogger("schedule"))
+        #http://apscheduler.readthedocs.org/en/latest/userguide.html#scheduler-config
+        self._sched  = BackgroundScheduler({'apscheduler.logger':logging.getLogger('schedule'),})
         self._latestStatus = 'init'
         self._sendmail = sendmail.sendmail(cf.get("DEFAULT", "smtp_server"),
                                     cf.get("DEFAULT", "from_addr"),
