@@ -19,16 +19,17 @@ def _format_addr(s):
 
 
 class sendmail(object):
-    def __init__(self, smtp_server, from_addr, password):
+    def __init__(self, smtp_server, from_addr, password, remarks):
         self._smtp_server = smtp_server        
         self._from_addr = from_addr
         self._password = password
+        self._remarks = remarks
         
     def send(self, content, to_addr):
         msg = MIMEText(content, 'plain', 'utf-8')
         msg['From'] = self._from_addr
         msg['To'] = ', '.join(to_addr)
-        msg['Subject'] = Header(u'来自TD的提醒……', 'utf-8').encode()
+        msg['Subject'] = Header(u'%s 的提醒……' % self._remarks, 'utf-8').encode()
         
         server = smtplib.SMTP(self._smtp_server, 25)
         server.set_debuglevel(1)

@@ -10,47 +10,9 @@ Created on Mon Aug 17 18:13:52 2015
 from apscheduler.schedulers.background import BackgroundScheduler
 import sendmail
 import quote
+from util import *
 import logging
 logger = logging.getLogger()
-
-
-def td(kline):
-    iCount = -1
-    isNeedBuy = False
-    isNeedSell = False
-    
-    curRow = kline.ix[iCount]
-    #第n根，close > ma60 且为阳线，然后开始从后往前看是否满足要求
-    if curRow['close'] > curRow['ma60'] and curRow['close'] >= curRow['open']:
-        iCount = iCount - 1
-        curRow = kline.ix[iCount]
-        #从第n-1一直到倒数第2根，close > ma60
-        while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
-            dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
-            #第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)
-            if abs(iCount) >= 3 and dMin < curRow['ma60'] and curRow['ma60'] < curRow['close']:
-                isNeedBuy = True
-                break
-            else:
-                iCount = iCount - 1
-                curRow = kline.ix[iCount]
-                
-    #第n根，close < ma60 且为阴线，然后开始从后往前看是否满足要求
-    elif curRow['close'] < curRow['ma60'] and curRow['close'] < curRow['open']:
-        iCount = iCount - 1
-        curRow = kline.ix[iCount]
-        #从第n-1一直到倒数第2根，close < ma60
-        while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
-            dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
-            #第1根K线 open > ma60 > close (即第一根为被ma60穿过实体的阴线)
-            if abs(iCount) >= 3 and dMax > curRow['ma60'] and curRow['ma60'] > curRow['close']:
-                isNeedSell = True
-                break
-            else:
-                iCount = iCount - 1
-                curRow = kline.ix[iCount]
-                
-    return isNeedBuy,isNeedSell
 
 
 class Strategy(object):
@@ -58,14 +20,13 @@ class Strategy(object):
         self._code = code
         self._quote = quote.Quote5mKline(cf, code)
         #http://apscheduler.readthedocs.org/en/latest/userguide.html#scheduler-config
-        self._sched  = BackgroundScheduler({'apscheduler.logger':logging.getLogger('schedule'),})
+        #self._sched  = BackgroundScheduler({'apscheduler.logger':logging.getLogger('schedule'),})
+        self._sched  = BackgroundScheduler()        
         self._latestStatus = 'init'
-        self._sendmail = sendmail.sendmail(cf.get("DEFAULT", "smtp_server"),
-                                    cf.get("DEFAULT", "from_addr"),
-                                    cf.get("DEFAULT", "password"))
+
     
     def start(self):
-        self._sched.add_job(self._quote.TimerToDo, 'interval', args=(self.OnNewKLine,),  seconds=3)
+        self._sched.add_job(self._quote.TimerToDo, 'interval', args=(self.OnTimerCall,self.OnNewKLine),  seconds=3)
         self._sched.start()
         logger.info('Strategy start')
         
@@ -89,6 +50,9 @@ class Strategy(object):
             self._latestStatus = 'sell'
             self.DealSell()
             
+    def OnTimerCall(self):
+        logger.info("OnTimerCall")
+            
     def DealBuy(self):
         pass
     
@@ -98,6 +62,10 @@ class Strategy(object):
 class Stg_Signal(Strategy):
     def __init__(self, cf, code):
         super(Stg_Signal, self).__init__(cf, code)
+        self._sendmail = sendmail.sendmail(cf.get("DEFAULT", "smtp_server"),
+                            cf.get("DEFAULT", "from_addr"),
+                            cf.get("DEFAULT", "password"),
+                            "Signal")
         self.GenToAddrList(cf)
                 
     def GenToAddrList(self, cf):
@@ -132,8 +100,15 @@ class Stg_Signal(Strategy):
 class Stg_Autotrader(Strategy):
     def __init__(self, cf, code, trade_):
         super(Stg_Autotrader, self).__init__(cf, code)
+        self._sendmail = sendmail.sendmail(cf.get("DEFAULT", "smtp_server"),
+            cf.get("DEFAULT", "from_addr"),
+            cf.get("DEFAULT", "password"),
+            "Autotrader")
         self._trade = trade_
         self._todayHaveBuy = False
+        self._bNeedToSellAtOpen = False
+        self._sellTime = datetime.datetime.strptime(cf.get("autotrader", "selltime"), "%H:%M").time()
+        self._stock_number = cf.get("autotrader", self._code)
         self.GenToAddrList(cf)
         self._iBuyIndex, self._iSellIndex = self.LookBackRealBuySellPoint()
         
@@ -143,7 +118,20 @@ class Stg_Autotrader(Strategy):
                     self._code, self._lastBuyPoint, self._lastSellPoint)
                     
         self.LookBackToGetSignal()
+        
+        if self.IsNeedToSellAtOpen():
+            self._bNeedToSellAtOpen = True
+            logger.info("code:%s NeedToSellAtOpen sellTime:%s", self._code, self._sellTime) 
+            
 
+                    
+    #检测需不需要在开盘卖掉（如果最后一个真实的买入信号发生在上一个交易日，并且最后一个是卖出信号）
+    def IsNeedToSellAtOpen(self):
+        if IsLastTradingDay(self._lastBuyPoint.date()) and self._latestStatus == 'sell':
+            return True
+        return False 
+             
+        
         
     def GenToAddrList(self, cf):
         self._to_addr_list = []
@@ -196,15 +184,34 @@ class Stg_Autotrader(Strategy):
             
         return iBuyIndex,iSellIndex
             
-    def DealBuy(self):
-        if self._todayHaveBuy:
-            logger.info("code:%s today have buy, so dont want to buy again", 
-                        *(self._code,))            
-            return
+    def OnTimerCall(self):
+        if self._bNeedToSellAtOpen and datetime.datetime.now().time() > self._sellTime:
+            logger.info("deal the sell at open issue")
+            self.DealSell()
+            self._bNeedToSellAtOpen = False
             
-        self._todayHaveBuy = True
-        pass
+        
+    def DealBuy(self):
+        logger.info("start to buy:%s with number:%s", self._code, self._stock_number)
+        if self._trade.buy(self._code, self._stock_number, None):
+            msg = "success to buy:%s with number:%s"%(self._code, self._stock_number)
+            logger.info(msg)
+            self._sendmail.send(msg, self._to_addr_list)
+        else:
+            msg = "failed to buy:%s with number:%s"%(self._code, self._stock_number)
+            logger.info(msg)
+            self._sendmail.send(msg, self._to_addr_list)
     
     def DealSell(self):
-        #if self._todayHaveBuy
-        pass
+        if self._todayHaveBuy:
+            logger.warn("code:%s today have buy, so cant sell today")
+        
+        logger.info("start to sell:%s with number:%s", self._code, self._stock_number)
+        if self._trade.buy(self._code, self._stock_number, None):
+            msg = "success to sell:%s with number:%s"%(self._code, self._stock_number)
+            logger.info(msg)
+            self._sendmail.send(msg, self._to_addr_list)
+        else:
+            msg = "failed to sell:%s with number:%s"%(self._code, self._stock_number)
+            logger.info(msg)
+            self._sendmail.send(msg, self._to_addr_list)

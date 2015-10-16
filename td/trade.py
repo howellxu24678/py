@@ -16,7 +16,6 @@ logger = logging.getLogger()
 
 from winguiauto import *
 
-
 class trade(object):
     def __init__(self, initfile):
         self._initfile = initfile;

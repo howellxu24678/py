@@ -6,63 +6,11 @@ Created on Mon Aug 17 17:11:33 2015
 """
 
 import os
-import tushare as ts
-import datetime
 import talib as ta
 import pandas as pd
-import numpy as np
+from util import *
 import logging
 logger = logging.getLogger()
-
-
-
-def GetDayBefore(dayoffset):
-    return datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=dayoffset), '%Y-%m-%d')
-        
-def GetRehabGene(code):
-        #无复权日线        
-    dfnfq1d = ts.get_hist_data(code,start=GetDayBefore(30),end=GetDayBefore(1))
-        
-    dffq1d = ts.get_h_data(code,start=GetDayBefore(30),end=GetDayBefore(1))
-        
-    rate = dffq1d['close'] / dfnfq1d['close']
-    print rate
-    
-def GetRealTimeQuote(code):
-    logger.info("GetRealTimeQuote %s", code)
-    #print 'time:',time.strftime("%H:%M:%S",time.localtime())
-    df = ts.get_realtime_quotes(code)
-    return df[['code','name','price','bid','ask','volume','amount','time']]    
-    
-    
-def GetHistData(code,_ktype):
-    df = ts.get_hist_data(code, ktype=_ktype)
-    return df[['open','high','close','low','volume']]
-    
-def Datetime2Str(_datetime):
-    return datetime.datetime.strftime(_datetime, "%Y-%m-%d %H:%M:%S")
-    
-def Str2Datetime(strtime):
-    return datetime.datetime.strptime(strtime, "%Y-%m-%d %H:%M:%S")
-    
-# 当前时间所在的段
-def GetTimeSlice(curTickDatetime, min_offset):
-    curTimeTuple = curTickDatetime.timetuple()
-    minSlice = int(((curTimeTuple.tm_min / min_offset) + 1) * min_offset)
-    #print "minSlice:%d" %(minSlice)
-    if(minSlice > 59):
-        return datetime.datetime(curTimeTuple.tm_year, curTimeTuple.tm_mon, 
-                      curTimeTuple.tm_mday, curTimeTuple.tm_hour + 1, 
-                      0, 0)
-    return datetime.datetime(curTimeTuple.tm_year, curTimeTuple.tm_mon, 
-                      curTimeTuple.tm_mday, curTimeTuple.tm_hour, 
-                      minSlice, 0)
-    
-def GetSMA(data):
-    return round(np.mean(data),2)
-#将传入的时间加上当前的日期返回
-def GetDatetimeFromTime(strTime):
-    return Str2Datetime(datetime.datetime.strftime(datetime.date.today(),'%Y-%m-%d') + ' ' + strTime)
     
 class Quote5mKline(object):
     def __init__(self,cf, code):
@@ -99,14 +47,11 @@ class Quote5mKline(object):
         
     def CheckHistoryData(self):
         dataLastDay = self._df5mKline.index[-1].date()
-        todayweekday = datetime.date.today().weekday()
-        
-        if (todayweekday == 0 and datetime.date.today() - dataLastDay > datetime.timedelta(days=3)) \
-            or (todayweekday != 0 and datetime.date.today() - dataLastDay > datetime.timedelta(days=1)):
+        if not IsLastTradingDay(dataLastDay):
             logger.critical("code:%s the history data is out of date, lastday:%s", self._code, dataLastDay)
             raise RuntimeError, 'the history data is out of date'
             
-        #!!!这里后续要补上根据节假日的判断（需要每年的国务院放假时间安排）
+       
         
     def CheckIfInTheMarketTimeRange(self, time):
         for i in range(len(self._marketimerange)):
@@ -147,5 +92,6 @@ class Quote5mKline(object):
                 
         logger.info("code:%s, kline:%s", self._code, self._df5mKline.tail().to_string())
     
-    def TimerToDo(self, calback):
-        self.OnTick(GetRealTimeQuote(self._code), calback)
+    def TimerToDo(self, timerCallback, newKlineCallback):
+        self.OnTick(GetRealTimeQuote(self._code), newKlineCallback)
+        timerCallback()
