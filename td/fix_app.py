@@ -9,7 +9,7 @@ import quickfix as fix
 import logging
 import quickfix42
 #import curses
-logger = logging.getLogger()
+logger = logging.getLogger("run")
 
 class UapGroup(quickfix42.Message):
     def __init__(self):

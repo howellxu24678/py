@@ -14,7 +14,7 @@ businessconf= "business.ini"
 
 try:
     logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
-    logger = logging.getLogger()
+    logger = logging.getLogger("run")
 
     cf = ConfigParser.ConfigParser()
     cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))

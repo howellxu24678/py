@@ -22,7 +22,7 @@ class RealTimeQuote(object):
         self._code2handle = code2handle
         #http://apscheduler.readthedocs.org/en/latest/userguide.html#scheduler-config
         #self._sched  = BackgroundScheduler({'apscheduler.logger':logging.getLogger('schedule'),})
-        self._sched  = BackgroundScheduler({'apscheduler.logger':logging.getLogger('schedule'),})
+        self._sched  = BackgroundScheduler()
     
     def start(self):
 
@@ -121,4 +121,4 @@ class Quote5mKline(object):
             self._df5mKline.loc[dt64LastTimeStamp, 'high'] = max(curTickPrice, lastHigh) 
             self._df5mKline.loc[dt64LastTimeStamp, 'low'] = min(curTickPrice, lastLow)
                 
-        logger.info("code:%s, kline:%s", self._code, self._df5mKline.tail().to_string())
+        logger.info("code:%s, kline: \n %s", self._code, self._df5mKline.tail().to_string())

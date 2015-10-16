@@ -12,7 +12,7 @@ import fix_app
 import ConfigParser 
 
 import logging
-logger = logging.getLogger()
+logger = logging.getLogger("run")
 
 from winguiauto import *
 

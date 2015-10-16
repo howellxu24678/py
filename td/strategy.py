@@ -12,7 +12,7 @@ import sendmail
 import quote
 from util import *
 import logging
-logger = logging.getLogger()
+logger = logging.getLogger("run")
 
 
 class Strategy(object):
@@ -23,7 +23,7 @@ class Strategy(object):
 
         
     def OnTick(self, tick):
-        logger.info("code：%s OnTick", self._code)        
+        logger.debug("code：%s OnTick", self._code)        
         self._quote.OnTick(tick, self.OnNewKLine)
         self.OnTimerCall()
         
@@ -45,7 +45,7 @@ class Strategy(object):
             self.DealSell()
             
     def OnTimerCall(self):
-        logger.info("code：%s OnTimerCall", self._code)
+        logger.debug("code：%s OnTimerCall", self._code)
             
     def DealBuy(self):
         pass
