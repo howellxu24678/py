@@ -5,12 +5,43 @@ Created on Mon Aug 17 17:11:33 2015
 @author: guosen
 """
 
+from apscheduler.schedulers.background import BackgroundScheduler
 import os
 import talib as ta
 import pandas as pd
 from util import *
 import logging
 logger = logging.getLogger()
+
+    
+    
+#根据传入的代码列表批量获取实时行情，并将行情通过dict - code2handle 找到对应的句柄调用各自代码的处理函数
+class RealTimeQuote(object):
+    def __init__(self,cf, codelist, code2handle):
+        self._codelist = codelist
+        self._code2handle = code2handle
+        #http://apscheduler.readthedocs.org/en/latest/userguide.html#scheduler-config
+        #self._sched  = BackgroundScheduler({'apscheduler.logger':logging.getLogger('schedule'),})
+        self._sched  = BackgroundScheduler({'apscheduler.logger':logging.getLogger('schedule'),})
+    
+    def start(self):
+
+        #self._sched.add_job(self._quote.TimerToDo, 'interval', args=(self.TimerCall,),  seconds=3)
+        self._sched.add_job(self.TimerCall, 'interval',  seconds=3)
+        self._sched.start()
+        logger.info('Strategy start')
+        
+    def stop(self):
+        logger.info('Strategy stop')
+        self._sched.shutdown()
+        
+    def TimerCall(self):
+        rtQuote = GetRealTimeQuote(self._codelist)
+        for i in range(rtQuote.shape[0]):
+            itQuote = rtQuote.ix[i]
+            if itQuote['code'] in self._code2handle:
+                self._code2handle[itQuote['code']].OnTick(itQuote)
+    
     
 class Quote5mKline(object):
     def __init__(self,cf, code):
@@ -60,14 +91,14 @@ class Quote5mKline(object):
         return False
         
     def OnTick(self, tick, calback):
-        if not self.CheckIfInTheMarketTimeRange(tick['time'].values[0]):
-            logger.warn("code:%s, time:%s is not in the market time range", self._code, tick['time'].values[0])            
+        if not self.CheckIfInTheMarketTimeRange(tick['time']):
+            logger.warn("code:%s, time:%s is not in the market time range", self._code, tick['time'])            
             return
             
         #当前传过来的Tick价格
-        curTickPrice = float(tick['price'].values[0])
+        curTickPrice = float(tick['price'])
         #当前传过来的Tick时间（加上当前日期）
-        curTickDatetime = GetDatetimeFromTime(tick['time'].values[0])
+        curTickDatetime = GetDatetimeFromTime(tick['time'])
         
         dt64CurTimeSlice = pd.to_datetime(GetTimeSlice(curTickDatetime, 5))        
         dt64LastTimeStamp = pd.to_datetime(self._df5mKline.index.values[-1])
@@ -91,7 +122,3 @@ class Quote5mKline(object):
             self._df5mKline.loc[dt64LastTimeStamp, 'low'] = min(curTickPrice, lastLow)
                 
         logger.info("code:%s, kline:%s", self._code, self._df5mKline.tail().to_string())
-    
-    def TimerToDo(self, timerCallback, newKlineCallback):
-        self.OnTick(GetRealTimeQuote(self._code), newKlineCallback)
-        timerCallback()

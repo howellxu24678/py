@@ -3,6 +3,7 @@ import logging
 import logging.config
 import trade
 import strategy
+import quote
 import os
 import ConfigParser 
 
@@ -19,26 +20,29 @@ try:
     cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
     
     role = cf.get("DEFAULT", "role")
-    codelist = cf.get(role, "codelist")
+    codelist = cf.get(role, "codelist").split(',')
     logger.info("role:%s, codelist:%s", role, codelist)
     
+    code2handle = {}
     
     if role == "signal":
-        for code in codelist.split(','):
-            logger.info("begin to start Stg_Signal with code:%s", code)
-            strategy.Stg_Signal(cf, code).start()
+        for code in codelist:
+            logger.info("create Stg_Signal with code:%s", code)
+            code2handle[code] = strategy.Stg_Signal(cf, code)
             
     elif role == "autotrader":
-        logger.info("begin to start trader")
+        logger.info("create gui_trade")
         trader = trade.gui_trade()
         
-        for code in codelist.split(','):
-            logger.info("begin to start Stg_Autotrader with code:%s", code)
-            strategy.Stg_Autotrader(cf, code, trader).start()
-
-
+        for code in codelist:
+            logger.info("create Stg_Autotrader with code:%s", code)
+            code2handle[code] = strategy.Stg_Autotrader(cf, code, trader)
+    
+    logger.info("create and start RealTimeQuote schedule")
+    quote.RealTimeQuote(cf, codelist, code2handle).start()
+    
 except BaseException,e:
-    print(e)
+    logger.exception(e)
 
 #trader = trade.fix_trade(os.path.join(os.getcwd(), baseconfdir, quickfixconf))
 #trader.create()

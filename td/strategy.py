@@ -7,7 +7,7 @@ Created on Mon Aug 17 18:13:52 2015
 #import trade
 #import quote
 
-from apscheduler.schedulers.background import BackgroundScheduler
+
 import sendmail
 import quote
 from util import *
@@ -18,20 +18,14 @@ logger = logging.getLogger()
 class Strategy(object):
     def __init__(self, cf, code):
         self._code = code
-        self._quote = quote.Quote5mKline(cf, code)
-        #http://apscheduler.readthedocs.org/en/latest/userguide.html#scheduler-config
-        #self._sched  = BackgroundScheduler({'apscheduler.logger':logging.getLogger('schedule'),})
-        self._sched  = BackgroundScheduler()        
+        self._quote = quote.Quote5mKline(cf, code)     
         self._latestStatus = 'init'
 
-    
-    def start(self):
-        self._sched.add_job(self._quote.TimerToDo, 'interval', args=(self.OnTimerCall,self.OnNewKLine),  seconds=3)
-        self._sched.start()
-        logger.info('Strategy start')
         
-    def stop(self):
-        self._sched.shutdown()
+    def OnTick(self, tick):
+        logger.info("code：%s OnTick", self._code)        
+        self._quote.OnTick(tick, self.OnNewKLine)
+        self.OnTimerCall()
         
     def OnNewKLine(self, kline):
         isNeedBuy, isNeedSell = td(kline)
@@ -51,7 +45,7 @@ class Strategy(object):
             self.DealSell()
             
     def OnTimerCall(self):
-        logger.info("OnTimerCall")
+        logger.info("code：%s OnTimerCall", self._code)
             
     def DealBuy(self):
         pass
