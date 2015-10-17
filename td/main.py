@@ -32,7 +32,7 @@ try:
             
     elif role == "autotrader":
         logger.info("create gui_trade")
-        trader = trade.gui_trade()
+        trader = trade.gui_trade(cf)
         
         for code in codelist:
             logger.info("create Stg_Autotrader with code:%s", code)

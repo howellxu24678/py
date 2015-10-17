@@ -17,60 +17,56 @@ logger = logging.getLogger("run")
 from winguiauto import *
 
 class trade(object):
-    def __init__(self, initfile):
-        self._initfile = initfile;
+    def __init__(self, cf):
+        self._cf = cf;
     
-    def buy(self, stock_code, stock_number, stock_price):
+    def buy(self, stock_code, stock_price, stock_number):
         pass
         
-    def sell(self, stock_code, stock_number, stock_price):
+    def sell(self, stock_code, stock_price, stock_number):
         pass
         
 class gui_trade(trade):
-    def __init__(self):
+    def __init__(self,cf):
+        super(gui_trade, self).__init__(cf)
         self._hwnd_parent = findSpecifiedTopWindow(wantedText = u'网上股票交易系统5.0')
         if self._hwnd_parent == 0:
             logger.critical(u'华泰交易软件没有运行！')
             raise RuntimeError, 'gui_trade init failed'
         else:
+            sendKeyMsg(self._hwnd_parent, win32con.VK_F6)
+            self._hwnd_child_controls = pickHwndOfControls(self._hwnd_parent, cf.getint('autotrader', 'numChildWindows'))
             logger.info('gui_trade init success')
-
     
-    def buy(self, stock_code, stock_number, stock_price):
+    def buy(self, stock_code, stock_price, stock_number):
         try:
-            pressKey(self._hwnd_parent, win32con.VK_F6)
-            hwndControls = findWantedControls(self._hwnd_parent)
             if closePopupWindow(self._hwnd_parent, wantedClass='Button'):
                 time.sleep(5)
-            click(hwndControls[2])
-            time.sleep(.5)
-            setEditText(hwndControls[2], stock_code)
-            time.sleep(.5)
-            click(hwndControls[7])
-            time.sleep(.5)
-            setEditText(hwndControls[7], stock_number)
-            time.sleep(.5)
-            clickButton(hwndControls[8])
+            setEditText(self._hwnd_child_controls[0][0], stock_code)
+            time.sleep(0.2)
+            if not stock_price is None:
+                setEditText(self._hwnd_child_controls[1][0], stock_price)
+                time.sleep(0.2)       
+            setEditText(self._hwnd_child_controls[2][0], stock_number)
+            time.sleep(0.2)
+            clickButton(self._hwnd_child_controls[3][0])
             time.sleep(1)
             return not closePopupWindow(self._hwnd_parent, wantedClass='Button')
         except BaseException,e:
             logger.exception(e)
         
-    def sell(self, stock_code, stock_number, stock_price):
+    def sell(self, stock_code, stock_price, stock_number):
         try:
-            pressKey(self._hwnd_parent, win32con.VK_F6)
-            hwndControls = findWantedControls(self._hwnd_parent)
             if closePopupWindow(self._hwnd_parent, wantedClass='Button'):
                 time.sleep(5)
-            click(hwndControls[11])
-            time.sleep(.5)
-            setEditText(hwndControls[11], stock_code)
-            time.sleep(.5)
-            click(hwndControls[16])
-            time.sleep(.5)
-            setEditText(hwndControls[16], stock_number)
-            time.sleep(.5)
-            clickButton(hwndControls[17])
+            setEditText(self._hwnd_child_controls[4][0], stock_code)
+            time.sleep(0.2)
+            if not stock_price is None:
+                setEditText(self._hwnd_child_controls[5][0], stock_price)
+                time.sleep(0.2)
+            setEditText(self._hwnd_child_controls[6][0], stock_number)
+            time.sleep(0.2)
+            clickButton(self._hwnd_child_controls[7][0])
             time.sleep(1)
             return not closePopupWindow(self._hwnd_parent, wantedClass='Button')
         except BaseException,e:

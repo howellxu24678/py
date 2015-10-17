@@ -13,11 +13,15 @@ Until I get around to writing some docs and examples, the tests at the foot of
 this module should serve to get you started.
 '''
 import time
-import os
 import struct
 import win32api
 import win32gui
 import win32con
+
+try:
+	import ConfigParser 
+except ImportError:
+	import configparser
 
 
 def findSpecifiedTopWindow(wantedText=None, wantedClass=None):
@@ -126,15 +130,35 @@ def dumpSpecifiedWindow(hwnd, wantedText=None, wantedClass=None):
     :return: 返回父窗口下所有子窗体的句柄
     '''
     windows = []
-    hwndChild = win32gui.FindWindowEx(hwnd, None, wantedClass, wantedText)
-    windows.append(hwndChild)
+    hwndChild = None
     while True:
         hwndChild = win32gui.FindWindowEx(hwnd, hwndChild, wantedClass, wantedText)
         if hwndChild:
-            windows.append(hwndChild)
+            textName = win32gui.GetWindowText(hwndChild)
+            className = win32gui.GetClassName(hwndChild)
+            windows.append((hwndChild, textName, className))
         else:
             return windows
 
+def findSpecifiedWindows(hwnd, numChildWindows=70):
+    '''
+    查找一个窗口，它有指定数量的子窗口
+    :param hwnd:
+    :return:
+    '''
+    windows = []
+    try:
+        win32gui.EnumChildWindows(hwnd, _windowEnumerationHandler, windows)
+    except win32gui.error:
+        # No child windows
+        return
+    for window in windows:
+        childHwnd, windowText, windowClass = window
+        windowContent = dumpSpecifiedWindow(childHwnd)
+        if len(windowContent) == numChildWindows:
+            return windowContent
+    # 没有指定数量的句柄
+    return
 
 def dumpWindow(hwnd):
     '''Dump all controls from a window into a nested list
@@ -170,6 +194,7 @@ def dumpWindow(hwnd):
         if window_content:
             window.append(window_content)
     return windows
+
 
 
 def findControl(topHwnd,
@@ -339,7 +364,7 @@ def focusWindow(hwnd):
     win32gui.SetForegroundWindow(hwnd)
 
 
-def pressKey(hwnd, key_code):
+def sendKeyMsg(hwnd, key_code):
     '''
     模拟按键
     :param hwnd: 窗体句柄
@@ -350,7 +375,6 @@ def pressKey(hwnd, key_code):
     time.sleep(.2)
     win32gui.PostMessage(hwnd, win32con.WM_KEYUP, key_code, 0)
     time.sleep(.2)
-
 
 
 def clickStatic(hwnd):
@@ -397,6 +421,7 @@ def setEditText(hwnd, text):
     '''
     win32gui.SendMessage(hwnd, win32con.WM_SETTEXT, None, text)
 
+
 # def setEditText(hwnd, text, append=False):
 #     '''Set an edit control's text.
 #
@@ -433,30 +458,30 @@ def setEditText(hwnd, text):
 #         time.sleep(.5)
 #     '''
 
-    # Ensure that text is a list
-    # try:
-    #     text + ''
-    #     text = [text]
-    # except TypeError:
-    #     pass
-    #
-    # # Set the current selection range, depending on append flag
-    # if append:
-    #     win32gui.SendMessage(hwnd,
-    #                          win32con.EM_SETSEL,
-    #                          -1,
-    #                          0)
-    # else:
-    #     win32gui.SendMessage(hwnd,
-    #                          win32con.EM_SETSEL,
-    #                          0,
-    #                          -1)
-    #
-    # # Send the text
-    # win32gui.SendMessage(hwnd,
-    #                      win32con.EM_REPLACESEL,
-    #                      True,
-    #                      os.linesep.join(text))
+# Ensure that text is a list
+# try:
+#     text + ''
+#     text = [text]
+# except TypeError:
+#     pass
+#
+# # Set the current selection range, depending on append flag
+# if append:
+#     win32gui.SendMessage(hwnd,
+#                          win32con.EM_SETSEL,
+#                          -1,
+#                          0)
+# else:
+#     win32gui.SendMessage(hwnd,
+#                          win32con.EM_SETSEL,
+#                          0,
+#                          -1)
+#
+# # Send the text
+# win32gui.SendMessage(hwnd,
+#                      win32con.EM_REPLACESEL,
+#                      True,
+#                      os.linesep.join(text))
 
 
 def _windowEnumerationHandler(hwnd, resultList):
@@ -510,22 +535,22 @@ class Bunch(object):
 class WinGuiAutoError(Exception):
     pass
 
-def findWantedControls(hwnd):
-    # 获取双向委托界面level3窗体下所有控件句柄
-    hwndChildLevel1 = dumpSpecifiedWindow(hwnd, wantedClass='AfxMDIFrame42s')
-    hwndChildLevel2 = dumpSpecifiedWindow(hwndChildLevel1[0])
-    for handler in hwndChildLevel2:
-        hwndChildLevel3 = dumpSpecifiedWindow(handler)
-        if len(hwndChildLevel3) == 70:  # 在hwndChildLevel3下，共有70个子窗体
-            return hwndChildLevel3
+
+def pickHwndOfControls(top_hwnd, num_child_windows):
+    cleaned_hwnd_controls = []
+    hwnd_controls = findSpecifiedWindows(top_hwnd, num_child_windows)
+    for Hwnd, text_name, class_name in hwnd_controls:
+        if class_name in ('Button', 'Edit'):
+            cleaned_hwnd_controls.append((Hwnd, text_name, class_name))
+    return cleaned_hwnd_controls
 
 
-def closePopupWindow(hwnd, wantedText=None, wantedClass=None):
+def closePopupWindow(top_hwnd, wantedText=None, wantedClass=None):
     # 如果有弹出式窗口，点击它的确定按钮
-    hwndPopup = findPopupWindow(hwnd)
-    if hwndPopup:
-        hwndControl = findControl(hwndPopup, wantedText, wantedClass)
-        clickButton(hwndControl)
+    hwnd_popup = findPopupWindow(top_hwnd)
+    if hwnd_popup:
+        hwnd_control = findControl(hwnd_popup, wantedText, wantedClass)
+        clickButton(hwnd_control)
         time.sleep(1)
         return True
     return False
