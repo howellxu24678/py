@@ -147,8 +147,8 @@ class fix_trade(trade):
     def CancleOrder(self):
         pass
     
-    def buy(self, stock_code, stock_number, stock_price):
+    def buy(self, stock_code, stock_price, stock_number):
         pass
         
-    def sell(self, stock_code, stock_number, stock_price):
+    def sell(self, stock_code, stock_price, stock_number):
         pass

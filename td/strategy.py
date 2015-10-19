@@ -187,7 +187,7 @@ class Stg_Autotrader(Strategy):
         
     def DealBuy(self):
         logger.info("start to buy:%s with number:%s", self._code, self._stock_number)
-        if self._trade.buy(self._code, self._stock_number, None):
+        if self._trade.buy(self._code, None, self._stock_number):
             msg = "success to buy:%s with number:%s"%(self._code, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
@@ -201,7 +201,7 @@ class Stg_Autotrader(Strategy):
             logger.warn("code:%s today have buy, so cant sell today")
         
         logger.info("start to sell:%s with number:%s", self._code, self._stock_number)
-        if self._trade.buy(self._code, self._stock_number, None):
+        if self._trade.sell(self._code, None, self._stock_number):
             msg = "success to sell:%s with number:%s"%(self._code, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)

@@ -49,7 +49,7 @@ except BaseException,e:
 #trader.UAN(9)
 #trader.NewStockOrder()
 
-#while(True):
-#    pass
+while(True):
+    pass
 
 
