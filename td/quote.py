@@ -17,9 +17,10 @@ logger = logging.getLogger()
     
 #根据传入的代码列表批量获取实时行情，并将行情通过dict - code2handle 找到对应的句柄调用各自代码的处理函数
 class RealTimeQuote(object):
-    def __init__(self,cf, codelist, code2handle):
+    def __init__(self,cf, codelist, codelistSignal, codelistAutoTrade):
         self._codelist = codelist
-        self._code2handle = code2handle
+        self._codelistSignal = codelistSignal
+        self._codelistAutoTrade = codelistAutoTrade
         #http://apscheduler.readthedocs.org/en/latest/userguide.html#scheduler-config
         #self._sched  = BackgroundScheduler({'apscheduler.logger':logging.getLogger('schedule'),})
         self._sched  = BackgroundScheduler()
@@ -39,8 +40,10 @@ class RealTimeQuote(object):
         rtQuote = GetRealTimeQuote(self._codelist)
         for i in range(rtQuote.shape[0]):
             itQuote = rtQuote.ix[i]
-            if itQuote['code'] in self._code2handle:
-                self._code2handle[itQuote['code']].OnTick(itQuote)
+            if itQuote['code'] in self._codelistSignal:
+                self._codelistSignal[itQuote['code']].OnTick(itQuote)
+            if itQuote['code'] in self._codelistAutoTrade:
+                self._codelistAutoTrade[itQuote['code']].OnTick(itQuote)
     
     
 class Quote5mKline(object):
