@@ -17,14 +17,14 @@ def td(kline):
     isNeedSell = False
     
     curRow = kline.ix[iCount]
-    #第n根，close > ma60 且为阳线，然后开始从后往前看是否满足要求
-    if curRow['close'] > curRow['ma60'] and curRow['close'] >= curRow['open']:
+    #第n根，close >= ma60 且为阳线或者十字星，然后开始从后往前看是否满足要求
+    if curRow['close'] >= curRow['ma60'] and curRow['close'] >= curRow['open']:
         iCount = iCount - 1
         curRow = kline.ix[iCount]
-        #从第n-1一直到倒数第2根，close > ma60
+        #从第n-1一直到倒数第2根，close >= ma60
         while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
             dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
-            #第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)
+            #第1根K线 open <= ma60 <= close (即第一根为被ma60穿过实体的阳线或者十字星)
             if abs(iCount) >= 3 and dMin <= curRow['ma60'] and curRow['ma60'] <= curRow['close']:
                 isNeedBuy = True
                 break
@@ -32,14 +32,14 @@ def td(kline):
                 iCount = iCount - 1
                 curRow = kline.ix[iCount]
                 
-    #第n根，close < ma60 且为阴线，然后开始从后往前看是否满足要求
-    elif curRow['close'] < curRow['ma60'] and curRow['close'] < curRow['open']:
+    #第n根，close <= ma60 且为阴线或者十字星，然后开始从后往前看是否满足要求
+    elif curRow['close'] <= curRow['ma60'] and curRow['close'] <= curRow['open']:
         iCount = iCount - 1
         curRow = kline.ix[iCount]
-        #从第n-1一直到倒数第2根，close < ma60
+        #从第n-1一直到倒数第2根，close <= ma60
         while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
             dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
-            #第1根K线 open > ma60 > close (即第一根为被ma60穿过实体的阴线)
+            #第1根K线 open >= ma60 >= close (即第一根为被ma60穿过实体的阴线或者十字星)
             if abs(iCount) >= 3 and dMax >= curRow['ma60'] and curRow['ma60'] >= curRow['close']:
                 isNeedSell = True
                 break
