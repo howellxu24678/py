@@ -29,6 +29,7 @@ class Strategy(object):
         
     def OnNewKLine(self, kline):
         isNeedBuy, isNeedSell = td(kline)
+        logger.info("code:%s, isNeedBuy:%s,isNeedSell:%s", self._code, isNeedBuy, isNeedSell)        
         if isNeedBuy:
             if self._latestStatus == 'buy':
                 return 

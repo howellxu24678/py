@@ -25,7 +25,7 @@ def td(kline):
         while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
             dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
             #第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)
-            if abs(iCount) >= 3 and dMin < curRow['ma60'] and curRow['ma60'] < curRow['close']:
+            if abs(iCount) >= 3 and dMin <= curRow['ma60'] and curRow['ma60'] <= curRow['close']:
                 isNeedBuy = True
                 break
             else:
@@ -40,7 +40,7 @@ def td(kline):
         while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
             dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
             #第1根K线 open > ma60 > close (即第一根为被ma60穿过实体的阴线)
-            if abs(iCount) >= 3 and dMax > curRow['ma60'] and curRow['ma60'] > curRow['close']:
+            if abs(iCount) >= 3 and dMax >= curRow['ma60'] and curRow['ma60'] >= curRow['close']:
                 isNeedSell = True
                 break
             else:
