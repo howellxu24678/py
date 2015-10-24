@@ -18,7 +18,8 @@ logger = logging.getLogger("run")
 class Strategy(object):
     def __init__(self, cf, code):
         self._code = code
-        self._quote = quote.Quote5mKline(cf, code)     
+        self._quote = quote.Quote5mKline(cf, code)
+        self._name = self._quote._name
         self._latestStatus = 'init'
 
         
@@ -29,7 +30,7 @@ class Strategy(object):
         
     def OnNewKLine(self, kline):
         isNeedBuy, isNeedSell = td(kline)
-        logger.info("code:%s, isNeedBuy:%s,isNeedSell:%s", self._code, isNeedBuy, isNeedSell)        
+        logger.info("code:%s,isNeedBuy:%s,isNeedSell:%s", self._code, isNeedBuy, isNeedSell)        
         if isNeedBuy:
             if self._latestStatus == 'buy':
                 return 
@@ -83,7 +84,7 @@ class Stg_Signal(Strategy):
             
     def SendMail(self, status):
         logger.info('sendmail code:%s, 5min %s, to_addr:%s', self._code, status, self._to_addr_list)
-        self._sendmail.send('code:%s, 5min %s' % (self._code, status), self._to_addr_list)
+        self._sendmail.send('code:%s, name:%s, 5min %s' % (self._code, self._name, status), self._to_addr_list)
         
     def DealBuy(self):
         self.SendMail('buy')
@@ -189,11 +190,11 @@ class Stg_Autotrader(Strategy):
     def DealBuy(self):
         logger.info("start to buy:%s with number:%s", self._code, self._stock_number)
         if self._trade.buy(self._code, None, self._stock_number):
-            msg = "success to buy:%s with number:%s"%(self._code, self._stock_number)
+            msg = "success to buy:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
         else:
-            msg = "failed to buy:%s with number:%s"%(self._code, self._stock_number)
+            msg = "failed to buy:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
     
@@ -203,10 +204,10 @@ class Stg_Autotrader(Strategy):
         
         logger.info("start to sell:%s with number:%s", self._code, self._stock_number)
         if self._trade.sell(self._code, None, self._stock_number):
-            msg = "success to sell:%s with number:%s"%(self._code, self._stock_number)
+            msg = "success to sell:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
         else:
-            msg = "failed to sell:%s with number:%s"%(self._code, self._stock_number)
+            msg = "failed to sell:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)

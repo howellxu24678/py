@@ -59,7 +59,7 @@ class Quote5mKline(object):
         self.CheckHistoryData()
         
     def GetHistDataFromFile(self, hqdatadir):
-        filepath = r"%s\%s.txt"%(hqdatadir, self._code)
+        filepath = os.path.join(hqdatadir, (self._code + '.txt'))
         if not os.path.exists(filepath):
             logger.critical("filepath %s does not exist", filepath)
             raise RuntimeError, 'filepath does not exist'
@@ -77,7 +77,7 @@ class Quote5mKline(object):
         ma60_ = ta.SMA(self._df5mKline['close'].values, 60)
         self._df5mKline['ma60'] = ma60_
         self._df5mKline.fillna(0.)
-
+        self._name = open(filepath).readline().split(' ')[1].decode('gbk').encode('utf-8')
         
     def CheckHistoryData(self):
         dataLastDay = self._df5mKline.index[-1].date()
