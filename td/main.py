@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging 
 import logging.config
-import trade
-import strategy
-import quote
+from autotrade import trade
+from autotrade import strategy
+from autotrade import quote
 import os
 import ConfigParser 
 

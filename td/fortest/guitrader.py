@@ -66,18 +66,24 @@
 #buy(hwnd_parent1, '000001', '100')
 #hwnd_parent2 = findSpecifiedTopWindow(wantedText = u'国信金太阳网上交易专业版V6.51 - [行情表-沪深Ａ股]')
 
-
-import trade
+import sys
 import os
 import ConfigParser 
+
+sys.path.append(os.path.join(os.getcwd(), os.pardir))
+#sys.path.append("F:\\code\\git\\temp\\autotrade")
+from autotrade import trade
+
+
 
 baseconfdir="conf"
 loggingconf= "logging.config"
 quickfixconf= "quickfix.ini"
 businessconf= "business.ini"
 
+
 cf = ConfigParser.ConfigParser()
-cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
+cf.read(os.path.join(os.getcwd(), os.pardir, baseconfdir, businessconf))
 
 trader = trade.gui_trade(cf)
-trader.buy('000001', None, 100)
+trader.buy('000001', None, '100')
