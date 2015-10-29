@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging 
 import logging.config
-from autotrade import trade
+from autotrade.trade.trade_tdx import *
 from autotrade import strategy
 from autotrade import quote
 import os
@@ -47,7 +47,7 @@ try:
         codelistSignal, code2SignalHandle = DealSignal(logger, cf)
     if(cf.getboolean("autotrader", "enable")):
         logger.info("create gui_trade")
-        trader = trade.gui_trade(cf)
+        trader = tdx_trade(cf)
         codelistAutoTrade, code2AutoTradeHandle = DealAutoTrade(trader, logger, cf)
     
     logger.info("create and start RealTimeQuote schedule")

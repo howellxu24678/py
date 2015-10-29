@@ -4,28 +4,14 @@ Created on Mon Aug 17 19:06:35 2015
 
 @author: guosen
 """
-import time
-import datetime
+
 
 import quickfix as fix
 import fix_app
-import ConfigParser 
-
-import logging
-logger = logging.getLogger("run")
+from tradebase import *
 
 from winguiauto import *
 
-class trade(object):
-    def __init__(self, cf):
-        self._cf = cf;
-    
-    def buy(self, stock_code, stock_price, stock_number):
-        pass
-        
-    def sell(self, stock_code, stock_price, stock_number):
-        pass
-        
 class gui_trade(trade):
     def __init__(self,cf):
         super(gui_trade, self).__init__(cf)
@@ -42,13 +28,14 @@ class gui_trade(trade):
         try:
             if closePopupWindow(self._hwnd_parent, wantedClass='Button'):
                 time.sleep(5)
+            click(self._hwnd_child_controls[0][0])
             setEditText(self._hwnd_child_controls[0][0], stock_code)
-            time.sleep(0.2)
+            time.sleep(0.5)
             if not stock_price is None:
                 setEditText(self._hwnd_child_controls[1][0], stock_price)
-                time.sleep(0.2)       
+                time.sleep(0.5)       
             setEditText(self._hwnd_child_controls[2][0], stock_number)
-            time.sleep(0.2)
+            time.sleep(0.5)
             clickButton(self._hwnd_child_controls[3][0])
             time.sleep(1)
             return not closePopupWindow(self._hwnd_parent, wantedClass='Button')
@@ -59,13 +46,14 @@ class gui_trade(trade):
         try:
             if closePopupWindow(self._hwnd_parent, wantedClass='Button'):
                 time.sleep(5)
+            click(self._hwnd_child_controls[4][0])
             setEditText(self._hwnd_child_controls[4][0], stock_code)
-            time.sleep(0.2)
+            time.sleep(0.5)
             if not stock_price is None:
                 setEditText(self._hwnd_child_controls[5][0], stock_price)
-                time.sleep(0.2)
+                time.sleep(0.5)
             setEditText(self._hwnd_child_controls[6][0], stock_number)
-            time.sleep(0.2)
+            time.sleep(0.5)
             clickButton(self._hwnd_child_controls[7][0])
             time.sleep(1)
             return not closePopupWindow(self._hwnd_parent, wantedClass='Button')

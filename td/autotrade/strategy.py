@@ -189,7 +189,12 @@ class Stg_Autotrader(Strategy):
         
     def DealBuy(self):
         logger.info("start to buy:%s with number:%s", self._code, self._stock_number)
-        if self._trade.buy(self._code, None, self._stock_number):
+        
+        before = self._trade.getMoneyInfo()
+        self._trade.buy(self._code, None, self._stock_number)
+        after = self._trade.getMoneyInfo()
+        if before - after > 1:
+            self._todayHaveBuy = True
             msg = "success to buy:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
@@ -200,10 +205,15 @@ class Stg_Autotrader(Strategy):
     
     def DealSell(self):
         if self._todayHaveBuy:
-            logger.warn("code:%s today have buy, so cant sell today")
+            msg = "code:%s today have buy, so cant sell today"%self._code
+            logger.warn(msg)
+            self._sendmail.send(msg, self._to_addr_list)
         
         logger.info("start to sell:%s with number:%s", self._code, self._stock_number)
-        if self._trade.sell(self._code, None, self._stock_number):
+        before = self._trade.getMoneyInfo()
+        self._trade.sell(self._code, None, self._stock_number)
+        after = self._trade.getMoneyInfo()
+        if after - before > 1:
             msg = "success to sell:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)

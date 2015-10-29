@@ -18,11 +18,6 @@ import win32api
 import win32gui
 import win32con
 
-try:
-	import ConfigParser 
-except ImportError:
-	import configparser
-
 
 def findSpecifiedTopWindow(wantedText=None, wantedClass=None):
     '''
