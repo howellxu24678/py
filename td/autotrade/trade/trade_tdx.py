@@ -27,6 +27,7 @@ class tdx_trade(trade):
             temp_hwnds = dumpWindow(temp_hwnds[1][0])
             self.__menu_hwnds = dumpWindow(temp_hwnds[0][0])
             self.__buy_sell_hwnds = dumpWindow(temp_hwnds[4][0])
+            logger.info('tdx_trade init success')
 
     def buy(self, stock_code, stock_price, stock_number):
         """

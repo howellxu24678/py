@@ -46,7 +46,7 @@ try:
     if(cf.getboolean("signal", "enable")):
         codelistSignal, code2SignalHandle = DealSignal(logger, cf)
     if(cf.getboolean("autotrader", "enable")):
-        logger.info("create gui_trade")
+        logger.info("create trade")
         trader = tdx_trade(cf)
         codelistAutoTrade, code2AutoTradeHandle = DealAutoTrade(trader, logger, cf)
     
