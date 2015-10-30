@@ -29,22 +29,25 @@ class Strategy(object):
         self.OnTimerCall()
         
     def OnNewKLine(self, kline):
-        isNeedBuy, isNeedSell = td(kline)
-        logger.info("code:%s,isNeedBuy:%s,isNeedSell:%s", self._code, isNeedBuy, isNeedSell)        
-        if isNeedBuy:
-            if self._latestStatus == 'buy':
-                return 
-            
-            self._latestStatus = 'buy'
-            self.DealBuy()
+        try:
+            isNeedBuy, isNeedSell = td(kline)
+            logger.info("code:%s,isNeedBuy:%s,isNeedSell:%s", self._code, isNeedBuy, isNeedSell)
+            if isNeedBuy:
+                if self._latestStatus == 'buy':
+                    return
 
-            
-        if isNeedSell:
-            if self._latestStatus == 'sell':
-                return
-                
-            self._latestStatus = 'sell'
-            self.DealSell()
+                self._latestStatus = 'buy'
+                self.DealBuy()
+
+
+            if isNeedSell:
+                if self._latestStatus == 'sell':
+                    return
+
+                self._latestStatus = 'sell'
+                self.DealSell()
+        except BaseException,e:
+            logger.exception(e)
             
     def OnTimerCall(self):
         logger.debug("code：%s OnTimerCall", self._code)
@@ -181,7 +184,7 @@ class Stg_Autotrader(Strategy):
         return iBuyIndex,iSellIndex
             
     def OnTimerCall(self):
-        if self._bNeedToSellAtOpen and datetime.datetime.now().time() > self._sellTime:
+        if self._bNeedToSellAtOpen and self._latestStatus == 'sell' and datetime.datetime.now().time() > self._sellTime:
             logger.info("deal the sell at open issue")
             self.DealSell()
             self._bNeedToSellAtOpen = False
@@ -189,10 +192,11 @@ class Stg_Autotrader(Strategy):
         
     def DealBuy(self):
         logger.info("start to buy:%s with number:%s", self._code, self._stock_number)
-        
+
         before = self._trade.getMoneyInfo()
         self._trade.buy(self._code, None, self._stock_number)
         after = self._trade.getMoneyInfo()
+        logger.info("DealBuy MoneyInfo before:%s, after:%s", before, after)
         if before - after > 1:
             self._todayHaveBuy = True
             msg = "success to buy:%s %s with number:%s"%(self._code, self._name, self._stock_number)
@@ -202,6 +206,8 @@ class Stg_Autotrader(Strategy):
             msg = "failed to buy:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
+
+
     
     def DealSell(self):
         if self._todayHaveBuy:
@@ -213,6 +219,7 @@ class Stg_Autotrader(Strategy):
         before = self._trade.getMoneyInfo()
         self._trade.sell(self._code, None, self._stock_number)
         after = self._trade.getMoneyInfo()
+        logger.info("DealSell MoneyInfo before:%s, after:%s", before, after)
         if after - before > 1:
             msg = "success to sell:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)

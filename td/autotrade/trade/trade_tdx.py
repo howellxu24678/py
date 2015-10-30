@@ -35,6 +35,7 @@ class tdx_trade(trade):
         :param code: 股票代码，字符串
         :param quantity: 数量， 字符串
         """
+        logger.info("begin to buy % with number %", stock_code, stock_number)
         self.clickRefreshButton()
         setEditText(self.__buy_sell_hwnds[0][0], stock_code)
         time.sleep(0.3)
@@ -44,6 +45,7 @@ class tdx_trade(trade):
         click(self.__buy_sell_hwnds[5][0])
         time.sleep(0.3)
         closePopupWindows(self.__hwnd)
+        logger.info("end to buy % with number %", stock_code, stock_number)
 
     def sell(self, stock_code, stock_price, stock_number):
         """
@@ -51,6 +53,7 @@ class tdx_trade(trade):
         :param code: 股票代码， 字符串
         :param quantity: 数量， 字符串
         """
+        logger.info("begin to sell % with number %", stock_code, stock_number)
         self.clickRefreshButton()
         setEditText(self.__buy_sell_hwnds[24][0], stock_code)
         time.sleep(0.3)
@@ -60,6 +63,7 @@ class tdx_trade(trade):
         click(self.__buy_sell_hwnds[29][0])
         time.sleep(0.3)
         closePopupWindows(self.__hwnd)
+        logger.info("end to sell % with number %", stock_code, stock_number)
 
     def clickRefreshButton(self):
         """
