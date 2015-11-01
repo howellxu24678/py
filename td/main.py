@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging 
 import logging.config
-from autotrade.trade.trade_tdx import *
+from autotrade.trade import *
 from autotrade import strategy
 from autotrade import quote
 import os
@@ -47,7 +47,7 @@ try:
         codelistSignal, code2SignalHandle = DealSignal(logger, cf)
     if(cf.getboolean("autotrader", "enable")):
         logger.info("create trade")
-        trader = tdx_trade(cf)
+        trader = trade.tdx_trade(cf)
         codelistAutoTrade, code2AutoTradeHandle = DealAutoTrade(trader, logger, cf)
     
     logger.info("create and start RealTimeQuote schedule")
@@ -64,7 +64,7 @@ except BaseException,e:
 #trader.UAN(9)
 #trader.NewStockOrder()
 
-#while(True):
-#    pass
+while(True):
+    pass
 
 

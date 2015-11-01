@@ -8,25 +8,51 @@ Created on Mon Aug 17 19:06:35 2015
 
 import quickfix as fix
 import fix_app
-from tradebase import *
+
 
 from winguiauto import *
+import time
+import datetime
+import ConfigParser
 
-class gui_trade(trade):
+import logging
+logger = logging.getLogger("run")
+
+class trade(object):
+    def __init__(self, cf):
+        self._cf = cf;
+
+    def buy(self, stock_code, stock_price, stock_number):
+        pass
+
+    def sell(self, stock_code, stock_price, stock_number):
+        pass
+
+
+class ths_trade(trade):
     def __init__(self,cf):
-        super(gui_trade, self).__init__(cf)
-        self._hwnd_parent = findSpecifiedTopWindow(wantedText = u'网上股票交易系统5.0')
-        if self._hwnd_parent == 0:
+        super(ths_trade, self).__init__(cf)
+        self.__top_hwnd = findTopWindow(wantedText = u'网上股票交易系统5.0')
+        if self.__top_hwnd == 0:
             logger.critical(u'华泰交易软件没有运行！')
             raise RuntimeError, 'gui_trade init failed'
         else:
-            sendKeyMsg(self._hwnd_parent, win32con.VK_F6)
-            self._hwnd_child_controls = pickHwndOfControls(self._hwnd_parent, cf.getint('autotrader', 'numChildWindows'))
-            logger.info('gui_trade init success')
+            try:
+                temp_hwnds = dumpWindows(self.__top_hwnd)
+                self.__wanted_hwnds = findSubWindows(temp_hwnds, 70)  # 华泰专用版
+                # self.__wanted_hwnds = findSubWindows(temp_hwnds, 73)   # 同花顺通用版
+                self.__control_hwnds = []
+                for hwnd, text_name, class_name in self.__wanted_hwnds:
+                    if class_name in ('Button', 'Edit'):
+                        self.__control_hwnds.append((hwnd, text_name, class_name))
+                logger.info('gui_trade init success')
+            except BaseException,e:
+                logger.critical(e)
+                raise e
     
     def buy(self, stock_code, stock_price, stock_number):
         try:
-            if closePopupWindow(self._hwnd_parent, wantedClass='Button'):
+            if closePopupWindow(self.__top_hwnd, wantedClass='Button'):
                 time.sleep(5)
             click(self._hwnd_child_controls[0][0])
             setEditText(self._hwnd_child_controls[0][0], stock_code)
@@ -38,13 +64,13 @@ class gui_trade(trade):
             time.sleep(0.5)
             clickButton(self._hwnd_child_controls[3][0])
             time.sleep(1)
-            return not closePopupWindow(self._hwnd_parent, wantedClass='Button')
+            return not closePopupWindow(self.__top_hwnd, wantedClass='Button')
         except BaseException,e:
             logger.exception(e)
         
     def sell(self, stock_code, stock_price, stock_number):
         try:
-            if closePopupWindow(self._hwnd_parent, wantedClass='Button'):
+            if closePopupWindow(self.__top_hwnd, wantedClass='Button'):
                 time.sleep(5)
             click(self._hwnd_child_controls[4][0])
             setEditText(self._hwnd_child_controls[4][0], stock_code)
@@ -56,10 +82,105 @@ class gui_trade(trade):
             time.sleep(0.5)
             clickButton(self._hwnd_child_controls[7][0])
             time.sleep(1)
-            return not closePopupWindow(self._hwnd_parent, wantedClass='Button')
+            return not closePopupWindow(self.__top_hwnd, wantedClass='Button')
         except BaseException,e:
             logger.exception(e)
-    
+
+class tdx_trade(trade):
+    def __init__(self, cf):
+        super(tdx_trade, self).__init__(cf)
+        self.__top_hwnd = findTopWindow(wantedClass='TdxW_MainFrame_Class')
+        if self.__top_hwnd == 0:
+            logger.critical(u'华泰通达信交易软件没有运行！')
+            raise RuntimeError, 'tdx_trade init failed'
+        else:
+            self.__button = {'refresh': 180, 'position': 145, 'deal': 112, 'withdrawal': 83, 'sell': 50, 'buy': 20}
+            windows = dumpWindows(self.__top_hwnd)
+            temp_hwnd = 0
+            for window in windows:
+                child_hwnd, window_text, window_class = window
+                if window_class == 'AfxMDIFrame42':
+                    temp_hwnd = child_hwnd
+                    break
+            temp_hwnds = dumpWindow(temp_hwnd)
+            temp_hwnds = dumpWindow(temp_hwnds[1][0])
+            self.__menu_hwnds = dumpWindow(temp_hwnds[0][0])
+            self.__buy_sell_hwnds = dumpWindow(temp_hwnds[4][0])
+            logger.info('tdx_trade init success')
+
+    def buy(self, stock_code, stock_price, stock_number):
+        """
+        买入函数
+        :param code: 股票代码，字符串
+        :param quantity: 数量， 字符串
+        """
+        logger.info("begin to buy % with number %", stock_code, stock_number)
+        restoreFocusWindow(self.__top_hwnd)
+        self.clickRefreshButton()
+        setEditText(self.__buy_sell_hwnds[0][0], stock_code)
+        time.sleep(0.3)
+        if stock_number != '0':
+            setEditText(self.__buy_sell_hwnds[3][0], stock_number)
+            time.sleep(0.3)
+        click(self.__buy_sell_hwnds[5][0])
+        time.sleep(0.3)
+        closePopupWindows(self.__top_hwnd)
+        logger.info("end to buy % with number %", stock_code, stock_number)
+
+    def sell(self, stock_code, stock_price, stock_number):
+        """
+        卖出函数
+        :param code: 股票代码， 字符串
+        :param quantity: 数量， 字符串
+        """
+        logger.info("begin to sell % with number %", stock_code, stock_number)
+        restoreFocusWindow(self.__top_hwnd)
+        self.clickRefreshButton()
+        setEditText(self.__buy_sell_hwnds[24][0], stock_code)
+        time.sleep(0.3)
+        if stock_number != '0':
+            setEditText(self.__buy_sell_hwnds[27][0], stock_number)
+            time.sleep(0.3)
+        click(self.__buy_sell_hwnds[29][0])
+        time.sleep(0.3)
+        closePopupWindows(self.__top_hwnd)
+        logger.info("end to sell % with number %", stock_code, stock_number)
+
+    def clickRefreshButton(self):
+        """
+        点击刷新按钮
+        """
+        restoreFocusWindow(self.__top_hwnd)
+        clickWindow(self.__menu_hwnds[0][0], self.__button['refresh'])
+
+    def getMoneyInfo(self):
+        """
+        :return:可用资金
+        """
+        self.clickRefreshButton()
+        setEditText(self.__buy_sell_hwnds[24][0], '999999')  # 测试时获得资金情况
+        time.sleep(0.3)
+        money = getWindowText(self.__buy_sell_hwnds[12][0]).strip()
+        return float(money)
+
+    def getPositionInfo(self):
+        """获取持仓股票信息
+        """
+        self.clickRefreshButton()
+        return getListViewInfo(self.__buy_sell_hwnds[64][0], 5)
+
+
+if __name__ == "__main__":
+    cf = ConfigParser.ConfigParser()
+    tdx_trade = tdx_trade(cf)
+    tdx_trade.buy('000001', None, '100')
+    #print  tdx_trade.getMoneyInfo()
+
+    #time.sleep(10)
+    #print result
+#    for re in result:
+#        for e in re:
+#            print e
 
         
 class fix_trade(trade):
