@@ -19,7 +19,7 @@ ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 
 
 def restoreFocusWindow(hwnd):
-    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+    win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
     win32gui.SetForegroundWindow(hwnd)
     time.sleep(0.2)
 
@@ -324,19 +324,8 @@ def click(hwnd):
     time.sleep(0.2)
 
 
-def focusWindow(hwnd):
-    """
-    捕捉窗口焦点
-    :param hwnd: 窗体句柄
-    :return:
-    """
-    win32gui.ShowWindow(hwnd, win32con.SW_SHOWMAXIMIZED)
-    win32gui.SetForegroundWindow(hwnd)
-
-
 def clickWindow(hwnd, offset):
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)
-    # print('left, top, right, bottom', left, top, right, bottom)
     win32api.SetCursorPos([left + offset, (bottom - top) // 2 + top])
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
     time.sleep(0.2)
@@ -357,9 +346,11 @@ def sendKeyMsg(hwnd, key_code):
     time.sleep(0.2)
 
 
+
 def sendKeyEvent(key, command):
     win32api.keybd_event(key, 0, command, 0)
     time.sleep(0.2)
+
 
 
 def clickStatic(hwnd):
@@ -413,6 +404,7 @@ def setEditText(hwnd, text):
     :return:
     """
     win32gui.SendMessage(hwnd, win32con.WM_SETTEXT, None, text)
+    time.sleep(0.2)
 
 
 # def setEditText(hwnd, text, append=False):

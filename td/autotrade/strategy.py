@@ -104,6 +104,7 @@ class Stg_Autotrader(Strategy):
             cf.get("DEFAULT", "password"),
             "Autotrader")
         self._trade = trade_
+        #控制当天买入不能卖出
         self._todayHaveBuy = False
         self._bNeedToSellAtOpen = False
         self._sellTime = datetime.datetime.strptime(cf.get("autotrader", "selltime"), "%H:%M").time()
@@ -120,7 +121,15 @@ class Stg_Autotrader(Strategy):
         
         if self.IsNeedToSellAtOpen():
             self._bNeedToSellAtOpen = True
-            logger.info("code:%s NeedToSellAtOpen sellTime:%s", self._code, self._sellTime) 
+            logger.info("code:%s NeedToSellAtOpen sellTime:%s", self._code, self._sellTime)
+
+        #买卖不成功时重试
+        self._retry = cf.getint("autotrader", "retry")
+        #重试计数
+        self._curRetryCount = 0
+        self._bNeedRetryWhileOrderFailed = self._retry > 0
+        self._bOrderOk = True
+
             
 
                     
@@ -188,7 +197,17 @@ class Stg_Autotrader(Strategy):
             logger.info("deal the sell at open issue")
             self.DealSell()
             self._bNeedToSellAtOpen = False
-            
+
+        if self._bNeedRetryWhileOrderFailed and not self._bOrderOk and self._curRetryCount < self._retry:
+            self._curRetryCount += 1
+            if self._latestStatus == 'buy':
+                self.DealBuy()
+            elif self._latestStatus == 'sell':
+                self.DealSell()
+
+            #重试成功之后，将计数器重置为0，以便下次重试
+            if self._bOrderOk:
+                self._curRetryCount = 0
         
     def DealBuy(self):
         logger.info("start to buy:%s with number:%s", self._code, self._stock_number)
@@ -198,11 +217,13 @@ class Stg_Autotrader(Strategy):
         after = self._trade.getMoneyInfo()
         logger.info("DealBuy MoneyInfo before:%s, after:%s", before, after)
         if before - after > 1:
+            self._bOrderOk = True
             self._todayHaveBuy = True
             msg = "success to buy:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
         else:
+            self._bOrderOk = False
             msg = "failed to buy:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
@@ -221,10 +242,12 @@ class Stg_Autotrader(Strategy):
         after = self._trade.getMoneyInfo()
         logger.info("DealSell MoneyInfo before:%s, after:%s", before, after)
         if after - before > 1:
+            self._bOrderOk = True
             msg = "success to sell:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
         else:
+            self._bOrderOk = False
             msg = "failed to sell:%s %s with number:%s"%(self._code, self._name, self._stock_number)
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
