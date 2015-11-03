@@ -88,28 +88,34 @@ class ths_trade(trade):
 
 class tdx_trade(trade):
     def __init__(self, cf):
-        super(tdx_trade, self).__init__(cf)
-        self.__top_hwnd = findTopWindow(wantedClass='TdxW_MainFrame_Class')
-        if self.__top_hwnd == 0:
-            logger.critical(u'华泰通达信交易软件没有运行！')
-            raise RuntimeError, 'tdx_trade init failed'
-        else:
-            self.__button = {'refresh': 180, 'position': 145, 'deal': 112, 'withdrawal': 83, 'sell': 50, 'buy': 20}
-            windows = dumpWindows(self.__top_hwnd)
-            temp_hwnd = 0
-            for window in windows:
-                child_hwnd, window_text, window_class = window
-                if window_class == 'AfxMDIFrame42':
-                    temp_hwnd = child_hwnd
-                    break
-            temp_hwnds = dumpWindow(temp_hwnd)
-            temp_hwnds = dumpWindow(temp_hwnds[1][0])
-            self.__menu_hwnds = dumpWindow(temp_hwnds[0][0])
-            self.__buy_sell_hwnds = dumpWindow(temp_hwnds[4][0])
-            if len(self.__buy_sell_hwnds) not in (68,):
-                logger.critical(u'无法获得通达信对买对卖界面的窗口句柄！')
+        try:
+            super(tdx_trade, self).__init__(cf)
+            self.__top_hwnd = findTopWindow(wantedClass='TdxW_MainFrame_Class')
+            if self.__top_hwnd == 0:
+                logger.critical(u'华泰通达信交易软件没有运行！')
                 raise RuntimeError, 'tdx_trade init failed'
-            logger.info('tdx_trade init success')
+            else:
+                self.__button = {'refresh': 180, 'position': 145, 'deal': 112, 'withdrawal': 83, 'sell': 50, 'buy': 20}
+                windows = dumpWindows(self.__top_hwnd)
+                temp_hwnd = 0
+                for window in windows:
+                    child_hwnd, window_text, window_class = window
+                    if window_class == 'AfxMDIFrame42':
+                        temp_hwnd = child_hwnd
+                        break
+                temp_hwnds = dumpWindow(temp_hwnd)
+                temp_hwnds = dumpWindow(temp_hwnds[1][0])
+                self.__menu_hwnds = dumpWindow(temp_hwnds[0][0])
+                self.__buy_sell_hwnds = dumpWindow(temp_hwnds[4][0])
+                if len(self.__buy_sell_hwnds) not in (68,):
+                    logger.critical(u'无法获得通达信对买对卖界面的窗口句柄！')
+                    raise RuntimeError, 'tdx_trade init failed'
+                logger.info("money:%s", self.getMoneyInfo())
+                #logger.info("positioninfo:%s", self.getPositionInfo())
+                logger.info('tdx_trade init success')
+        except BaseException,e:
+            logger.exception(e)
+            raise e
 
     def buy(self, stock_code, stock_price, stock_number):
         """
@@ -174,9 +180,9 @@ class tdx_trade(trade):
 if __name__ == "__main__":
     cf = ConfigParser.ConfigParser()
     tdx_trade = tdx_trade(cf)
-    tdx_trade.buy('000001', None, '100')
     #tdx_trade.buy('000001', None, '100')
-    print  tdx_trade.getMoneyInfo()
+    #tdx_trade.buy('000001', None, '100')
+    #print  tdx_trade.getMoneyInfo()
 
     #time.sleep(10)
     #print result
