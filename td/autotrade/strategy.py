@@ -210,11 +210,19 @@ class Stg_Autotrader(Strategy):
                 self._curRetryCount = 0
         
     def DealBuy(self):
-        logger.info("start to buy:%s with number:%s", self._code, self._stock_number)
+        try:
+            logger.info("start to buy:%s with number:%s", self._code, self._stock_number)
 
-        before = self._trade.getMoneyInfo()
-        self._trade.buy(self._code, None, self._stock_number)
-        after = self._trade.getMoneyInfo()
+            self._trade.maximizeFocusWindow()
+            before = self._trade.getMoneyInfo()
+            self._trade.buy(self._code, None, self._stock_number)
+            after = self._trade.getMoneyInfo()
+
+        except BaseException,e:
+            logger.exception(e)
+            self._bOrderOk = False
+            raise e
+
         logger.info("DealBuy MoneyInfo before:%s, after:%s", before, after)
         if before - after > 1:
             self._bOrderOk = True
@@ -228,18 +236,24 @@ class Stg_Autotrader(Strategy):
             logger.info(msg)
             self._sendmail.send(msg, self._to_addr_list)
 
-
-    
     def DealSell(self):
-        if self._todayHaveBuy:
-            msg = "code:%s today have buy, so cant sell today"%self._code
-            logger.warn(msg)
-            self._sendmail.send(msg, self._to_addr_list)
-        
-        logger.info("start to sell:%s with number:%s", self._code, self._stock_number)
-        before = self._trade.getMoneyInfo()
-        self._trade.sell(self._code, None, self._stock_number)
-        after = self._trade.getMoneyInfo()
+        try:
+            if self._todayHaveBuy:
+                msg = "code:%s today have buy, so cant sell today"%self._code
+                logger.warn(msg)
+                self._sendmail.send(msg, self._to_addr_list)
+
+            logger.info("start to sell:%s with number:%s", self._code, self._stock_number)
+            self._trade.maximizeFocusWindow()
+            before = self._trade.getMoneyInfo()
+            self._trade.sell(self._code, None, self._stock_number)
+            after = self._trade.getMoneyInfo()
+
+        except BaseException,e:
+            logger.exception(e)
+            self._bOrderOk = False
+            raise e
+
         logger.info("DealSell MoneyInfo before:%s, after:%s", before, after)
         if after - before > 1:
             self._bOrderOk = True

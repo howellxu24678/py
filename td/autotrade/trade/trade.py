@@ -123,7 +123,7 @@ class tdx_trade(trade):
         :param code: 股票代码，字符串
         :param quantity: 数量， 字符串
         """
-        logger.info("begin to buy % with number %", stock_code, stock_number)
+        logger.info("begin to buy %s with number %s", stock_code, stock_number)
         self.clickRefreshButton()
         setEditText(self.__buy_sell_hwnds[0][0], stock_code)
         time.sleep(0.3)
@@ -133,7 +133,7 @@ class tdx_trade(trade):
         click(self.__buy_sell_hwnds[5][0])
         time.sleep(0.3)
         closePopupWindows(self.__top_hwnd)
-        logger.info("end to buy % with number %", stock_code, stock_number)
+        logger.info("end to buy %s with number %s", stock_code, stock_number)
 
     def sell(self, stock_code, stock_price, stock_number):
         """
@@ -141,7 +141,7 @@ class tdx_trade(trade):
         :param code: 股票代码， 字符串
         :param quantity: 数量， 字符串
         """
-        logger.info("begin to sell % with number %", stock_code, stock_number)
+        logger.info("begin to sell %s with number %s", stock_code, stock_number)
         self.clickRefreshButton()
         setEditText(self.__buy_sell_hwnds[24][0], stock_code)
         time.sleep(0.3)
@@ -151,13 +151,12 @@ class tdx_trade(trade):
         click(self.__buy_sell_hwnds[29][0])
         time.sleep(0.3)
         closePopupWindows(self.__top_hwnd)
-        logger.info("end to sell % with number %", stock_code, stock_number)
+        logger.info("end to sell %s with number %s", stock_code, stock_number)
 
     def clickRefreshButton(self):
         """
         点击刷新按钮
         """
-        restoreFocusWindow(self.__top_hwnd)
         clickWindow(self.__menu_hwnds[0][0], self.__button['refresh'])
 
     def getMoneyInfo(self):
@@ -176,6 +175,17 @@ class tdx_trade(trade):
         self.clickRefreshButton()
         return getListViewInfo(self.__buy_sell_hwnds[64][0], 5)
 
+    def maximizeFocusWindow(self):
+        '''
+        最大化窗口，获取焦点
+        '''
+        maxFocusWindow(self.__top_hwnd)
+
+    def minimizeWindow(self):
+        """
+        最小化窗体
+        """
+        minWindow(self.__top_hwnd)
 
 if __name__ == "__main__":
     cf = ConfigParser.ConfigParser()

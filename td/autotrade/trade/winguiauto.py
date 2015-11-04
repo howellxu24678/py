@@ -18,9 +18,13 @@ WriteProcessMemory = ctypes.windll.kernel32.WriteProcessMemory
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 
 
-def restoreFocusWindow(hwnd):
+def maxFocusWindow(hwnd):
     win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
     win32gui.SetForegroundWindow(hwnd)
+    time.sleep(0.2)
+
+def minWindow(hwnd):
+    win32gui.ShowWindow(hwnd, win32con.SW_MINIMIZE)
     time.sleep(0.2)
 
 def getTableData(cols):
@@ -34,10 +38,10 @@ def getTableData(cols):
 
 def getListViewInfo(hwnd, cols):
     """
-    获取ListView的信息
-    :param hwnd: sysListView句柄
+    获取sysListView32的信息
+    :param hwnd: sysListView32句柄
     :param cols: 读取的列数
-    :return: sysListView中的内容
+    :return: sysListView32中的内容
     """
     col_info = []
     for col in range(cols):
@@ -346,11 +350,9 @@ def sendKeyMsg(hwnd, key_code):
     time.sleep(0.2)
 
 
-
 def sendKeyEvent(key, command):
     win32api.keybd_event(key, 0, command, 0)
     time.sleep(0.2)
-
 
 
 def clickStatic(hwnd):
