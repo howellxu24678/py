@@ -6,11 +6,6 @@ xml_file_name = os.path.join(os.getcwd(), "test.xml")
 doc = etree.parse(xml_file_name)
 root = doc.getroot()
 
-qindegree = {}
-qoutdegree = {}
-mqset = set()
-mqlist = []
-matrix = []
 needToDealList = []
 
 def StdInt2Str(sid):
@@ -24,46 +19,40 @@ def StdInt2Str(sid):
     except:
         return str(sid)
 
-def genReplaceNullStr(s, sr, sf):
-    '''
-    当队列编号为空时，根据上下文生成一个队列编号，便于后续处理和定位
-    :param s:
-    :param sr:
-    :param sf:
-    :return:
-    '''
-    return s.getparent().tag + ":" + sr.get("id") + "_" + sf.get("id")
+# def genReplaceNullStr(s, sr, sf):
+#     '''
+#     当队列编号为空时，根据上下文生成一个队列编号，便于后续处理和定位
+#     :param s:
+#     :param sr:
+#     :param sf:
+#     :return:
+#     '''
+#     return s.getparent().tag + ":" + sr.get("id") + "_" + sf.get("id")
+
+def genQueueNullStr(sr, sf):
+    return sr.get("id") + "_" + sf.get("id")
 
 def genAdjValue(s, sr, sf):
-    return s.getparent().tag + " srvid:" + \
+    return "srvid:" + \
            sr.get("id") + "_" + "funcid:" + \
            sf.get("id") + "_" + "clsid:" + \
            sf.get("clsid")
 
-def addIndegree(node):
-    '''
-    给节点添加入度
-    :param node:
-    :return:
-    '''
-    if node in qindegree:
-        qindegree[node] += 1
-    else:
-        qindegree[node] = 1
 
-def addOutdegree(node):
-    '''
-    给节点添加出度
-    :param node:
-    :return:
-    '''
-    if node in qoutdegree:
-        qoutdegree[node] += 1
+def addDegree(dictdegree, section, node):
+    if dictdegree.has_key(section):
+        if node in dictdegree[section]:
+            dictdegree[section][node] += 1
+        else:
+            dictdegree[section][node] = 1
     else:
-        qoutdegree[node] = 1
+        d = {node: 1}
+        dictdegree[section] = d
 
 def isNeedToDeal(s):
-    if "all" in needToDealList:
+    if s.getparent().tag == "kernel":
+        return False
+    elif "all" in needToDealList:
         return True
     elif s.getparent().tag in needToDealList:
         return  True
@@ -77,18 +66,24 @@ def checkServiceId():
     :return:
     '''
     print "checkServiceId"
-    idset = set()
+    idictset = {}
     for s in root.getiterator('services'):
         for sr in s.getiterator("service"):
             if not isNeedToDeal(s):
                 continue
-            sid = s.getparent().tag + ":" + sr.get("id")
-            if sid in idset:
-                print "error!!! services name:", sr.get("name"), "id:", sid, "is duplicated"
-                return
+            sid = sr.get("id")
+            if idictset.has_key(s.getparent().tag):
+                if sid in idictset[s.getparent().tag]:
+                    print "error!!!", s.getparent().tag, "services name:",sr.get("name"), "id:", sid, "is duplicated"
+                    return
+                else:
+                    idictset[s.getparent().tag].add(sid)
             else:
+                idset = set()
                 idset.add(sid)
-    print "serviceId:", idset
+                idictset[s.getparent().tag] = idset
+
+    print "serviceId:", idictset
 
 def checkQueueId():
     '''
@@ -96,25 +91,40 @@ def checkQueueId():
     :return:
     '''
     print "checkQueueId"
-    idset = set()
+    idictset = {}
     for s in root.getiterator('queues'):
         for sr in s.getiterator("msgqueue"):
             if not isNeedToDeal(s):
                 continue
-            sid = s.getparent().tag + ":" + sr.get("id")
-            if sid in idset:
-                print "error!!! msgqueue name:", sr.get("name"), "id:", sid, "is duplicated"
-                return
+            sid = sr.get("id")
+            if idictset.has_key(s.getparent().tag):
+                if sid in idictset[s.getparent().tag]:
+                    print "error!!!", s.getparent().tag, "msgqueue name:",sr.get("name"), "id:", sid, "is duplicated"
+                    return
+                else:
+                    idictset[s.getparent().tag].add(sid)
             else:
+                idset = set()
                 idset.add(sid)
+                idictset[s.getparent().tag] = idset
 
-    print "queueId:", idset
+    print "queueId:", idictset
 
-def findAllMsgQueueSetAndDegree():
+def mqDictSetAdd(mqdictset, s, q):
+    if mqdictset.has_key(s.getparent().tag):
+        mqdictset[s.getparent().tag].add(StdInt2Str(q))
+    else:
+        mqset = set()
+        mqset.add(StdInt2Str(q))
+        mqdictset[s.getparent().tag] = mqset
+
+def findAllMsgQueueInServices():
     '''
     获得所有节点的集合及其入度出度
     :return:
     '''
+    mqdictset = {}
+
     for s in root.getiterator('services'):
         for sr in s.getiterator("service"):
             for sf in sr.getiterator("svcfunc"):
@@ -122,22 +132,29 @@ def findAllMsgQueueSetAndDegree():
                     continue
                 if sf.get("inqueue") != "":
                     for q in sf.get("inqueue").split(','):
-                        mqset.add(s.getparent().tag + ":" + StdInt2Str(q))
+                        mqDictSetAdd(mqdictset, s, q)
                 if sf.get("outqueue") != "":
                     for q in sf.get("outqueue").split(','):
-                        mqset.add(s.getparent().tag + ":" + StdInt2Str(q))
+                        mqDictSetAdd(mqdictset, s, q)
 
                 if sf.get("inqueue") == "" or sf.get("outqueue") == "":
-                    mqset.add(genReplaceNullStr(s, sr, sf))
+                    mqDictSetAdd(mqdictset, s, genQueueNullStr(sr, sf))
 
+    print "findAllMsgQueueInServices mqdictset", mqdictset
+    return mqdictset
 
-
-def getSrvAdj():
+def getSrvAdj(mqdictset):
     '''
     生成邻接表
     :return:
     '''
-    mat = [["" for i in range(len(mqlist))] for j in range(len(mqlist))]
+
+    dictmat = {}
+    dictindegree = {}
+    dictoutdegree = {}
+    for k,v in mqdictset.iteritems():
+        dictmat[k] =  [["" for i in range(len(v))] for j in range(len(v))]
+
     for s in root.getiterator('services'):
         for sr in s.getiterator("service"):
             for sf in sr.getiterator("svcfunc"):
@@ -151,70 +168,68 @@ def getSrvAdj():
                 if not (sf.get("outqueue") is None or sf.get("outqueue") == ""):
                     outqueuelist = sf.get("outqueue").split(',')
                 sr_adj_value = genAdjValue(s,sr,sf)
+                section = s.getparent().tag
+                mqlist = list(mqdictset[section])
                 if len(inqueuelist) > 0 and len(outqueuelist) > 0:
                     for iq in inqueuelist:
                         for oq in outqueuelist:
-                            iqindex = s.getparent().tag + ":" + StdInt2Str(iq)
-                            oqindex = s.getparent().tag + ":" + StdInt2Str(oq)
-                            mat[mqlist.index(iqindex)][mqlist.index(oqindex)] = sr_adj_value
-                            addIndegree(oqindex)
-                            addOutdegree(iqindex)
+                            dictmat[s.getparent().tag][mqlist.index(StdInt2Str(iq))][mqlist.index(StdInt2Str(oq))] = sr_adj_value
+                            addDegree(dictindegree, section, StdInt2Str(oq))
+                            addDegree(dictoutdegree, section, StdInt2Str(iq))
 
                 if len(inqueuelist) > 0 and len(outqueuelist) == 0:
                     for iq in inqueuelist:
-                        iqindex = s.getparent().tag + ":" + StdInt2Str(iq)
-                        mat[mqlist.index(iqindex)][mqlist.index(genReplaceNullStr(s, sr, sf))] = sr_adj_value
-                        addIndegree(genReplaceNullStr(s, sr, sf))
-                        addOutdegree(iqindex)
+                        dictmat[s.getparent().tag][mqlist.index(StdInt2Str(iq))][mqlist.index(genQueueNullStr(sr, sf))] = sr_adj_value
+                        addDegree(dictindegree, section, genQueueNullStr(sr, sf))
+                        addDegree(dictoutdegree, section, StdInt2Str(iq))
+
 
                 if len(inqueuelist) == 0 and len(outqueuelist) > 0:
                     for oq in outqueuelist:
-                        oqindex = s.getparent().tag + ":" + StdInt2Str(oq)
-                        mat[mqlist.index(genReplaceNullStr(s, sr, sf))][mqlist.index(oqindex)] = sr_adj_value
-                        addIndegree(oqindex)
-                        addOutdegree(genReplaceNullStr(s, sr, sf))
-    return mat
+                        dictmat[s.getparent().tag][mqlist.index(genQueueNullStr(sr, sf))][mqlist.index(StdInt2Str(oq))] = sr_adj_value
+                        addDegree(dictindegree, section, StdInt2Str(oq))
+                        addDegree(dictoutdegree, section, genQueueNullStr(sr, sf))
+
+    return dictmat,dictindegree,dictoutdegree
+
+def traceRouteDict(mqdictset, dictmat,dictindegree,dictoutdegree):
+    for k,v in mqdictset.iteritems():
+        startpoints = v - set(dictindegree[k])
+        endpoints = v - set(dictoutdegree[k])
+        for s in startpoints:
+            for e in endpoints:
+                visit = [False for i in range(len(v))]
+                path = []
+                schAllPath(s, e, visit, path, list(v), dictmat[k], k)
 
 
-def traceRoute():
-    print "traceRoute"
-    startpoints = mqset - set(qindegree)
-    endpoints = mqset - set(qoutdegree)
+def printPath(path,k):
+    print k, "begin<< brief:{",
 
-    print "startpoints:", startpoints
-    print "endpoints", endpoints
-    for s in startpoints:
-        for e in endpoints:
-            visit = [False for i in range(len(mqlist))]
-            path = []
-            schAllPath(s, e, visit, path)
-
-def printPath(path):
-    print "begin<< brief:{",
-
-    if len(path) == 2:
-        print path,
-    elif len(path) % 2 == 1:
+    if len(path) % 2 == 1:
         for i in range(len(path)):
             if i % 2 == 0:
                 print path[i],
+                if i < len(path) - 1:
+                    print "->",
+
     print "} detail:", path, ">>end"
 
 
-def schAllPath(v, t, visit, path):
+def schAllPath(v, t, visit, path, mqlist, matrix, k):
     if visit[mqlist.index(v)]:
         return
     path.append(v)
 
     if v == t:
-        printPath(path)
+        printPath(path, k)
 
     else:
         visit[mqlist.index(v)] = True
         for i in range(len(mqlist)):
             if matrix[mqlist.index(v)][i] != "" and not visit[i]:
                 path.append(matrix[mqlist.index(v)][i])
-                schAllPath(mqlist[i], t, visit, path)
+                schAllPath(mqlist[i], t, visit, path, mqlist, matrix, k)
                 path.pop()
                 path.pop()
         visit[mqlist.index(v)] = False
@@ -230,12 +245,14 @@ if __name__  == "__main__":
 
     checkServiceId()
     checkQueueId()
-    #traceRoute()
-    findAllMsgQueueSetAndDegree()
-    mqlist = list(mqset)
-    #print mqset
-    #print mqlist
-    matrix = getSrvAdj()
-    #print matrix
-    traceRoute()
+    #print findAllMsgQueueInServices()
+    #mqlist = list(mqdictset)
+    mqdictset = findAllMsgQueueInServices()
+    dictmat,dictindegree,dictoutdegree = getSrvAdj(mqdictset)
+
+    print dictmat
+    print dictindegree
+    print dictoutdegree
+
+    traceRouteDict(mqdictset, dictmat,dictindegree,dictoutdegree)
 
