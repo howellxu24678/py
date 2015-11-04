@@ -2,7 +2,7 @@
 from lxml import etree
 import  os
 import  sys
-xml_file_name = os.path.join(os.getcwd(), "maServer.xml")
+xml_file_name = os.path.join(os.getcwd(), "test.xml")
 doc = etree.parse(xml_file_name)
 root = doc.getroot()
 
@@ -83,12 +83,12 @@ def checkServiceId():
             if not isNeedToDeal(s):
                 continue
             sid = s.getparent().tag + ":" + sr.get("id")
-            print "id", sid
             if sid in idset:
-                print ("error!!! services name:", sr.get("name"), "id:", sid, "is duplicated")
+                print "error!!! services name:", sr.get("name"), "id:", sid, "is duplicated"
                 return
             else:
                 idset.add(sid)
+    print "serviceId:", idset
 
 def checkQueueId():
     '''
@@ -98,16 +98,17 @@ def checkQueueId():
     print "checkQueueId"
     idset = set()
     for s in root.getiterator('queues'):
-        for sr in s.getiterator("mqset"):
+        for sr in s.getiterator("msgqueue"):
             if not isNeedToDeal(s):
                 continue
             sid = s.getparent().tag + ":" + sr.get("id")
-            print ("id", sid)
             if sid in idset:
-                print ("error!!! mqset name:", sr.get("name"), "id:", sid, "is duplicated")
+                print "error!!! msgqueue name:", sr.get("name"), "id:", sid, "is duplicated"
                 return
             else:
                 idset.add(sid)
+
+    print "queueId:", idset
 
 def findAllMsgQueueSetAndDegree():
     '''
@@ -174,12 +175,6 @@ def getSrvAdj():
                         addOutdegree(genReplaceNullStr(s, sr, sf))
     return mat
 
-def isEnd(node, visit):
-    for i in range(len(mqlist)):
-        if matrix[mqlist.index(node)][i] != "" and not visit[i]:
-            return False
-    return  True
-
 
 def traceRoute():
     print "traceRoute"
@@ -194,20 +189,36 @@ def traceRoute():
             path = []
             schAllPath(s, e, visit, path)
 
+def printPath(path):
+    print "begin<< brief:{",
+
+    if len(path) == 2:
+        print path,
+    elif len(path) % 2 == 1:
+        for i in range(len(path)):
+            if i % 2 == 0:
+                print path[i],
+    print "} detail:", path, ">>end"
+
+
 def schAllPath(v, t, visit, path):
     if visit[mqlist.index(v)]:
         return
     path.append(v)
 
     if v == t:
-        print "begin<<", path, ">>end"
+        printPath(path)
+
     else:
         visit[mqlist.index(v)] = True
         for i in range(len(mqlist)):
             if matrix[mqlist.index(v)][i] != "" and not visit[i]:
                 path.append(matrix[mqlist.index(v)][i])
                 schAllPath(mqlist[i], t, visit, path)
+                path.pop()
+                path.pop()
         visit[mqlist.index(v)] = False
+
 
 
 if __name__  == "__main__":
