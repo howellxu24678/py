@@ -2,7 +2,7 @@
 from lxml import etree
 import  os
 import  sys
-xml_file_name = os.path.join(os.getcwd(), "test.xml")
+xml_file_name = os.path.join(os.getcwd(), "maServer.xml")
 doc = etree.parse(xml_file_name)
 root = doc.getroot()
 
@@ -18,16 +18,6 @@ def StdInt2Str(sid):
         return str(int(sid))
     except:
         return str(sid)
-
-# def genReplaceNullStr(s, sr, sf):
-#     '''
-#     当队列编号为空时，根据上下文生成一个队列编号，便于后续处理和定位
-#     :param s:
-#     :param sr:
-#     :param sf:
-#     :return:
-#     '''
-#     return s.getparent().tag + ":" + sr.get("id") + "_" + sf.get("id")
 
 def genQueueNullStr(sr, sf):
     return sr.get("id") + "_" + sf.get("id")
@@ -65,7 +55,7 @@ def checkServiceId():
     校验ServiceId 是否有重复，允许不同的parent下的ServiceId重复
     :return:
     '''
-    print "checkServiceId"
+    print "####----- %-20s ------####" % "checkServiceId"
     idictset = {}
     for s in root.getiterator('services'):
         for sr in s.getiterator("service"):
@@ -75,7 +65,7 @@ def checkServiceId():
             if idictset.has_key(s.getparent().tag):
                 if sid in idictset[s.getparent().tag]:
                     print "error!!!", s.getparent().tag, "services name:",sr.get("name"), "id:", sid, "is duplicated"
-                    return
+                    raise RuntimeError, 'checkServiceId failed'
                 else:
                     idictset[s.getparent().tag].add(sid)
             else:
@@ -90,39 +80,47 @@ def checkQueueId():
     校验QueueId 是否有重复，允许不同的parent下的QueueId重复
     :return:
     '''
-    print "checkQueueId"
+    print "####----- %-20s ------####" % "checkQueueId"
     idictset = {}
-    for s in root.getiterator('queues'):
-        for sr in s.getiterator("msgqueue"):
-            if not isNeedToDeal(s):
+    for queuses in root.getiterator('queues'):
+        for msgqueue in queuses.getiterator("msgqueue"):
+            if not isNeedToDeal(queuses):
                 continue
-            sid = sr.get("id")
-            if idictset.has_key(s.getparent().tag):
-                if sid in idictset[s.getparent().tag]:
-                    print "error!!!", s.getparent().tag, "msgqueue name:",sr.get("name"), "id:", sid, "is duplicated"
-                    return
+            sid = StdInt2Str(msgqueue.get("id"))
+            if idictset.has_key(queuses.getparent().tag):
+                if sid in idictset[queuses.getparent().tag]:
+                    print "error!!!", queuses.getparent().tag, "msgqueue name:",msgqueue.get("name"), "id:", sid, "is duplicated"
+                    raise RuntimeError, 'checkQueueId failed'
                 else:
-                    idictset[s.getparent().tag].add(sid)
+                    idictset[queuses.getparent().tag].add(sid)
             else:
                 idset = set()
                 idset.add(sid)
-                idictset[s.getparent().tag] = idset
+                idictset[queuses.getparent().tag] = idset
 
     print "queueId:", idictset
+    return idictset
 
 def mqDictSetAdd(mqdictset, s, q):
     if mqdictset.has_key(s.getparent().tag):
-        mqdictset[s.getparent().tag].add(StdInt2Str(q))
+        mqdictset[s.getparent().tag].add(q)
     else:
         mqset = set()
-        mqset.add(StdInt2Str(q))
+        mqset.add(q)
         mqdictset[s.getparent().tag] = mqset
+
+def parseQueue(q):
+    if q.find(':') > -1:
+        return StdInt2Str(q.split(':')[1].strip())
+    else:
+        return  StdInt2Str(q.strip())
 
 def findAllMsgQueueInServices():
     '''
     获得所有节点的集合及其入度出度
     :return:
     '''
+    print "####----- %-20s ------####" % "findAllMsgQueueInServices"
     mqdictset = {}
 
     for s in root.getiterator('services'):
@@ -132,16 +130,38 @@ def findAllMsgQueueInServices():
                     continue
                 if sf.get("inqueue") != "":
                     for q in sf.get("inqueue").split(','):
-                        mqDictSetAdd(mqdictset, s, q)
+                        mqDictSetAdd(mqdictset, s, parseQueue(q))
                 if sf.get("outqueue") != "":
                     for q in sf.get("outqueue").split(','):
-                        mqDictSetAdd(mqdictset, s, q)
+                        mqDictSetAdd(mqdictset, s, parseQueue(q))
 
                 if sf.get("inqueue") == "" or sf.get("outqueue") == "":
                     mqDictSetAdd(mqdictset, s, genQueueNullStr(sr, sf))
 
-    print "findAllMsgQueueInServices mqdictset", mqdictset
+    print "mqdictset", mqdictset
     return mqdictset
+
+def parseXa():
+    '''
+    解析xa模块
+    :return:
+    '''
+    xadict = {}
+    for xas in root.getiterator('xas'):
+        for xa in xas.getiterator("xa"):
+            if not isNeedToDeal(xas):
+                continue
+            xaopen = xa.get("xaopen")
+            queidindex = xaopen.find("queid")
+            if queidindex > -1:
+                queid = xaopen[queidindex: xaopen.find(";", queidindex)].split("=")[1]
+                if xadict.has_key(xas.getparent().tag):
+                    xadict[xas.getparent().tag][queid] = xa.get("name") + "_" + xa.get("id")
+                else:
+                    dxa = {queid: xa.get("name") + "_" + xa.get("id")}
+                    xadict[xas.getparent().tag] = dxa
+    return xadict
+
 
 def getSrvAdj(mqdictset):
     '''
@@ -173,26 +193,27 @@ def getSrvAdj(mqdictset):
                 if len(inqueuelist) > 0 and len(outqueuelist) > 0:
                     for iq in inqueuelist:
                         for oq in outqueuelist:
-                            dictmat[s.getparent().tag][mqlist.index(StdInt2Str(iq))][mqlist.index(StdInt2Str(oq))] = sr_adj_value
-                            addDegree(dictindegree, section, StdInt2Str(oq))
-                            addDegree(dictoutdegree, section, StdInt2Str(iq))
+                            dictmat[s.getparent().tag][mqlist.index(parseQueue(iq))][mqlist.index(parseQueue(oq))] = sr_adj_value
+                            addDegree(dictindegree, section, parseQueue(oq))
+                            addDegree(dictoutdegree, section, parseQueue(iq))
 
                 if len(inqueuelist) > 0 and len(outqueuelist) == 0:
                     for iq in inqueuelist:
-                        dictmat[s.getparent().tag][mqlist.index(StdInt2Str(iq))][mqlist.index(genQueueNullStr(sr, sf))] = sr_adj_value
+                        dictmat[s.getparent().tag][mqlist.index(parseQueue(iq))][mqlist.index(genQueueNullStr(sr, sf))] = sr_adj_value
                         addDegree(dictindegree, section, genQueueNullStr(sr, sf))
-                        addDegree(dictoutdegree, section, StdInt2Str(iq))
+                        addDegree(dictoutdegree, section, parseQueue(iq))
 
 
                 if len(inqueuelist) == 0 and len(outqueuelist) > 0:
                     for oq in outqueuelist:
-                        dictmat[s.getparent().tag][mqlist.index(genQueueNullStr(sr, sf))][mqlist.index(StdInt2Str(oq))] = sr_adj_value
-                        addDegree(dictindegree, section, StdInt2Str(oq))
+                        dictmat[s.getparent().tag][mqlist.index(genQueueNullStr(sr, sf))][mqlist.index(parseQueue(oq))] = sr_adj_value
+                        addDegree(dictindegree, section, parseQueue(oq))
                         addDegree(dictoutdegree, section, genQueueNullStr(sr, sf))
 
     return dictmat,dictindegree,dictoutdegree
 
-def traceRouteDict(mqdictset, dictmat,dictindegree,dictoutdegree):
+def traceRouteDict(mqdictset, dictmat, dictindegree, dictoutdegree, xadict):
+    print "####----- %-20s ------####" % "traceRoute"
     for k,v in mqdictset.iteritems():
         startpoints = v - set(dictindegree[k])
         endpoints = v - set(dictoutdegree[k])
@@ -200,12 +221,17 @@ def traceRouteDict(mqdictset, dictmat,dictindegree,dictoutdegree):
             for e in endpoints:
                 visit = [False for i in range(len(v))]
                 path = []
-                schAllPath(s, e, visit, path, list(v), dictmat[k], k)
+                schAllPath(s, e, visit, path, list(v), dictmat[k], k, xadict)
 
 
-def printPath(path,k):
+def printPath(path,k,xadict):
+    xahead = ""
+    if k in xadict and path[0] in xadict[k]:
+        xahead = xadict[k][path[0]]
+
     print k, "begin<< brief:{",
-
+    if xahead != "":
+        print xahead, "->",
     if len(path) % 2 == 1:
         for i in range(len(path)):
             if i % 2 == 0:
@@ -213,46 +239,61 @@ def printPath(path,k):
                 if i < len(path) - 1:
                     print "->",
 
-    print "} detail:", path, ">>end"
+    print "} detail:",
+    if xahead != "":
+        print xahead, "->",
+    print path, ">>end"
 
 
-def schAllPath(v, t, visit, path, mqlist, matrix, k):
+def schAllPath(v, t, visit, path, mqlist, matrix, k, xadict):
     if visit[mqlist.index(v)]:
         return
     path.append(v)
 
     if v == t:
-        printPath(path, k)
+        printPath(path, k, xadict)
 
     else:
         visit[mqlist.index(v)] = True
         for i in range(len(mqlist)):
             if matrix[mqlist.index(v)][i] != "" and not visit[i]:
                 path.append(matrix[mqlist.index(v)][i])
-                schAllPath(mqlist[i], t, visit, path, mqlist, matrix, k)
+                schAllPath(mqlist[i], t, visit, path, mqlist, matrix, k, xadict)
                 path.pop()
                 path.pop()
         visit[mqlist.index(v)] = False
 
-
+def checkNoBeUsedQueue(mqsetdef, mqsetuse):
+    print "####----- %-20s ------####" % "checkNoBeUsedQueue"
+    for k,v in mqsetdef.iteritems():
+        ret = mqsetdef[k] - mqsetuse[k]
+        if len(ret) > 0:
+            print k, "queue defined but no be used:", ret
 
 if __name__  == "__main__":
+    try:
+        if len(sys.argv[1:]) > 0 and sys.argv[1] != "all":
+            needToDealList = sys.argv[1:]
+        else:
+            needToDealList = ["all",]
 
-    if len(sys.argv[1:]) > 0 and sys.argv[1] != "all":
-        needToDealList = sys.argv[1:]
-    else:
-        needToDealList = ["all",]
+        checkServiceId()
+        #定义的queue队列
+        mqdefset = checkQueueId()
 
-    checkServiceId()
-    checkQueueId()
-    #print findAllMsgQueueInServices()
-    #mqlist = list(mqdictset)
-    mqdictset = findAllMsgQueueInServices()
-    dictmat,dictindegree,dictoutdegree = getSrvAdj(mqdictset)
+        #在service中使用到的queue队列
+        mqdictset = findAllMsgQueueInServices()
+        
+        checkNoBeUsedQueue(mqdefset, mqdictset)
+        dictmat,dictindegree,dictoutdegree = getSrvAdj(mqdictset)
 
-    print dictmat
-    print dictindegree
-    print dictoutdegree
+        xadict = parseXa()
+        print xadict
+#        print dictmat
+#        print dictindegree
+#        print dictoutdegree
 
-    traceRouteDict(mqdictset, dictmat,dictindegree,dictoutdegree)
+        traceRouteDict(mqdictset, dictmat,dictindegree,dictoutdegree, xadict)
+    except BaseException,e:
+        print e
 
