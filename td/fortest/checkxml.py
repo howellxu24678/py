@@ -22,11 +22,15 @@ def StdInt2Str(sid):
 def genQueueNullStr(sr, sf):
     return sr.get("id") + "_" + sf.get("id")
 
-def genAdjValue(s, sr, sf):
+def genSerAdjValue(sr, sf):
     return "srvid:" + \
            sr.get("id") + "_" + "funcid:" + \
            sf.get("id") + "_" + "clsid:" + \
            sf.get("clsid")
+
+def genLbmAdjValue(sr, pa):
+    return "srvid:" + \
+           sr.get("id") + "_LBM_" + pa.get("spdxml")
 
 
 def addDegree(dictdegree, section, node):
@@ -162,6 +166,37 @@ def parseXa():
                     xadict[xas.getparent().tag] = dxa
     return xadict
 
+def srvAdjSubDeal(mqdictset, dictmat, dictindegree, dictoutdegree, s, sr, sf, sr_adj_value):
+    print "srvAdjSubDeal", s.getparent().tag, sr.get("id")
+    inqueuelist=[]
+    outqueuelist=[]
+    if not (sf.get("inqueue") is None or sf.get("inqueue") == ""):
+        inqueuelist = sf.get("inqueue").split(',')
+    if not (sf.get("outqueue") is None or sf.get("outqueue") == ""):
+        outqueuelist = sf.get("outqueue").split(',')
+
+    section = s.getparent().tag
+    mqlist = list(mqdictset[section])
+    if len(inqueuelist) > 0 and len(outqueuelist) > 0:
+        for iq in inqueuelist:
+            for oq in outqueuelist:
+                dictmat[s.getparent().tag][mqlist.index(parseQueue(iq))][mqlist.index(parseQueue(oq))] = sr_adj_value
+                addDegree(dictindegree, section, parseQueue(oq))
+                addDegree(dictoutdegree, section, parseQueue(iq))
+
+    if len(inqueuelist) > 0 and len(outqueuelist) == 0:
+        for iq in inqueuelist:
+            dictmat[s.getparent().tag][mqlist.index(parseQueue(iq))][mqlist.index(genQueueNullStr(sr, sf))] = sr_adj_value
+            addDegree(dictindegree, section, genQueueNullStr(sr, sf))
+            addDegree(dictoutdegree, section, parseQueue(iq))
+
+
+    if len(inqueuelist) == 0 and len(outqueuelist) > 0:
+        for oq in outqueuelist:
+            dictmat[s.getparent().tag][mqlist.index(genQueueNullStr(sr, sf))][mqlist.index(parseQueue(oq))] = sr_adj_value
+            addDegree(dictindegree, section, parseQueue(oq))
+            addDegree(dictoutdegree, section, genQueueNullStr(sr, sf))
+
 
 def getSrvAdj(mqdictset):
     '''
@@ -180,35 +215,18 @@ def getSrvAdj(mqdictset):
             for sf in sr.getiterator("svcfunc"):
                 if not isNeedToDeal(s):
                     continue
-
-                inqueuelist=[]
-                outqueuelist=[]
-                if not (sf.get("inqueue") is None or sf.get("inqueue") == ""):
-                    inqueuelist = sf.get("inqueue").split(',')
-                if not (sf.get("outqueue") is None or sf.get("outqueue") == ""):
-                    outqueuelist = sf.get("outqueue").split(',')
-                sr_adj_value = genAdjValue(s,sr,sf)
-                section = s.getparent().tag
-                mqlist = list(mqdictset[section])
-                if len(inqueuelist) > 0 and len(outqueuelist) > 0:
-                    for iq in inqueuelist:
-                        for oq in outqueuelist:
-                            dictmat[s.getparent().tag][mqlist.index(parseQueue(iq))][mqlist.index(parseQueue(oq))] = sr_adj_value
-                            addDegree(dictindegree, section, parseQueue(oq))
-                            addDegree(dictoutdegree, section, parseQueue(iq))
-
-                if len(inqueuelist) > 0 and len(outqueuelist) == 0:
-                    for iq in inqueuelist:
-                        dictmat[s.getparent().tag][mqlist.index(parseQueue(iq))][mqlist.index(genQueueNullStr(sr, sf))] = sr_adj_value
-                        addDegree(dictindegree, section, genQueueNullStr(sr, sf))
-                        addDegree(dictoutdegree, section, parseQueue(iq))
+                sr_adj_value = genSerAdjValue(sr,sf)
+                srvAdjSubDeal(mqdictset, dictmat, dictindegree, dictoutdegree, s, sr, sf, sr_adj_value)
 
 
-                if len(inqueuelist) == 0 and len(outqueuelist) > 0:
-                    for oq in outqueuelist:
-                        dictmat[s.getparent().tag][mqlist.index(genQueueNullStr(sr, sf))][mqlist.index(parseQueue(oq))] = sr_adj_value
-                        addDegree(dictindegree, section, parseQueue(oq))
-                        addDegree(dictoutdegree, section, genQueueNullStr(sr, sf))
+
+            for param in sr.getiterator("param") :
+                if not isNeedToDeal(s) or param.get("workpath") is None:
+                    continue
+                pa_adj_value = genLbmAdjValue(sr,param)
+                print "pa_adj_value", pa_adj_value
+                srvAdjSubDeal(mqdictset, dictmat, dictindegree, dictoutdegree, s, sr, param, pa_adj_value)
+
 
     return dictmat,dictindegree,dictoutdegree
 
