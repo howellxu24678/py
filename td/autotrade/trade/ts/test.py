@@ -23,20 +23,20 @@
 
 from ctypes import *
 
-class myStr(Structure):
+class STU(Structure):
     def __str__(self):
         ss = ""
         for filed_name,field_type in self._fields_:
             ss += "%s:%s|" % (filed_name, getattr(self, filed_name))
         return ss
 
-class Server(myStr):
+class Server(STU):
     _fields_ = [("szIp", c_char * 50),
                 ("nPort", c_int)]
                 
 
 
-class NewLoginInfo(myStr):
+class NewLoginInfo(STU):
     _fields_ = [("account", c_char * 50),
                 ("accountName", c_char * 50),
                 ("password", c_char * 50),
@@ -47,6 +47,18 @@ class NewLoginInfo(myStr):
                 
 gxts = WinDLL("GxTS.dll")
 macliapi = WinDLL("maCliApi.dll")
+
+hHandle = c_void_p(0)
+macliapi.maCli_Init(byref(hHandle))
+macliapi.maCli_BeginWrite(hHandle)
+macliapi.maCli_SetHdrValueC(hHandle, c_char('Q'), c_int(1052672))
+macliapi.maCli_SetValueS(hHandle, c_char_p("127.0.0.1"), c_char_p("8812"))
+macliapi.maCli_EndWrite(hHandle)
+ilen = c_int(0)
+p = create_string_buffer(1024)
+macliapi.maCli_Make(hHandle,p, byref(ilen))
+macliapi.maCli_Close(hHandle)
+macliapi.maCli_Exit(hHandle)
 
 #typedef void (* Fun_OnMsgPtr)(const char *msg, int len, const char *account, void *param);
 
