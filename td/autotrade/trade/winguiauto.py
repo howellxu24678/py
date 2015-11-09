@@ -20,8 +20,11 @@ ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 
 def maxFocusWindow(hwnd):
     win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
+    time.sleep(0.5)
+    sendKeyMsg(hwnd, '%')
+    time.sleep(0.5)
     win32gui.SetForegroundWindow(hwnd)
-    time.sleep(0.2)
+    time.sleep(0.5)
 
 def minWindow(hwnd):
     win32gui.ShowWindow(hwnd, win32con.SW_MINIMIZE)

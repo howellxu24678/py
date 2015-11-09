@@ -198,7 +198,7 @@ class Stg_Autotrader(Strategy):
             self.DealSell()
             self._bNeedToSellAtOpen = False
 
-        if self._bNeedRetryWhileOrderFailed and not self._bOrderOk and self._curRetryCount < self._retry:
+        if self._bNeedRetryWhileOrderFailed and not self._bOrderOk and self._curRetryCount < self._retry - 1:
             self._curRetryCount += 1
             if self._latestStatus == 'buy':
                 self.DealBuy()
