@@ -21,7 +21,15 @@
 #>>> for field_name, field_type in s._fields_:
 #...     print field_name, getattr(s, field_name)
 
+#import sys
+#import os
+#sys.path.append(os.getcwd())
+#sys.path.append(os.path.join(os.getcwd(),"maClient"))
+
 from ctypes import *
+macliapi = WinDLL("maCliApi.dll")
+hHandle = c_void_p(0)
+macliapi.maCli_Init(byref(hHandle))
 
 class STU(Structure):
     def __str__(self):
@@ -46,10 +54,9 @@ class NewLoginInfo(STU):
                 ("servers", Server * 10)]
                 
 gxts = WinDLL("GxTS.dll")
-macliapi = WinDLL("maCliApi.dll")
 
-hHandle = c_void_p(0)
-macliapi.maCli_Init(byref(hHandle))
+
+
 macliapi.maCli_BeginWrite(hHandle)
 macliapi.maCli_SetHdrValueC(hHandle, c_char('Q'), c_int(1052672))
 macliapi.maCli_SetValueS(hHandle, c_char_p("127.0.0.1"), c_char_p("8812"))

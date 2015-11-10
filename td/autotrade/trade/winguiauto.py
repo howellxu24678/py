@@ -9,6 +9,7 @@ import win32clipboard
 
 import win32con
 import commctrl
+import win32com.client
 
 GetWindowThreadProcessId = ctypes.windll.user32.GetWindowThreadProcessId
 VirtualAllocEx = ctypes.windll.kernel32.VirtualAllocEx
@@ -21,7 +22,8 @@ ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 def maxFocusWindow(hwnd):
     win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
     time.sleep(0.5)
-    sendKeyMsg(hwnd, '%')
+    shell = win32com.client.Dispatch("WScript.Shell")
+    shell.SendKeys('%')
     time.sleep(0.5)
     win32gui.SetForegroundWindow(hwnd)
     time.sleep(0.5)

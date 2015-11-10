@@ -208,6 +208,10 @@ class Stg_Autotrader(Strategy):
             #重试成功之后，将计数器重置为0，以便下次重试
             if self._bOrderOk:
                 self._curRetryCount = 0
+            else:
+                msg = "failed to retry %s:%s %s with number:%s"%(self._latestStatus, self._code, self._name, self._stock_number)
+                logger.warn(msg)
+                self._sendmail.send(msg, self._to_addr_list)
         
     def DealBuy(self):
         try:
@@ -233,7 +237,7 @@ class Stg_Autotrader(Strategy):
         else:
             self._bOrderOk = False
             msg = "failed to buy:%s %s with number:%s"%(self._code, self._name, self._stock_number)
-            logger.info(msg)
+            logger.warn(msg)
             self._sendmail.send(msg, self._to_addr_list)
 
     def DealSell(self):
@@ -263,5 +267,5 @@ class Stg_Autotrader(Strategy):
         else:
             self._bOrderOk = False
             msg = "failed to sell:%s %s with number:%s"%(self._code, self._name, self._stock_number)
-            logger.info(msg)
+            logger.warn(msg)
             self._sendmail.send(msg, self._to_addr_list)
