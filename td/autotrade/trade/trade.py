@@ -20,7 +20,7 @@ logger = logging.getLogger("run")
 
 class trade(object):
     def __init__(self, cf):
-        self._cf = cf;
+        self._cf = cf
 
     def buy(self, stock_code, stock_price, stock_number):
         pass
@@ -187,18 +187,141 @@ class tdx_trade(trade):
         """
         minWindow(self.__top_hwnd)
 
-if __name__ == "__main__":
-    cf = ConfigParser.ConfigParser()
-    tdx_trade = tdx_trade(cf)
-    #tdx_trade.buy('000001', None, '100')
-    #tdx_trade.buy('000001', None, '100')
-    #print  tdx_trade.getMoneyInfo()
 
-    #time.sleep(10)
-    #print result
-#    for re in result:
-#        for e in re:
-#            print e
+
+import  pywinauto
+class tdx_wa_trade(trade):
+    def __init__(self,cf):
+        try:
+            super(tdx_wa_trade, self).__init__(cf)
+            self.__app = pywinauto.application.Application()
+            self.__app.connect(class_name='TdxW_MainFrame_Class')
+            top_hwnd = pywinauto.findwindows.find_window(class_name='TdxW_MainFrame_Class')
+            temp_hwnd = pywinauto.findwindows.find_windows(top_level_only=False, class_name='AfxWnd42', parent=top_hwnd)[-1]
+            wanted_hwnd = pywinauto.findwindows.find_windows(top_level_only=False, parent=temp_hwnd)
+            if len(wanted_hwnd) != 70:
+                logger.critical(u'无法获得通达信双向委托界面的窗口句柄！')
+                raise RuntimeError, 'tdx_trade init failed'
+            menu_bar = wanted_hwnd[1]
+            controls = wanted_hwnd[6]
+            self.__main_window = self.__app.window_(handle=top_hwnd)
+            self.__menu_bar = self.__app.window_(handle=menu_bar)
+            self.__controls = self.__app.window_(handle=controls)
+
+            logger.info("money:%s", self.getMoneyInfo())
+            #logger.info("positioninfo:%s", self.getPositionInfo())
+            logger.info('tdx_wa_trade init success')
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+            
+    def buy(self, stock_code, stock_price, stock_number):
+        """
+        买入函数
+        :param stock_code: 股票代码，字符串
+        :param stock_number: 数量， 字符串
+        """
+        logger.info("begin to buy %s with number %s", stock_code, stock_number)
+        self.__controls.Edit1.SetEditText(stock_code)
+        time.sleep(0.2)
+        if stock_number != '0':
+            self.__controls.Edit3.SetEditText(stock_number)
+            time.sleep(0.2)
+        self.__controls.Button1.Click()
+        time.sleep(0.2)
+        while self.__closePopupWindow():
+            time.sleep(0.2)
+        logger.info("end to buy %s with number %s", stock_code, stock_number)
+
+    def sell(self, stock_code, stock_price, stock_number):
+        """
+        卖出函数
+        :param stock_code: 股票代码， 字符串
+        :param stock_number: 数量， 字符串
+        """
+        logger.info("begin to sell %s with number %s", stock_code, stock_number)
+        self.__controls.Edit4.SetEditText(stock_code)
+        time.sleep(0.2)
+        if stock_number != '0':
+            self.__controls.Edit6.SetEditText(stock_number)
+            time.sleep(0.2)
+        self.__controls.Button2.Click()
+        time.sleep(0.2)
+        while self.__closePopupWindow():
+            time.sleep(0.2)
+        logger.info("end to sell %s with number %s", stock_code, stock_number)
+
+    def __closePopupWindow(self):
+        """
+        关闭一个弹窗。
+        :return: 如果有弹出式对话框，返回True，否则返回False
+        """
+        popup_hwnd = self.__main_window.PopupWindow()
+        if popup_hwnd:
+            popup_window = self.__app.window_(handle=popup_hwnd)
+            popup_window.SetFocus()
+            popup_window.Button.Click()
+            return True
+        return False
+
+    def maximizeFocusWindow(self):
+        """
+        最大化窗口
+        """
+        if self.__main_window.GetShowState() != 3:
+            self.__main_window.Maximize()
+
+    def minimizeWindow(self):
+        """
+        最小化窗体
+        """
+        self.__main_window.Minimize()
+
+    def clickRefreshButton(self, t=0.5):
+        """点击刷新按钮
+        """
+        self.__menu_bar.ClickInput(coords=(180, 12))
+        time.sleep(t)
+
+    def getMoneyInfo(self):
+        """获取可用资金
+        """
+        self.clickRefreshButton()
+        self.__controls.Edit1.SetEditText('000001')  # 测试时获得资金情况
+        time.sleep(0.2)
+        money = self.__controls.Static6.WindowText()
+        return float(money)
+
+    def getPositionInfo(self):
+        """获取持仓股票信息
+        """
+        self.clickRefreshButton()
+        position = []
+        rows = self.__controls.ListView.ItemCount()
+        cols = 10
+        info = self.__controls.ListView.Texts()[1:]
+        for row in range(rows):
+            position.append(info[row * cols:(row + 1) * cols])
+        return position
+
+    def getDeal(self, code, pre_position, cur_position):
+        """
+        获取成交数量
+        :param code: 股票代码
+        :param pre_position: 下单前的持仓
+        :param cur_position: 下单后的持仓
+        :return: 0-未成交， 正整数是买入的数量， 负整数是卖出的数量
+        """
+        if pre_position == cur_position:
+            return 0
+        pre_len = len(pre_position)
+        cur_len = len(cur_position)
+        if pre_len == cur_len:
+            for row in range(cur_len):
+                if cur_position[row][0] == code:
+                    return int(float(cur_position[row][1]) - float(pre_position[row][1]))
+        if cur_len > pre_len:
+            return int(float(cur_position[-1][1]))
 
         
 class fix_trade(trade):
@@ -279,3 +402,10 @@ class fix_trade(trade):
         
     def sell(self, stock_code, stock_price, stock_number):
         pass
+
+if __name__ == "__main__":
+    cf = ConfigParser.ConfigParser()
+    tdx = tdx_wa_trade(cf)
+    #tdx.buy('000001', None, '100')
+    #tdx.buy('000001', None, '100')
+    #tdx.getMoneyInfo()

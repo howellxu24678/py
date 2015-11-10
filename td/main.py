@@ -47,7 +47,7 @@ try:
         codelistSignal, code2SignalHandle = DealSignal(logger, cf)
     if(cf.getboolean("autotrader", "enable")):
         logger.info("create trade")
-        trader = trade.tdx_trade(cf)
+        trader = trade.tdx_wa_trade(cf)
         codelistAutoTrade, code2AutoTradeHandle = DealAutoTrade(trader, logger, cf)
     
     logger.info("create and start RealTimeQuote schedule")
