@@ -164,7 +164,7 @@ class tdx_trade(trade):
         :return:可用资金
         """
         self.clickRefreshButton()
-        setEditText(self.__buy_sell_hwnds[24][0], '999999')  # 测试时获得资金情况
+        setEditText(self.__buy_sell_hwnds[24][0], '000001')  # 测试时获得资金情况
         time.sleep(0.3)
         money = getWindowText(self.__buy_sell_hwnds[12][0]).strip()
         return float(money)
