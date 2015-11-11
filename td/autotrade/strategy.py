@@ -193,25 +193,31 @@ class Stg_Autotrader(Strategy):
         return iBuyIndex,iSellIndex
             
     def OnTimerCall(self):
-        if self._bNeedToSellAtOpen and self._latestStatus == 'sell' and datetime.datetime.now().time() > self._sellTime:
-            logger.info("deal the sell at open issue")
-            self.DealSell()
-            self._bNeedToSellAtOpen = False
-
-        if self._bNeedRetryWhileOrderFailed and not self._bOrderOk and self._curRetryCount < self._retry - 1:
-            self._curRetryCount += 1
-            if self._latestStatus == 'buy':
-                self.DealBuy()
-            elif self._latestStatus == 'sell':
+        try:
+            if self._bNeedToSellAtOpen and self._latestStatus == 'sell' and datetime.datetime.now().time() > self._sellTime:
+                logger.info("deal the sell at open issue")
                 self.DealSell()
+                self._bNeedToSellAtOpen = False
 
-            #重试成功之后，将计数器重置为0，以便下次重试
-            if self._bOrderOk:
-                self._curRetryCount = 0
-            else:
-                msg = "failed to retry %s:%s %s with number:%s"%(self._latestStatus, self._code, self._name, self._stock_number)
+            if self._bNeedRetryWhileOrderFailed and not self._bOrderOk and self._curRetryCount < self._retry - 1:
+                self._curRetryCount += 1
+                if self._latestStatus == 'buy':
+                    self.DealBuy()
+                elif self._latestStatus == 'sell':
+                    self.DealSell()
+
+                #重试成功之后，将计数器重置为0，以便下次重试
+                if self._bOrderOk:
+                    self._curRetryCount = 0
+                else:
+                    msg = "failed to retry %s:%s %s with number:%s"%(self._latestStatus, self._code, self._name, self._stock_number)
+                    logger.warn(msg)
+                    self._sendmail.send(msg, self._to_addr_list)
+        except BaseException,e:
+                msg = "occur exception when %s:%s %s with number:%s"%(self._latestStatus, self._code, self._name, self._stock_number)
                 logger.warn(msg)
                 self._sendmail.send(msg, self._to_addr_list)
+
         
     def DealBuy(self):
         try:
