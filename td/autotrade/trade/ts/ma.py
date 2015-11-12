@@ -111,22 +111,21 @@ class Ma(object):
             logger.exception(e)
             raise e
 
+def onMsg(pMsg, iLen, pAccount, pParam):
+    print "onMsg"
+    print pMsg.decode("gbk")
+    print iLen
+    print pAccount
 
-
+onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, c_void_p)
+onMsgHandle = onMsgFv(onMsg)
 
 def test():
-    def onMsg(pMsg, iLen, pAccount, pParam):
-        print "onMsg"
-        print pMsg.decode("gbk")
-        print iLen
-        print pAccount
-        
     gxts = WinDLL("GxTS.dll")
-    onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, c_void_p)
+
     #onMsgFv = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_void_p)
-    onMsgHandle = onMsgFv(onMsg)
-    gxts.AxE_Init(None, None, onMsgHandle, None)
     
+    gxts.AxE_Init(None, None, onMsgHandle, None)
     loginfo = NewLoginInfo()
     loginfo.account = "110000035019"
     loginfo.password = "110000035019@GXTS"
@@ -144,12 +143,19 @@ CALLBACK = CFUNCTYPE (None, c_char_p, c_int, c_char_p, c_void_p)
 class Myclass(object):
     def getCallbackFunc(self):
         def func(pMsg, iLen, pAccount, pParam):
-            print "doSomething"
+            print "func"
             print pMsg.decode("gbk")
             print iLen
             print pAccount
             #self.doSomething(pMsg, iLen, pAccount, pParam)
         return CALLBACK(func)
+    @staticmethod
+    def cbfun(pMsg, iLen, pAccount, pParam):
+        print "cbfun"
+        print pMsg.decode("gbk")
+        print iLen
+        print pAccount       
+        
 
     def doSomething(self, pMsg, iLen, pAccount, pParam):
         print "doSomething"
@@ -159,8 +165,8 @@ class Myclass(object):
 
     def doRegister(self):
         gxts = WinDLL("GxTS.dll")
-
-        gxts.AxE_Init(None, None, self.getCallbackFunc(), None)
+        onCB = CALLBACK(Myclass.cbfun)
+        gxts.AxE_Init(None, None, onMsgHandle, None)
 
         loginfo = NewLoginInfo()
         loginfo.account = "110000035019"
@@ -182,7 +188,7 @@ class Myclass(object):
     # matest.logonEa()
     #matest.logonBackend()
 
-    #testea()
+#test()
 ca = Myclass()
 ca.doRegister()
 #test()

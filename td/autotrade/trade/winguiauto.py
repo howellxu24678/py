@@ -173,7 +173,7 @@ def closePopupWindows(top_hwnd):
     :return:
     """
     while closePopupWindow(top_hwnd):
-        time.sleep(0.3)
+        time.sleep(1)
 
 
 def findControl(topHwnd,

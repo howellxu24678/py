@@ -231,6 +231,7 @@ class Stg_Autotrader(Strategy):
         except BaseException,e:
             logger.exception(e)
             self._bOrderOk = False
+            self._trade.initTradeHandle()
             raise e
 
         logger.info("DealBuy MoneyInfo before:%s, after:%s", before, after)
@@ -262,6 +263,7 @@ class Stg_Autotrader(Strategy):
         except BaseException,e:
             logger.exception(e)
             self._bOrderOk = False
+            self._trade.initTradeHandle()
             raise e
 
         logger.info("DealSell MoneyInfo before:%s, after:%s", before, after)
