@@ -8,14 +8,14 @@ import base64
 logger = logging.getLogger("run")
 
 
-#typedef void (* Fun_OnMsgPtr)(const char *msg, int len, const char *account, void *param);
+def onMsg(pMsg, iLen, pAccount, pParam):
+    print "onMsg"
+    print pMsg.decode("gbk")
+    print iLen
+    print pAccount
 
-
-    #print pAccount.values
-
-#onMsgFv = WINFUNCTYPE(None, c_char_p, c_int, c_char_p, c_void_p)
-#onMsgFv = CFUNCTYPE(None, POINTER(c_char), c_int, POINTER(c_char), c_void_p)
-
+onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, c_void_p)
+onMsgHandle = onMsgFv(onMsg)
 
 class Ma(object):
     def __init__(self, acc_, pwd_):
@@ -25,20 +25,12 @@ class Ma(object):
             self._acc = c_char_p(acc_)
             self._pwd = c_char_p(pwd_)
 
-            onMsgFv = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_void_p)
-            onMsgHandle = onMsgFv(self.onMsg)
             iret = self._ea.AxE_Init(None, None, onMsgHandle, None)
             print iret
 
         except BaseException,e:
             logger.exception(e)
             raise e
-
-    def onMsg(pMsg, iLen, pAccount, pParam):
-        print "onMsg"
-        print pMsg.decode("gbk")
-        print iLen
-        print pAccount
         
     def setPkgHead(self, hHandle_, pkgtype_, msgtype_, funtype_, funid_, msgid_):
         try:
@@ -111,86 +103,20 @@ class Ma(object):
             logger.exception(e)
             raise e
 
-def onMsg(pMsg, iLen, pAccount, pParam):
-    print "onMsg"
-    print pMsg.decode("gbk")
-    print iLen
-    print pAccount
 
-onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, c_void_p)
-onMsgHandle = onMsgFv(onMsg)
 
-def test():
-    gxts = WinDLL("GxTS.dll")
 
-    #onMsgFv = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_void_p)
-    
-    gxts.AxE_Init(None, None, onMsgHandle, None)
-    loginfo = NewLoginInfo()
-    loginfo.account = "110000035019"
-    loginfo.password = "110000035019@GXTS"
-    loginfo.accountType = c_int(6)
-    loginfo.autoReconnect = c_int(0)
-    loginfo.serverCount = c_int(1)
-    loginfo.servers[0].szIp = "58.61.28.212"
-    loginfo.servers[0].nPort = c_int(9104)
-    print loginfo
-    
-    gxts.AxE_NewMultiLogin(byref(loginfo))
 
-CALLBACK = CFUNCTYPE (None, c_char_p, c_int, c_char_p, c_void_p)
 
-class Myclass(object):
-    def getCallbackFunc(self):
-        def func(pMsg, iLen, pAccount, pParam):
-            print "func"
-            print pMsg.decode("gbk")
-            print iLen
-            print pAccount
-            #self.doSomething(pMsg, iLen, pAccount, pParam)
-        return CALLBACK(func)
-    @staticmethod
-    def cbfun(pMsg, iLen, pAccount, pParam):
-        print "cbfun"
-        print pMsg.decode("gbk")
-        print iLen
-        print pAccount       
-        
-
-    def doSomething(self, pMsg, iLen, pAccount, pParam):
-        print "doSomething"
-        print pMsg.decode("gbk")
-        print iLen
-        print pAccount
-
-    def doRegister(self):
-        gxts = WinDLL("GxTS.dll")
-        onCB = CALLBACK(Myclass.cbfun)
-        gxts.AxE_Init(None, None, onMsgHandle, None)
-
-        loginfo = NewLoginInfo()
-        loginfo.account = "110000035019"
-        loginfo.password = "110000035019@GXTS"
-        loginfo.accountType = c_int(6)
-        loginfo.autoReconnect = c_int(0)
-        loginfo.serverCount = c_int(1)
-        loginfo.servers[0].szIp = "58.61.28.212"
-        loginfo.servers[0].nPort = c_int(9104)
-        print loginfo
-
-        gxts.AxE_NewMultiLogin(byref(loginfo))
 
 #if __name__ == "__main__":
 #    import sys
 #    import os
 #    sys.path.append(os.getcwd())
-    # matest = Ma("110000035019", "111111")
-    # matest.logonEa()
+matest = Ma("110000035019", "111111")
+matest.logonEa()
     #matest.logonBackend()
 
-#test()
-ca = Myclass()
-ca.doRegister()
 #test()
 while(True):
     pass
