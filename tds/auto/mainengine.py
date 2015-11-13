@@ -4,7 +4,7 @@ __author__ = 'xujh'
 from eventengine import *
 from ma import *
 from datetime import datetime
-
+logger = logging.getLogger("run")
 
 class MainEngine(object):
     def __init__(self, cf):
@@ -19,13 +19,17 @@ class MainEngine(object):
         self._trade.logonEa()
 
     def onTimer(self,event):
-        print u'MainEngine 处理每秒触发的计时器事件：%s' % str(datetime.now())
+        pass
+        #print u'MainEngine 处理每秒触发的计时器事件：%s' % str(datetime.now())
 
     def AxeagleListen(self,event):
-        print "AxeagleListen"
-        print event.dict_["pMsg"].decode("gbk")
-        print event.dict_["iLen"]
-        print event.dict_["pAccount"]
+        logger.info("pMsg:%s, iLen:%s, pAccount:%s",
+                    event.dict_["pMsg"].decode("gbk"),
+                    event.dict_["iLen"],
+                    event.dict_["pAccount"])
+
+        if event.dict_["pMsg"].split('\1')[0] == "40000":
+            self._trade.logonBackend()
 
 
 

@@ -7,15 +7,12 @@ from eventengine import *
 import datetime
 import logging
 import base64
+import socket
 logger = logging.getLogger("run")
 
 
 def onMsg(pMsg, iLen, pAccount, pParam):
     print "onMsg"
-    # print pMsg.decode("gbk")
-    # print iLen
-    # print pAccount
-
     event = Event(type_=EVENT_AXEAGLE)
     event.dict_['pMsg'] = pMsg
     event.dict_['iLen'] = iLen
@@ -36,6 +33,8 @@ class Ma(object):
             self._port = cf.getint("ma","port")
             self._acc = c_char_p(cf.get("ma", "account"))
             self._pwd = c_char_p(cf.get("ma", "password"))
+
+            self._localIp = c_char_p("1:" + socket.gethostbyname(socket.gethostname()))
             self._ea.AxE_Init(None, None, onMsgHandle, py_object(self._eventEngine))
 
         except BaseException,e:
@@ -46,22 +45,34 @@ class Ma(object):
         try:
             self._ma.maCli_SetHdrValueC(hHandle_, c_char(pkgtype_), defineDict['MACLI_HEAD_FID_PKT_TYPE'])
             self._ma.maCli_SetHdrValueC(hHandle_, c_char(msgtype_), defineDict['MACLI_HEAD_FID_MSG_TYPE'])
-            self._ma.maCli_SetHdrValueC(hHandle_, c_char_p('01'), defineDict['MACLI_HEAD_FID_PKT_VER'])
+            self._ma.maCli_SetHdrValueS(hHandle_, c_char_p('01'), defineDict['MACLI_HEAD_FID_PKT_VER'])
             self._ma.maCli_SetHdrValueC(hHandle_, c_char(funtype_), defineDict['MACLI_HEAD_FID_FUNC_TYPE'])
-            self._ma.maCli_SetHdrValueC(hHandle_, c_char_p(funid_), defineDict['MACLI_HEAD_FID_FUNC_ID'])
-            self._ma.maCli_SetHdrValueC(hHandle_, msgid_, defineDict['MACLI_HEAD_FID_MSG_ID'])
+            self._ma.maCli_SetHdrValueS(hHandle_, c_char_p(funid_), defineDict['MACLI_HEAD_FID_FUNC_ID'])
+            self._ma.maCli_SetHdrValueS(hHandle_, msgid_, defineDict['MACLI_HEAD_FID_MSG_ID'])
 
         except BaseException,e:
             logger.exception(e)
             raise e
 
+    def setRegular(self, hHandle_):
+        try:
+            self._ma.maCli_SetValueS(hHandle_, self._acc, fixDict['OP_USER'])
+            self._ma.maCli_SetValueC(hHandle_, c_char('1'), fixDict['OP_ROLE'])
+            self._ma.maCli_SetValueS(hHandle_, self._localIp, fixDict['OP_SITE'])
+            self._ma.maCli_SetValueC(hHandle_, c_char('0'), fixDict['CHANNEL'])
+            #self._ma.maCli_SetValueS(hHandle_, self._acc, fixDict['FUNCTION'])
+            #self._ma.maCli_SetValueS(hHandle_, self._acc, fixDict['RUNTIME'])
+            #self._ma.maCli_SetValueS(hHandle_, self._acc, fixDict['OP_ORG'])
+        except BaseException,e:
+            logger.exception(e)
+            raise e
     def genReqId(self):
         return int(datetime.datetime.now().strftime("%H%M%S%f")[0:-3])
 
-    #def setEagleMsgHead(self, ):
     def sendReqMsg(self, b64bizdata_, reqid_, funid_, msgid_, cmdid_ = 40002):
         msg = "%d\1%d\1%s\1%s\1%s\1%s"%(cmdid_, reqid_, self._acc, funid_, msgid_,b64bizdata_)
-        print msg
+        logger.info("msg:%s", msg)
+        self._ea.AxE_SendMsg(self._acc, msg, len(msg))
 
 
     def logonEa(self):
@@ -88,6 +99,8 @@ class Ma(object):
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
+            self.setRegular(hHandle)
+
             self._ma.maCli_SetValueS(hHandle, c_char_p("Z"), fixDict['ACCT_TYPE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['ACCT_ID'])
             self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict['USE_SCOPE'])
@@ -104,6 +117,8 @@ class Ma(object):
             ilen = c_int(0)
             pBizData = c_char_p(0)
             self._ma.maCli_Make(hHandle, byref(pBizData), byref(ilen))
+
+            logger.info("before b64encode:%s", pBizData.value)
             b64bizdata = base64.b64encode(pBizData.value)
             self._ma.maCli_Close(hHandle)
             self._ma.maCli_Exit(hHandle)

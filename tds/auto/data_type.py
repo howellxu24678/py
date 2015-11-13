@@ -32,13 +32,21 @@ defineDict['MACLI_HEAD_FID_PUB_TOPIC'] = c_int(1073152)
 defineDict['MACLI_HEAD_FID_USER_SESSION'] = c_int(1871872)
 
 fixDict = {}
+fixDict['OP_USER'] = c_char_p("8810")
+fixDict['OP_ROLE'] = c_char_p("8811")
+fixDict['OP_SITE'] = c_char_p("8812")
+fixDict['CHANNEL'] = c_char_p("8813")
+fixDict['SESSION_ID'] = c_char_p("8814")
+fixDict['FUNCTION'] = c_char_p("8815")
+fixDict['RUNTIME'] = c_char_p("8816")
+fixDict['OP_ORG'] = c_char_p("8821")
+
 fixDict['ACCT_TYPE'] = c_char_p("8987")
 fixDict['ACCT_ID'] = c_char_p("9081")
 fixDict['USE_SCOPE'] = c_char_p("9082")
-fixDict['ENCRYPT_KEY'] = c_char_p("9086")
 fixDict['AUTH_TYPE'] = c_char_p("9083")
 fixDict['AUTH_DATA'] = c_char_p("9084")
-fixDict['SESSION_ID'] = c_char_p("8814")
+fixDict['ENCRYPT_KEY'] = c_char_p("9086")
 
 
 class STU(Structure):
