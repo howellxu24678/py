@@ -13,6 +13,7 @@
 
 
 EVENT_TIMER = 'eTimer'                  # 计时器事件，每隔1秒发送一次
+EVENT_AXEAGLE = 'axeagel'
  
 
 

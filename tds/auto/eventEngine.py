@@ -8,7 +8,7 @@ from threading import Thread
 from PyQt4.QtCore import QTimer
 
 # 自己开发的模块
-from eventType import *
+from eventype import *
 
 
 ########################################################################
@@ -50,8 +50,9 @@ class EventEngine:
     """
 
     #----------------------------------------------------------------------
-    def __init__(self):
+    def __init__(self, interval = 1000):
         """初始化事件引擎"""
+        self.__interval = interval
         # 事件队列
         self.__queue = Queue()
         
@@ -110,7 +111,7 @@ class EventEngine:
         self.__thread.start()
         
         # 启动计时器，计时器事件间隔默认设定为1秒
-        self.__timer.start(1000)
+        self.__timer.start(self.__interval)
     
     #----------------------------------------------------------------------
     def stop(self):

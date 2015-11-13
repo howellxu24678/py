@@ -2,6 +2,8 @@
 __author__ = 'xujh'
 
 from data_type import *
+from eventengine import *
+
 import datetime
 import logging
 import base64
@@ -10,23 +12,31 @@ logger = logging.getLogger("run")
 
 def onMsg(pMsg, iLen, pAccount, pParam):
     print "onMsg"
-    print pMsg.decode("gbk")
-    print iLen
-    print pAccount
+    # print pMsg.decode("gbk")
+    # print iLen
+    # print pAccount
 
-onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, c_void_p)
+    event = Event(type_=EVENT_AXEAGLE)
+    event.dict_['pMsg'] = pMsg
+    event.dict_['iLen'] = iLen
+    event.dict_['pAccount'] = pAccount
+    pParam.put(event)
+
+
+onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, py_object)
 onMsgHandle = onMsgFv(onMsg)
 
 class Ma(object):
-    def __init__(self, acc_, pwd_):
+    def __init__(self, cf, eventEngine_):
         try:
             self._ma = WinDLL("maCliApi.dll")
             self._ea = WinDLL("GxTS.dll")
-            self._acc = c_char_p(acc_)
-            self._pwd = c_char_p(pwd_)
-
-            iret = self._ea.AxE_Init(None, None, onMsgHandle, None)
-            print iret
+            self._eventEngine = eventEngine_
+            self._ip = cf.get("ma", "ip")
+            self._port = cf.getint("ma","port")
+            self._acc = c_char_p(cf.get("ma", "account"))
+            self._pwd = c_char_p(cf.get("ma", "password"))
+            self._ea.AxE_Init(None, None, onMsgHandle, py_object(self._eventEngine))
 
         except BaseException,e:
             logger.exception(e)
@@ -61,8 +71,8 @@ class Ma(object):
         loginfo.accountType = c_int(6)
         loginfo.autoReconnect = c_int(0)
         loginfo.serverCount = c_int(1)
-        loginfo.servers[0].szIp = "58.61.28.212"
-        loginfo.servers[0].nPort = c_int(9104)
+        loginfo.servers[0].szIp = self._ip
+        loginfo.servers[0].nPort = c_int(self._port)
         print loginfo
 
         self._ea.AxE_NewMultiLogin(byref(loginfo))
@@ -109,17 +119,37 @@ class Ma(object):
 
 
 
-#if __name__ == "__main__":
-#    import sys
-#    import os
-#    sys.path.append(os.getcwd())
-matest = Ma("110000035019", "111111")
-matest.logonEa()
-    #matest.logonBackend()
-
+# if __name__ == "__main__":
+#     from PyQt4.QtCore import QCoreApplication
+#     import sys
+#     import os
+#     import ConfigParser
+#
+#     def simpletest(event):
+#         print u'处理每秒触发的计时器事件：%s' % str(datetime.now())
+#
+#     app = QCoreApplication(sys.argv)
+#
+#     ee = EventEngine(3000)
+#     ee.register(EVENT_TIMER, simpletest)
+#     ee.start()
+#
+#
+#
+#     logging.config.fileConfig(os.path.join(os.getcwd(), "..", "conf", "logging.config"))
+#     logger = logging.getLogger("run")
+#
+#     sys.path.append(os.getcwd())
+#     cf = ConfigParser.ConfigParser()
+#     path = os.path.join(os.getcwd(), "..", "conf", "business.ini")
+#     print path
+#     cf.read(path)
+#
+#     matest = Ma(cf,ee)
+#     matest.logonEa()
+#     #matest.logonBackend()
+#     app.exec_()
 #test()
-while(True):
-    pass
 
 # CALLBACK = ctypes.CFUNCTYPE(None, ctypes.POINTER(Notification))
 #

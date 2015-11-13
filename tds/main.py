@@ -1,65 +1,99 @@
 # -*- coding: utf-8 -*-
 import logging 
 import logging.config
-from autotrade.trade import *
-from autotrade import strategy
-from autotrade import quote
+from auto import strategy
+from auto import quote
+from auto.mainengine import MainEngine
 import os
-import ConfigParser 
+import ConfigParser
+import sys
+from PyQt4.QtCore import QCoreApplication
 
 baseconfdir="conf"
 loggingconf= "logging.config"
-quickfixconf= "quickfix.ini"
 businessconf= "business.ini"
 
-def DealSignal(logger, cf):
-    codelist = cf.get("signal", "codelist").split(',')
-    logger.info("signal, codelist:%s", codelist)
-    code2handle = {}
-    for code in codelist:
-        logger.info("create Stg_Signal with code:%s", code)
-        code2handle[code] = strategy.Stg_Signal(cf, code)
-    return codelist, code2handle
-    
+def main():
+    """主程序入口"""
+    app = QCoreApplication(sys.argv)
 
-def DealAutoTrade(trader, logger, cf):
-    codelist = cf.get("autotrader", "codelist").split(',')
-    logger.info("autotrader, codelist:%s", codelist)
-    code2handle = {}
-    for code in codelist:
-        logger.info("create Stg_Autotrader with code:%s", code)
-        code2handle[code] = strategy.Stg_Autotrader(cf, code, trader)
-    return codelist, code2handle
-
-try:
     logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
     logger = logging.getLogger("run")
 
+    print os.getcwd()
+
     cf = ConfigParser.ConfigParser()
     cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
-    
-    codelistSignal = []
-    code2SignalHandle = {}
-    codelistAutoTrade = []
-    code2AutoTradeHandle = {}
-    
-    if(cf.getboolean("signal", "enable")):
-        codelistSignal, code2SignalHandle = DealSignal(logger, cf)
-    if(cf.getboolean("autotrader", "enable")):
-        logger.info("create trade")
-        trader = trade.tdx_wa_trade(cf)
-        codelistAutoTrade, code2AutoTradeHandle = DealAutoTrade(trader, logger, cf)
-    
-    logger.info("create and start RealTimeQuote schedule")
-    quote.RealTimeQuote(cf, \
-    list(set(codelistSignal).union(set(codelistAutoTrade))), \
-    code2SignalHandle, \
-    code2AutoTradeHandle).start()
-    
-except BaseException,e:
-    logger.exception(e)
 
-while(True):
-    pass
+    ee = MainEngine(cf)
+    ee.logon()
+
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()
+
+
+
+# from ctypes import *
+#
+# class Test(object):
+#     def __init__(self):
+#         pass
+#
+#     def pp(self):
+#         print  "Test print"
+#
+# te = Test()
+# py_object(te)
+
+# def DealSignal(logger, cf):
+#     codelist = cf.get("signal", "codelist").split(',')
+#     logger.info("signal, codelist:%s", codelist)
+#     code2handle = {}
+#     for code in codelist:
+#         logger.info("create Stg_Signal with code:%s", code)
+#         code2handle[code] = strategy.Stg_Signal(cf, code)
+#     return codelist, code2handle
+#
+#
+# def DealAutoTrade(trader, logger, cf):
+#     codelist = cf.get("autotrader", "codelist").split(',')
+#     logger.info("autotrader, codelist:%s", codelist)
+#     code2handle = {}
+#     for code in codelist:
+#         logger.info("create Stg_Autotrader with code:%s", code)
+#         code2handle[code] = strategy.Stg_Autotrader(cf, code, trader)
+#     return codelist, code2handle
+#
+# try:
+#     logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
+#     logger = logging.getLogger("run")
+#
+#     cf = ConfigParser.ConfigParser()
+#     cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
+#
+#     codelistSignal = []
+#     code2SignalHandle = {}
+#     codelistAutoTrade = []
+#     code2AutoTradeHandle = {}
+#
+#     if(cf.getboolean("signal", "enable")):
+#         codelistSignal, code2SignalHandle = DealSignal(logger, cf)
+#     if(cf.getboolean("autotrader", "enable")):
+#         logger.info("create trade")
+#         trader = trade.tdx_wa_trade(cf)
+#         codelistAutoTrade, code2AutoTradeHandle = DealAutoTrade(trader, logger, cf)
+#
+#     logger.info("create and start RealTimeQuote schedule")
+#     quote.RealTimeQuote(cf, \
+#     list(set(codelistSignal).union(set(codelistAutoTrade))), \
+#     code2SignalHandle, \
+#     code2AutoTradeHandle).start()
+#
+# except BaseException,e:
+#     logger.exception(e)
+
 
 
