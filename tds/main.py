@@ -59,11 +59,6 @@ try:
 except BaseException,e:
     logger.exception(e)
 
-#trader = trade.fix_trade(os.path.join(os.getcwd(), baseconfdir, quickfixconf))
-#trader.create()
-#trader.UAN(9)
-#trader.NewStockOrder()
-
 while(True):
     pass
 
