@@ -12,7 +12,7 @@ logger = logging.getLogger("run")
 
 
 def onMsg(pMsg, iLen, pAccount, pParam):
-    print "onMsg"
+    logger.info("onAxEagle callback msgLen:%s", iLen)
     event = Event(type_=EVENT_AXEAGLE)
     event.dict_['pMsg'] = pMsg
     event.dict_['iLen'] = iLen
@@ -27,12 +27,14 @@ class Ma(object):
     def __init__(self, cf, eventEngine_):
         try:
             self._ma = WinDLL("maCliApi.dll")
+            #self._ea = WinDLL("testdll.dll")
             self._ea = WinDLL("GxTS.dll")
             self._eventEngine = eventEngine_
             self._ip = cf.get("ma", "ip")
             self._port = cf.getint("ma","port")
             self._acc = c_char_p(cf.get("ma", "account"))
             self._pwd = c_char_p(cf.get("ma", "password"))
+            self._reqid = 0
 
             self._localIp = c_char_p("1:" + socket.gethostbyname(socket.gethostname()))
             self._ea.AxE_Init(None, None, onMsgHandle, py_object(self._eventEngine))
@@ -49,7 +51,6 @@ class Ma(object):
             self._ma.maCli_SetHdrValueC(hHandle_, c_char(funtype_), defineDict['MACLI_HEAD_FID_FUNC_TYPE'])
             self._ma.maCli_SetHdrValueS(hHandle_, c_char_p(funid_), defineDict['MACLI_HEAD_FID_FUNC_ID'])
             self._ma.maCli_SetHdrValueS(hHandle_, msgid_, defineDict['MACLI_HEAD_FID_MSG_ID'])
-
         except BaseException,e:
             logger.exception(e)
             raise e
@@ -60,18 +61,30 @@ class Ma(object):
             self._ma.maCli_SetValueC(hHandle_, c_char('1'), fixDict['OP_ROLE'])
             self._ma.maCli_SetValueS(hHandle_, self._localIp, fixDict['OP_SITE'])
             self._ma.maCli_SetValueC(hHandle_, c_char('0'), fixDict['CHANNEL'])
-            #self._ma.maCli_SetValueS(hHandle_, self._acc, fixDict['FUNCTION'])
-            #self._ma.maCli_SetValueS(hHandle_, self._acc, fixDict['RUNTIME'])
-            #self._ma.maCli_SetValueS(hHandle_, self._acc, fixDict['OP_ORG'])
+            self._ma.maCli_SetValueS(hHandle_, c_char_p("10301105"), fixDict['FUNCTION'])
+            szVersion = create_string_buffer(32)
+            self._ma.maCli_GetVersion(hHandle_, szVersion, len(szVersion))
+            self._ma.maCli_SetValueS(hHandle_, szVersion, fixDict['SESSION_ID'])
+            self._ma.maCli_SetValueS(hHandle_,
+                                     c_char_p(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")),
+                                     fixDict['RUNTIME'])
+            self._ma.maCli_SetValueN(hHandle_, c_int(0), fixDict['OP_ORG'])
         except BaseException,e:
             logger.exception(e)
             raise e
     def genReqId(self):
+        # self._reqid += 1
+        # return  self._reqid
         return int(datetime.datetime.now().strftime("%H%M%S%f")[0:-3])
 
     def sendReqMsg(self, b64bizdata_, reqid_, funid_, msgid_, cmdid_ = 40002):
-        msg = "%d\1%d\1%s\1%s\1%s\1%s"%(cmdid_, reqid_, self._acc, funid_, msgid_,b64bizdata_)
-        logger.info("msg:%s", msg)
+        msg = "%d\1%d\1%s\1%s\1%s\1%s"%(cmdid_,
+                                        reqid_,
+                                        self._acc.value,
+                                        funid_,
+                                        msgid_.value,
+                                        b64bizdata_)
+        logger.info("AxE_SendMsg:%s", msg)
         self._ea.AxE_SendMsg(self._acc, msg, len(msg))
 
 
@@ -80,13 +93,13 @@ class Ma(object):
         loginfo.account = self._acc.value
         loginfo.password = self._acc.value + "@GXTS"
         loginfo.accountType = c_int(6)
-        loginfo.autoReconnect = c_int(0)
+        loginfo.autoReconnect = c_int(1)
         loginfo.serverCount = c_int(1)
         loginfo.servers[0].szIp = self._ip
         loginfo.servers[0].nPort = c_int(self._port)
-        print loginfo
 
-        self._ea.AxE_NewMultiLogin(byref(loginfo))
+        iret = self._ea.AxE_NewMultiLogin(byref(loginfo))
+        logger.info("loginfo:%s AxE_NewMultiLogin return:%s", loginfo, iret)
 
     def logonBackend(self):
         try:
@@ -106,11 +119,9 @@ class Ma(object):
             self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict['USE_SCOPE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['ENCRYPT_KEY'])
             self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict['AUTH_TYPE'])
-            szVersion = create_string_buffer(32)
-            self._ma.maCli_GetVersion(hHandle, szVersion, len(szVersion))
-            self._ma.maCli_SetValueS(hHandle, szVersion, fixDict['SESSION_ID'])
+
             szAuthData = create_string_buffer(128)
-            self._ma.maCli_ComEncrypt(hHandle, szAuthData, len(szAuthData), self._acc, self._pwd)
+            self._ma.maCli_ComEncrypt(hHandle, szAuthData, len(szAuthData),self._pwd, self._acc)
             self._ma.maCli_SetValueS(hHandle, szAuthData, fixDict['AUTH_DATA'])
             self._ma.maCli_EndWrite(hHandle)
 
@@ -127,53 +138,3 @@ class Ma(object):
         except BaseException,e:
             logger.exception(e)
             raise e
-
-
-
-
-
-
-
-# if __name__ == "__main__":
-#     from PyQt4.QtCore import QCoreApplication
-#     import sys
-#     import os
-#     import ConfigParser
-#
-#     def simpletest(event):
-#         print u'处理每秒触发的计时器事件：%s' % str(datetime.now())
-#
-#     app = QCoreApplication(sys.argv)
-#
-#     ee = EventEngine(3000)
-#     ee.register(EVENT_TIMER, simpletest)
-#     ee.start()
-#
-#
-#
-#     logging.config.fileConfig(os.path.join(os.getcwd(), "..", "conf", "logging.config"))
-#     logger = logging.getLogger("run")
-#
-#     sys.path.append(os.getcwd())
-#     cf = ConfigParser.ConfigParser()
-#     path = os.path.join(os.getcwd(), "..", "conf", "business.ini")
-#     print path
-#     cf.read(path)
-#
-#     matest = Ma(cf,ee)
-#     matest.logonEa()
-#     #matest.logonBackend()
-#     app.exec_()
-#test()
-
-# CALLBACK = ctypes.CFUNCTYPE(None, ctypes.POINTER(Notification))
-#
-# class MyClass(object):
-#
-#     def getCallbackFunc(self):
-#         def func(Notification):
-#             self.doSomething(Notification)
-#         return CALLBACK(func)
-#
-#     def doRegister(self):
-#         myLib.RegisterNofityCallback(45454, 0, self.getCallbackFunc())

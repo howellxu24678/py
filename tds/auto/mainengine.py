@@ -8,7 +8,7 @@ logger = logging.getLogger("run")
 
 class MainEngine(object):
     def __init__(self, cf):
-        self._eventEngine = EventEngine(3000)
+        self._eventEngine = EventEngine(10000)
         self._trade = Ma(cf, self._eventEngine)
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
         self._eventEngine.register(EVENT_AXEAGLE, self.AxeagleListen)
@@ -19,12 +19,13 @@ class MainEngine(object):
         self._trade.logonEa()
 
     def onTimer(self,event):
-        pass
+        print "want to logonBackend again"
+        self._trade.logonBackend()
         #print u'MainEngine 处理每秒触发的计时器事件：%s' % str(datetime.now())
 
     def AxeagleListen(self,event):
         logger.info("pMsg:%s, iLen:%s, pAccount:%s",
-                    event.dict_["pMsg"].decode("gbk"),
+                    event.dict_["pMsg"],
                     event.dict_["iLen"],
                     event.dict_["pAccount"])
 
