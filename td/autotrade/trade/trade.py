@@ -410,9 +410,27 @@ class fix_trade(trade):
         pass
 
 if __name__ == "__main__":
+    #import time
+    import os
+    import logging 
+    import logging.config
+    baseconfdir="conf"
+    loggingconf= "logging.config"
+    quickfixconf= "quickfix.ini"
+    businessconf= "business.ini"
+    logging.config.fileConfig(os.path.join(os.getcwd(), '..', '..', baseconfdir, loggingconf))
+    logger = logging.getLogger("run")
+    
     cf = ConfigParser.ConfigParser()
-    tdxa = tdx_wa_trade(cf)
-    tdx = tdx_trade(cf)
+    tdxa = tdx_trade(cf)
+    while(True):
+        try:
+            logger.info("getMoneyInfo:%s", tdxa.getMoneyInfo())
+            logger.info("getPositionInfo:%s", tdxa.getPositionInfo())
+            time.sleep(10)
+        except BaseException,e:
+            logger.exception(e)
+    #tdx = tdx_trade(cf)
 #    for i in range(100):
 #        print tdxa.getMoneyInfo()
     #tdx.buy('000001', None, '100')
