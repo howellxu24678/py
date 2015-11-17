@@ -108,7 +108,7 @@ class Ma(object):
             self._ma.maCli_BeginWrite(hHandle)
             reqid = self.genReqId()
             funid = "10301105"
-            msgid = create_string_buffer(32)
+            msgid = create_string_buffer(33)
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
@@ -130,7 +130,7 @@ class Ma(object):
             self._ma.maCli_Make(hHandle, byref(pBizData), byref(ilen))
 
             logger.info("before b64encode:%s", pBizData.value)
-            b64bizdata = base64.b64encode(pBizData.value)
+            b64bizdata = base64.encodestring(pBizData.value)
             self._ma.maCli_Close(hHandle)
             self._ma.maCli_Exit(hHandle)
 
