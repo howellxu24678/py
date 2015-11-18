@@ -30,11 +30,14 @@ class Ma(object):
             #self._ea = WinDLL("testdll.dll")
             self._ea = WinDLL("GxTS.dll")
             self._eventEngine = eventEngine_
+            self._eventEngine.register(EVENT_AXEAGLE, self.onRecvMsg)
+
             self._ip = cf.get("ma", "ip")
             self._port = cf.getint("ma","port")
             self._acc = c_char_p(cf.get("ma", "account"))
             self._pwd = c_char_p(cf.get("ma", "password"))
-            self._reqid = 0
+            self._session = None
+            #self._reqid = 0
 
             self._localIp = c_char_p("1:" + socket.gethostbyname(socket.gethostname()))
             self._ea.AxE_Init(None, None, onMsgHandle, py_object(self._eventEngine))
@@ -62,8 +65,10 @@ class Ma(object):
             self._ma.maCli_SetValueS(hHandle_, self._localIp, fixDict['OP_SITE'])
             self._ma.maCli_SetValueC(hHandle_, c_char('0'), fixDict['CHANNEL'])
             self._ma.maCli_SetValueS(hHandle_, c_char_p("10301105"), fixDict['FUNCTION'])
-            szVersion = create_string_buffer(32)
-            self._ma.maCli_GetVersion(hHandle_, szVersion, len(szVersion))
+            if self._session is None:
+                szVersion = create_string_buffer(32+1)
+                self._ma.maCli_GetVersion(hHandle_, szVersion, len(szVersion))
+                self._session = szVersion
             self._ma.maCli_SetValueS(hHandle_, szVersion, fixDict['SESSION_ID'])
             self._ma.maCli_SetValueS(hHandle_,
                                      c_char_p(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")),
@@ -108,7 +113,7 @@ class Ma(object):
             self._ma.maCli_BeginWrite(hHandle)
             reqid = self.genReqId()
             funid = "10301105"
-            msgid = create_string_buffer(33)
+            msgid = create_string_buffer(32+1)
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
@@ -120,8 +125,8 @@ class Ma(object):
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['ENCRYPT_KEY'])
             self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict['AUTH_TYPE'])
 
-            szAuthData = create_string_buffer(128)
-            self._ma.maCli_ComEncrypt(hHandle, szAuthData, len(szAuthData),self._pwd, self._acc)
+            szAuthData = create_string_buffer(256+1)
+            self._ma.maCli_ComEncrypt(hHandle, szAuthData, len(szAuthData), self._pwd, self._acc)
             self._ma.maCli_SetValueS(hHandle, szAuthData, fixDict['AUTH_DATA'])
             self._ma.maCli_EndWrite(hHandle)
 
@@ -138,3 +143,84 @@ class Ma(object):
         except BaseException,e:
             logger.exception(e)
             raise e
+
+    def onRecvMsg(self,event):
+        logger.info("pMsg:%s", event.dict_["pMsg"])
+        msgSplitList = event.dict_["pMsg"].split('\1')
+        cmdId = msgSplitList[0]
+        if cmdId == "40002":
+            msgstr = base64.decodestring(msgSplitList[5])
+            logger.info("pMsg:%s, iLen:%s, pAccount:%s",
+                        msgstr,
+                        event.dict_["iLen"],
+                        event.dict_["pAccount"])
+
+            self.parseMsg(msgstr)
+
+        if cmdId == "40000":
+            self.logonBackend()
+
+    def parseMsg(self, msgstr_):
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_Parse(hHandle, c_char_p(msgstr_), c_int(len(msgstr_)))
+            funid = create_string_buffer(8+1)
+            self._ma.maCli_GetHdrValueS(hHandle, funid, len(funid), defineDict['MACLI_HEAD_FID_FUNC_ID'])
+            logger.info("fundid:%s", funid.value)
+            itablecount = c_int(0)
+            self._ma.maCli_GetTableCount(hHandle, byref(itablecount))
+            logger.debug("itablecount:%s", itablecount)
+            msgcode, msglevel, msgtext = self.parseFirstTable(hHandle)
+            logger.info("msgcode:%s, msglevel:%s, msgtext:%s", msgcode.value, msglevel.value, msgtext.value)
+
+            if msgcode.value == 0:
+                ret = self.parseSecondTable(hHandle, funid)
+                logger.info("ret:%s", ret)
+
+
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
+    def parseFirstTable(self, hHandle_):
+        self._ma.maCli_OpenTable(hHandle_, 1)
+        self._ma.maCli_ReadRow(hHandle_, 1)
+        msgcode = c_int(0)
+        msglevel = c_char('0')
+        msgtext = create_string_buffer(256+1)
+        self._ma.maCli_GetValueN(hHandle_, byref(msgcode), fixDict['MSG_CODE'])
+        self._ma.maCli_GetValueC(hHandle_, byref(msglevel), fixDict['MSG_LEVEL'])
+        self._ma.maCli_GetValueS(hHandle_, byref(msgtext), len(msgtext), fixDict['MSG_TEXT'])
+
+        return msgcode, msglevel, msgtext
+
+    def parseSecondTable(self, hHandle_, funid_):
+        self._ma.maCli_OpenTable(hHandle_, 2)
+        self._ma.maCli_ReadRow(hHandle_, 1)
+
+        ret = {}
+        for fixidx_,type_ in replyMsgParam[funid_.value].iteritems():
+            if type_ == 'l':
+                l = c_int64(0)
+                self._ma.maCli_GetValueL(hHandle_, byref(l), fixDict[fixidx_])
+                ret[fixidx_] = l.value
+            elif type_ == 'd':
+                d = c_double(0.0)
+                self._ma.maCli_GetValueD(hHandle_, byref(d), fixDict[fixidx_])
+                ret[fixidx_] = d.value
+            elif type_ == 'c':
+                c = c_char('0')
+                self._ma.maCli_GetValueC(hHandle_, byref(c), fixDict[fixidx_])
+                ret[fixidx_] = c.value
+            elif type_ == 'n':
+                n = c_int(0)
+                self._ma.maCli_GetValueN(hHandle_, byref(n), fixDict[fixidx_])
+                ret[fixidx_] = n.value
+            elif type_[0] == 's':
+                len_ = int(type_.split(',')[1]) + 1
+                s = create_string_buffer(len_)
+                self._ma.maCli_GetValueS(hHandle_, byref(s), len_, fixDict[fixidx_])
+                ret[fixidx_] = s.value
+        return  ret
+

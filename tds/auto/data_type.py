@@ -32,21 +32,63 @@ defineDict['MACLI_HEAD_FID_PUB_TOPIC'] = c_int(1073152)
 defineDict['MACLI_HEAD_FID_USER_SESSION'] = c_int(1871872)
 
 fixDict = {}
-fixDict['OP_USER'] = c_char_p("8810")
-fixDict['OP_ROLE'] = c_char_p("8811")
-fixDict['OP_SITE'] = c_char_p("8812")
-fixDict['CHANNEL'] = c_char_p("8813")
-fixDict['SESSION_ID'] = c_char_p("8814")
-fixDict['FUNCTION'] = c_char_p("8815")
-fixDict['RUNTIME'] = c_char_p("8816")
-fixDict['OP_ORG'] = c_char_p("8821")
+fixDict['STKEX'] = c_char_p("207")#交易市场
+fixDict['STKBD'] = c_char_p("625")#交易板块
+fixDict['STK_TRDACCT'] = c_char_p("448")#证券账户
 
-fixDict['ACCT_TYPE'] = c_char_p("8987")
-fixDict['ACCT_ID'] = c_char_p("9081")
-fixDict['USE_SCOPE'] = c_char_p("9082")
-fixDict['AUTH_TYPE'] = c_char_p("9083")
-fixDict['AUTH_DATA'] = c_char_p("9084")
-fixDict['ENCRYPT_KEY'] = c_char_p("9086")
+fixDict['OP_USER'] = c_char_p("8810")#操作用户代码
+fixDict['OP_ROLE'] = c_char_p("8811")#操作用户角色
+fixDict['OP_SITE'] = c_char_p("8812")#操作站点
+fixDict['CHANNEL'] = c_char_p("8813")#操作渠道
+fixDict['SESSION_ID'] = c_char_p("8814")#会话凭证
+fixDict['FUNCTION'] = c_char_p("8815")#功能代码
+fixDict['RUNTIME'] = c_char_p("8816")#调用时间
+fixDict['OP_ORG'] = c_char_p("8821")#操作机构
+
+fixDict['CUST_CODE'] = c_char_p("8902")#客户代码
+fixDict['INT_ORG'] = c_char_p("8911")#内部机构
+fixDict['CUACCT_CODE'] = c_char_p("8920")#资产账户
+fixDict['CUACCT_ATTR'] = c_char_p("8921")#资产账户属性
+fixDict['TRDACCT_SN'] = c_char_p("8928")#账户序号
+fixDict['TRDACCT_EXID'] = c_char_p("8929")#报盘账户
+fixDict['TRDACCT_NAME'] = c_char_p("8932")#交易账户名称
+fixDict['TRDACCT_STATUS'] = c_char_p("8933")#账户状态
+fixDict['TREG_STATUS'] = c_char_p("8934")#指定状态
+fixDict['BREG_STATUS'] = c_char_p("8935")#回购状态
+fixDict['STKPBU'] = c_char_p("8943")#交易单元
+fixDict['ACCT_TYPE'] = c_char_p("8987")#账户类型
+
+fixDict['ACCT_ID'] = c_char_p("9081")#账户标识
+fixDict['USE_SCOPE'] = c_char_p("9082")#使用范围
+fixDict['AUTH_TYPE'] = c_char_p("9083")#认证类型
+fixDict['AUTH_DATA'] = c_char_p("9084")#认证数据
+fixDict['ENCRYPT_KEY'] = c_char_p("9086")#加密因子
+
+
+fixDict['MSG_CODE'] = c_char_p("8817")#信息代码
+fixDict['MSG_LEVEL'] = c_char_p("8818")#信息级别
+fixDict['MSG_TEXT'] = c_char_p("8819")#信息正文
+
+
+replyMsgParam = {}
+replyMsgParam['10301105'] = {'CUST_CODE': 'l',
+                             'CUACCT_CODE': 'l',
+                             'STKEX' : 'c',
+                             'STKBD' : 's,2',
+                             'STK_TRDACCT' : 's,10',
+                             'TRDACCT_SN': 'n',
+                             'TRDACCT_EXID' : 's,10',
+                             'TRDACCT_STATUS' : 'c',
+                             'TREG_STATUS' : 'c',
+                             'BREG_STATUS' : 'c',
+                             'STKPBU' : 's,8',
+                             'ACCT_TYPE' : 's,2',
+                             'ACCT_ID' : 's,32',
+                             'TRDACCT_NAME' : 's,32',
+                             'SESSION_ID' : 's,128',
+                             'INT_ORG' : 'n',
+                             'CUACCT_ATTR' : 'c'
+                             }
 
 
 class STU(Structure):

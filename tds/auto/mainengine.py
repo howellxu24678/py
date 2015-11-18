@@ -26,16 +26,8 @@ class MainEngine(object):
         #print u'MainEngine 处理每秒触发的计时器事件：%s' % str(datetime.now())
 
     def AxeagleListen(self,event):
-        msgSplitList = event.dict_["pMsg"].split('\1')
-        cmdId = msgSplitList[0]
-        if cmdId == "40002":
-            logger.info("pMsg:%s, iLen:%s, pAccount:%s",
-                        base64.decodestring(msgSplitList[5]),
-                        event.dict_["iLen"],
-                        event.dict_["pAccount"])
+        pass
 
-        if cmdId == "40000":
-            self._trade.logonBackend()
 
 
 
