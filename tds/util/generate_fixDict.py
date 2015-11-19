@@ -1,22 +1,58 @@
 # -*- coding: utf-8 -*-
 __author__ = 'xujh'
 
+import  re
 
 globalFix2Line = {}
-def process_line(line):
+globalReplyMsgParam = {}
+globalFunid2Name = {}
+curfunid = None
+curfunname = None
 
-    if line == '\n':
-        return
+typeDict = {'BIGINT':'l', 'SMALLINT':'n','CHAR(1)':'c','INTEGER':'n','CMONEY':'d','CPRICE':'d',}
 
-    content = line.split('\t')
-    if content[3].isdigit() and len(content) > 3:
-        fixidx = content[3]
-        py_line = 'fixDict["%s"] = c_char_p("%s")#%s\n' % (content[1], fixidx, content[0])
+def getValue(subcontent):
+    if subcontent in typeDict:
+        return typeDict[subcontent]
+    elif "VARCHAR" in subcontent:
+        return  's,' + re.findall(r'\d+', subcontent)[0]
+
+def processReplyMsgParam(line):
+    if line.strip().isdigit():
+        global curfunid
+        curfunid = int(line.strip())
+    elif len(line.strip().split('\t')) == 1 and len(line.strip()) > 0:
+        global curfunname
+        curfunname = line.strip()
+        globalFunid2Name[curfunid] = curfunname
+    else:
+        content = line.strip().split('\t')
+        if len(content) > 3 and content[3].isdigit():
+            k = content[1]
+            v = getValue(content[2])
+            if not curfunid in globalReplyMsgParam:
+                globalReplyMsgParam[curfunid] = { k : v }
+            else:
+                globalReplyMsgParam[curfunid][k] = v
+
+
+
+def processFixDict(line):
+    content = line.strip().split('\t')
+    if len(content) > 3 and content[3].isdigit():
+        fixidx = content[3].strip()
+        py_line = 'fixDict["%s"] = c_char_p("%s")#%s\n' % (content[1].strip(), fixidx, content[0].strip())
         if not fixidx in  globalFix2Line:
             globalFix2Line[int(fixidx)] = [py_line,]
         elif fixidx in globalFix2Line and not py_line in globalFix2Line[fixidx]:
             globalFix2Line[int(fixidx)].append(py_line)
 
+def process_line(line):
+    if line == '\n' or len(line.strip()) == 0:
+        return
+
+    processFixDict(line)
+    processReplyMsgParam(line)
 
 def main():
     """主函数"""
@@ -44,7 +80,8 @@ def main():
         #     for py_line in v:
         #         fpy.write(py_line.decode('gbk').encode('utf-8'))
 
-        # print globalFix2Line
+        print globalReplyMsgParam
+        print globalFunid2Name
         fcpp.close()
         fpy.close()
 
