@@ -20,7 +20,7 @@ class MainEngine(object):
         self._trade.logonEa()
 
     def onTimer(self,event):
-        pass
+        self._trade.queryMoney()
         #print "want to logonBackend again"
         #self._trade.logonBackend()
         #print u'MainEngine 处理每秒触发的计时器事件：%s' % str(datetime.now())

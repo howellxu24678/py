@@ -39,6 +39,10 @@ class Ma(object):
             self._session = None
             #self._reqid = 0
 
+            self._dealReplyDict = {}
+            self._dealReplyDict['10301105'] = self.dealLogonBackendReply
+            self._dealReplyDict['10301105'] = self.dealQueryMoneyReply
+
             self._localIp = c_char_p("1:" + socket.gethostbyname(socket.gethostname()))
             self._ea.AxE_Init(None, None, onMsgHandle, py_object(self._eventEngine))
 
@@ -69,7 +73,7 @@ class Ma(object):
                 szVersion = create_string_buffer(32+1)
                 self._ma.maCli_GetVersion(hHandle_, szVersion, len(szVersion))
                 self._session = szVersion
-            self._ma.maCli_SetValueS(hHandle_, szVersion, fixDict['SESSION_ID'])
+            self._ma.maCli_SetValueS(hHandle_, self._session, fixDict['SESSION_ID'])
             self._ma.maCli_SetValueS(hHandle_,
                                      c_char_p(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")),
                                      fixDict['RUNTIME'])
@@ -130,19 +134,46 @@ class Ma(object):
             self._ma.maCli_SetValueS(hHandle, szAuthData, fixDict['AUTH_DATA'])
             self._ma.maCli_EndWrite(hHandle)
 
-            ilen = c_int(0)
-            pBizData = c_char_p(0)
-            self._ma.maCli_Make(hHandle, byref(pBizData), byref(ilen))
-
-            logger.info("before b64encode:%s", pBizData.value)
-            b64bizdata = base64.encodestring(pBizData.value)
-            self._ma.maCli_Close(hHandle)
-            self._ma.maCli_Exit(hHandle)
+            b64bizdata = self.genBizData(hHandle)
 
             self.sendReqMsg(b64bizdata, reqid, funid, msgid)
         except BaseException,e:
             logger.exception(e)
             raise e
+
+    def queryMoney(self):
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_BeginWrite(hHandle)
+            reqid = self.genReqId()
+            funid = "10303001"
+            msgid = create_string_buffer(32+1)
+            self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+            self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
+            self.setRegular(hHandle)
+
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_EndWrite(hHandle)
+
+            b64bizdata = self.genBizData(hHandle)
+            self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
+    def genBizData(self, hHandle_):
+        ilen = c_int(0)
+        pBizData = c_char_p(0)
+        self._ma.maCli_Make(hHandle_, byref(pBizData), byref(ilen))
+
+        logger.info("before b64encode:%s", pBizData.value)
+        b64bizdata = base64.encodestring(pBizData.value)
+        self._ma.maCli_Close(hHandle_)
+        self._ma.maCli_Exit(hHandle_)
+        return  b64bizdata
 
     def onRecvMsg(self,event):
         logger.info("pMsg:%s", event.dict_["pMsg"])
@@ -177,7 +208,16 @@ class Ma(object):
             if msgcode.value == 0:
                 ret = self.parseSecondTable(hHandle, funid)
                 logger.info("ret:%s", ret)
+                if funid.value in self._dealReplyDict:
+                    self._dealReplyDict[funid.value](ret)
 
+            elif msgcode.value == 100:
+                logger.info("reply funid:%s success but the result is empty", funid)
+            else:
+                logger.error("reply funid:%s failed errcode:%s", funid, msgcode.value)
+
+            self._ma.maCli_Close(hHandle)
+            self._ma.maCli_Exit(hHandle)
 
         except BaseException,e:
             logger.exception(e)
@@ -196,31 +236,52 @@ class Ma(object):
         return msgcode, msglevel, msgtext
 
     def parseSecondTable(self, hHandle_, funid_):
+        if not funid_.value in replyMsgParam:
+            logger.warn("funid:%s is not find in replyMsgParam", funid_.value)
+            return
+
         self._ma.maCli_OpenTable(hHandle_, 2)
-        self._ma.maCli_ReadRow(hHandle_, 1)
+        ret = []
+        irowcount = c_int(0)
+        self._ma.maCli_GetRowCount(hHandle_, byref(irowcount))
+        for i in range(1, irowcount.value + 1):
+            self._ma.maCli_ReadRow(hHandle_, 1)
+            retdict = {}
 
-        ret = {}
-        for fixidx_,type_ in replyMsgParam[funid_.value].iteritems():
-            if type_ == 'l':
-                l = c_int64(0)
-                self._ma.maCli_GetValueL(hHandle_, byref(l), fixDict[fixidx_])
-                ret[fixidx_] = l.value
-            elif type_ == 'd':
-                d = c_double(0.0)
-                self._ma.maCli_GetValueD(hHandle_, byref(d), fixDict[fixidx_])
-                ret[fixidx_] = d.value
-            elif type_ == 'c':
-                c = c_char('0')
-                self._ma.maCli_GetValueC(hHandle_, byref(c), fixDict[fixidx_])
-                ret[fixidx_] = c.value
-            elif type_ == 'n':
-                n = c_int(0)
-                self._ma.maCli_GetValueN(hHandle_, byref(n), fixDict[fixidx_])
-                ret[fixidx_] = n.value
-            elif type_[0] == 's':
-                len_ = int(type_.split(',')[1]) + 1
-                s = create_string_buffer(len_)
-                self._ma.maCli_GetValueS(hHandle_, byref(s), len_, fixDict[fixidx_])
-                ret[fixidx_] = s.value
-        return  ret
 
+            for fixidx_,type_ in replyMsgParam[funid_.value].iteritems():
+                if type_ == 'l':
+                    l = c_int64(0)
+                    self._ma.maCli_GetValueL(hHandle_, byref(l), fixDict[fixidx_])
+                    retdict[fixidx_] = l.value
+                elif type_ == 'd':
+                    d = c_double(0.0)
+                    self._ma.maCli_GetValueD(hHandle_, byref(d), fixDict[fixidx_])
+                    retdict[fixidx_] = d.value
+                elif type_ == 'c':
+                    c = c_char('0')
+                    self._ma.maCli_GetValueC(hHandle_, byref(c), fixDict[fixidx_])
+                    retdict[fixidx_] = c.value
+                elif type_ == 'n':
+                    n = c_int(0)
+                    self._ma.maCli_GetValueN(hHandle_, byref(n), fixDict[fixidx_])
+                    retdict[fixidx_] = n.value
+                elif type_[0] == 's':
+                    len_ = int(type_.split(',')[1]) + 1
+                    s = create_string_buffer(len_)
+                    self._ma.maCli_GetValueS(hHandle_, byref(s), len_, fixDict[fixidx_])
+                    retdict[fixidx_] = s.value
+            ret.append(retdict)
+        return ret
+
+    def dealLogonBackendReply(self, ret_):
+        for retdict in ret_:
+            if not 'SESSION_ID' in retdict:
+                logger.error("SESSION_ID is not in the reply of 10301105")
+                return
+            if len(retdict['SESSION_ID']) > 0:
+                self._session = c_char_p(retdict['SESSION_ID'])
+                logger.info("set the _session to %s", retdict['SESSION_ID'])
+
+    def dealQueryMoneyReply(self, ret_):
+        pass

@@ -20,15 +20,15 @@ def onMsg(pMsg, iLen, pAccount, pParam):
     pParam.put(event)
 
 
-onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, py_object)
+onMsgFv = CFUNCTYPE(None, c_char_p, c_int, c_char_p, py_object)
 onMsgHandle = onMsgFv(onMsg)
 
 class Ma(object):
     def __init__(self, cf, eventEngine_):
         try:
             self._ma = WinDLL("maCliApi.dll")
-            #self._ea = WinDLL("testdll.dll")
-            self._ea = WinDLL("GxTS.dll")
+            self._ea = WinDLL("testdll.dll")
+            #self._ea = WinDLL("GxTS.dll")
             self._eventEngine = eventEngine_
             self._ip = cf.get("ma", "ip")
             self._port = cf.getint("ma","port")

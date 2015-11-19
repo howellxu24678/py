@@ -58,6 +58,24 @@ fixDict['BREG_STATUS'] = c_char_p("8935")#回购状态
 fixDict['STKPBU'] = c_char_p("8943")#交易单元
 fixDict['ACCT_TYPE'] = c_char_p("8987")#账户类型
 
+fixDict['CURRENCY'] = c_char_p("15")#货币代码
+fixDict['MARKET_VALUE'] = c_char_p("9081")#资产总值
+fixDict['FUND_VALUE'] = c_char_p("9082")#资金资产
+fixDict['STK_VALUE'] = c_char_p("9083")#市值
+fixDict['FUND_LOAN'] = c_char_p("9084")#融资总金额
+fixDict['FUND_PREBLN'] = c_char_p("8860")#资金昨日余额
+fixDict['FUND_BLN'] = c_char_p("9082")#资金余额
+fixDict['FUND_AVL'] = c_char_p("9083")#资金可用金额
+fixDict['FUND_FRZ'] = c_char_p("9084")#资金冻结金额
+fixDict['FUND_UFZ'] = c_char_p("8860")#资金解冻金额
+fixDict['FUND_TRD_FRZ'] = c_char_p("8864")#资金交易冻结金额
+fixDict['FUND_TRD_UFZ'] = c_char_p("8865")#资金交易解冻金额
+fixDict['FUND_TRD_OTD'] = c_char_p("8866")#资金交易在途金额
+fixDict['FUND_TRD_BLN'] = c_char_p("8867")#资金交易轧差金额
+fixDict['FUND_STATUS'] = c_char_p("8868")#资金状态
+fixDict['CUACCT_ATTR'] = c_char_p("8921")#资产账户属性
+
+
 fixDict['ACCT_ID'] = c_char_p("9081")#账户标识
 fixDict['USE_SCOPE'] = c_char_p("9082")#使用范围
 fixDict['AUTH_TYPE'] = c_char_p("9083")#认证类型
@@ -89,8 +107,21 @@ replyMsgParam['10301105'] = {'CUST_CODE': 'l',
                              'INT_ORG' : 'n',
                              'CUACCT_ATTR' : 'c'
                              }
-
-
+replyMsgParam['10303001'] = {'CUST_CODE': 'l',
+                             'CUACCT_CODE': 'l',
+                             'CURRENCY': 'c',
+                             'INT_ORG' : 'n',
+                             'MARKET_VALUE' : 'd',
+                             'FUND_VALUE' : 'd',
+                             'STK_VALUE' : 'd',
+                             'FUND_LOAN' : 'd',
+                             'FUND_PREBLN' : 'd',
+                             'FUND_BLN' : 'd',
+                             'FUND_AVL' : 'd',
+                             'FUND_FRZ' : 'd',
+                             'FUND_UFZ' : 'd',
+                             'FUND_TRD_FRZ' : 'd'
+                             }
 class STU(Structure):
     def __str__(self):
         ss = ""

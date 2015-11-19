@@ -17,7 +17,7 @@ int CStockAccount::LogonBackend(ma::IDBEngine *pclsDBEngine, MACLIHANDLE hHandle
 	maCli_GetVersion(hHandle, szVersion, sizeof(szVersion));
 	maCli_SetValueS(hHandle, szVersion, FID_SESSION);
 
-	char szBufAuthData[128]={0}; 
+	char szBufAuthData[128]={0};
 	maCli_ComEncrypt(hHandle, szBufAuthData, sizeof(szBufAuthData), m_sPwd.c_str(), m_sAccountID.c_str());
 	maCli_SetValueS(hHandle, szBufAuthData, FID_AUTH_DATA);
 	maCli_EndWrite(hHandle);

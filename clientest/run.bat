@@ -1,3 +1,3 @@
-E:
-cd E:\pan\work\code\github\py\clientest
+F:
+cd F:\code\git\py\clientest
 python main.py
