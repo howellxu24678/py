@@ -89,12 +89,11 @@ def main():
 
         for line in fcpp:
             process_line(line)
-        #     if py_line:
-        #         fpy.write(py_line.decode('gbk').encode('utf-8'))
 
         for k in sorted(globalFix2Line.keys()):
             for py_line in globalFix2Line[k]:
                 fpy.write(py_line.decode('gbk').encode('utf-8'))
+
         fpy.write('\n')
         fpy.write('\n')
         fpy.write('replyMsgParam = {}\n')
@@ -104,6 +103,14 @@ def main():
                 to_write += "'%s': '%s',\n" % (kinner,globalReplyMsgParam[k][kinner])
                 to_write += "                             "
             to_write += "}\n"
+            fpy.write(to_write.decode('gbk').encode('utf-8'))
+
+
+        fpy.write('\n')
+        fpy.write('\n')
+        fpy.write('funNameDict = {}\n')
+        for k in sorted(globalFunid2Name.keys()):
+            to_write = 'funNameDict["%s"] = u"%s"\n' % (k, globalFunid2Name[k])
             fpy.write(to_write.decode('gbk').encode('utf-8'))
 
         fcpp.close()

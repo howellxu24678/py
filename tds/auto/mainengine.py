@@ -9,7 +9,10 @@ logger = logging.getLogger("run")
 
 class MainEngine(object):
     def __init__(self, cf):
-        self._eventEngine = EventEngine(10000)
+        self._eventEngine = EventEngine(cf.getint("ma", "timer"))
+        self._todolist = cf.get("ma", "todolist").strip().split(',')
+        logger.info("todolist:%s", self._todolist)
+
         self._trade = Ma(cf, self._eventEngine)
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
         self._eventEngine.register(EVENT_AXEAGLE, self.AxeagleListen)
@@ -20,10 +23,12 @@ class MainEngine(object):
         self._trade.logonEa()
 
     def onTimer(self,event):
-        self._trade.queryMoney()
-        #print "want to logonBackend again"
-        #self._trade.logonBackend()
-        #print u'MainEngine 处理每秒触发的计时器事件：%s' % str(datetime.now())
+        try:
+            for func in self._todolist:
+                logger.debug("timer to run %s", getattr(self._trade, func))
+                getattr(self._trade, func)()
+        except BaseException,e:
+            logger.exception(e)
 
     def AxeagleListen(self,event):
         pass

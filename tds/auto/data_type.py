@@ -331,3 +331,14 @@ replyMsgParam["88888888"] = {'MSG_CODE': 'n',
                              'MSG_LEVEL': 'c',
                              'MSG_TEXT': 's,256',
                              }
+
+
+funNameDict = {}
+funNameDict["10301105"] = u"用户登录(API)"
+funNameDict["10302001"] = u"买卖委托"
+funNameDict["10302004"] = u"委托撤单"
+funNameDict["10303001"] = u"可用资金查询"
+funNameDict["10303002"] = u"可用股份查询"
+funNameDict["10303003"] = u"当日委托查询"
+funNameDict["10303004"] = u"当日成交查询"
+funNameDict["88888888"] = u"应答第一结果集"

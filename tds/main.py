@@ -3,24 +3,33 @@ import logging
 import logging.config
 from auto import strategy
 from auto import quote
-from auto.mainengine import MainEngine
+
 import os
 import ConfigParser
 import sys
-from PyQt4.QtCore import QCoreApplication
 
 baseconfdir="conf"
 loggingconf= "logging.config"
 businessconf= "business.ini"
 
+def test():
+    import time
+    logconfilepath = os.path.join(os.getcwd(), baseconfdir, loggingconf)
+    print logconfilepath
+    logging.config.fileConfig(logconfilepath)
+    logger = logging.getLogger()
+    logger.debug("debug test")
+    time.sleep(1)
+
 def main():
+    from auto.mainengine import MainEngine
+    from PyQt4.QtCore import QCoreApplication
     """主程序入口"""
     app = QCoreApplication(sys.argv)
 
     logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
     logger = logging.getLogger("run")
-
-    print os.getcwd()
+    logger.debug("debug test")
 
     cf = ConfigParser.ConfigParser()
     cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))

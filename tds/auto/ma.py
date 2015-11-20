@@ -63,7 +63,7 @@ class NewLoginInfo(STU):
 
 
 def onMsg(pMsg, iLen, pAccount, pParam):
-    logger.info("onAxEagle callback msgLen:%s", iLen)
+    logger.debug("onAxEagle callback msgLen:%s", iLen)
     event = Event(type_=EVENT_AXEAGLE)
     event.dict_['pMsg'] = pMsg
     event.dict_['iLen'] = iLen
@@ -78,7 +78,6 @@ class Ma(object):
     def __init__(self, cf, eventEngine_):
         try:
             self._ma = WinDLL("maCliApi.dll")
-            #self._ea = WinDLL("testdll.dll")
             self._ea = WinDLL("GxTS.dll")
             self._eventEngine = eventEngine_
             self._eventEngine.register(EVENT_AXEAGLE, self.onRecvMsg)
@@ -87,8 +86,12 @@ class Ma(object):
             self._port = cf.getint("ma","port")
             self._acc = c_char_p(cf.get("ma", "account"))
             self._pwd = c_char_p(cf.get("ma", "password"))
+            logger.info("ip:%s, port:%s, account:%s, password:%s",
+                        self._ip,
+                        self._port,
+                        self._acc,
+                        self._pwd)
             self._session = None
-            #self._reqid = 0
 
             self._dealReplyDict = {}
             self._dealReplyDict['10301105'] = self.dealLogonBackendReply
@@ -133,8 +136,6 @@ class Ma(object):
             logger.exception(e)
             raise e
     def genReqId(self):
-        # self._reqid += 1
-        # return  self._reqid
         return int(datetime.datetime.now().strftime("%H%M%S%f")[0:-3])
 
     def sendReqMsg(self, b64bizdata_, reqid_, funid_, msgid_, cmdid_ = 40002):
@@ -144,7 +145,7 @@ class Ma(object):
                                         funid_,
                                         msgid_.value,
                                         b64bizdata_)
-        logger.info("AxE_SendMsg:%s", msg)
+        logger.debug("AxE_SendMsg:%s", msg)
         self._ea.AxE_SendMsg(self._acc, msg, len(msg))
 
 
@@ -159,7 +160,11 @@ class Ma(object):
         loginfo.servers[0].nPort = c_int(self._port)
 
         iret = self._ea.AxE_NewMultiLogin(byref(loginfo))
-        logger.info("loginfo:%s AxE_NewMultiLogin return:%s", loginfo, iret)
+        logger.debug("login info:%s", loginfo)
+        if iret != 0:
+            logger.error("Failed to login AxEagle, errorcode:%s", iret)
+        else:
+            logger.info("Success to login AxEagle")
 
     def logonBackend(self):
         try:
@@ -215,24 +220,93 @@ class Ma(object):
             logger.exception(e)
             raise e
 
+    def queryPosition(self):
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_BeginWrite(hHandle)
+            reqid = self.genReqId()
+            funid = "10303002"
+            msgid = create_string_buffer(32+1)
+            self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+            self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
+            self.setRegular(hHandle)
+
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_EndWrite(hHandle)
+
+            b64bizdata = self.genBizData(hHandle)
+            self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
+    def queryOrderToday(self):
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_BeginWrite(hHandle)
+            reqid = self.genReqId()
+            funid = "10303003"
+            msgid = create_string_buffer(32+1)
+            self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+            self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
+            self.setRegular(hHandle)
+
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_EndWrite(hHandle)
+
+            b64bizdata = self.genBizData(hHandle)
+            self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
+    def queryMatchToday(self):
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_BeginWrite(hHandle)
+            reqid = self.genReqId()
+            funid = "10303004"
+            msgid = create_string_buffer(32+1)
+            self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+            self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
+            self.setRegular(hHandle)
+
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_EndWrite(hHandle)
+
+            b64bizdata = self.genBizData(hHandle)
+            self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
     def genBizData(self, hHandle_):
         ilen = c_int(0)
         pBizData = c_char_p(0)
         self._ma.maCli_Make(hHandle_, byref(pBizData), byref(ilen))
 
-        logger.info("before b64encode:%s", pBizData.value)
+        logger.debug("before b64encode:%s", pBizData.value)
         b64bizdata = base64.encodestring(pBizData.value)
         self._ma.maCli_Close(hHandle_)
         self._ma.maCli_Exit(hHandle_)
         return  b64bizdata
 
     def onRecvMsg(self,event):
-        logger.info("pMsg:%s", event.dict_["pMsg"])
+        logger.debug("pMsg:%s", event.dict_["pMsg"])
         msgSplitList = event.dict_["pMsg"].split('\1')
         cmdId = msgSplitList[0]
         if cmdId == "40002":
             msgstr = base64.decodestring(msgSplitList[5])
-            logger.info("pMsg:%s, iLen:%s, pAccount:%s",
+            logger.debug("pMsg:%s, iLen:%s, pAccount:%s",
                         msgstr,
                         event.dict_["iLen"],
                         event.dict_["pAccount"])
@@ -249,24 +323,31 @@ class Ma(object):
             self._ma.maCli_Parse(hHandle, c_char_p(msgstr_), c_int(len(msgstr_)))
             funid = create_string_buffer(8+1)
             self._ma.maCli_GetHdrValueS(hHandle, funid, len(funid), defineDict['MACLI_HEAD_FID_FUNC_ID'])
-            logger.info("fundid:%s", funid.value)
+            logger.debug("fundid:%s", funid.value)
             itablecount = c_int(0)
             self._ma.maCli_GetTableCount(hHandle, byref(itablecount))
             logger.debug("itablecount:%s", itablecount)
             msgcode, msglevel, msgtext = self.parseFirstTable(hHandle)
-            logger.info("msgcode:%s, msglevel:%s, msgtext:%s", msgcode.value, msglevel.value, msgtext.value)
+            logger.debug("msgcode:%s, msglevel:%s, msgtext:%s", msgcode.value, msglevel.value, msgtext.value)
 
             if msgcode.value == 0:
+                logger.info("reply funid:%s name:%s success with second table result",
+                            funid.value,
+                            funNameDict[funid.value])
                 ret = self.parseSecondTable(hHandle, funid)
-                logger.info("ret:%s", ret)
+                logger.debug("ret:%s", ret)
+
                 if funid.value in self._dealReplyDict:
                     self._dealReplyDict[funid.value](ret)
-
             elif msgcode.value == 100:
-                logger.info("reply funid:%s success but the result is empty", funid)
+                logger.info("reply funid:%s name:%s success without second table result",
+                            funid.value,
+                            funNameDict[funid.value])
             else:
-                logger.error("reply funid:%s failed errcode:%s", funid, msgcode.value)
-
+                logger.error("reply funid:%s name:%s failed errcode:%s",
+                             funid.value,
+                             funNameDict[funid.value],
+                             msgcode.value)
             self._ma.maCli_Close(hHandle)
             self._ma.maCli_Exit(hHandle)
 
