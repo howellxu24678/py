@@ -95,7 +95,10 @@ class Ma(object):
 
             self._dealReplyDict = {}
             self._dealReplyDict['10301105'] = self.dealLogonBackendReply
-            self._dealReplyDict['10301105'] = self.dealQueryMoneyReply
+            self._dealReplyDict['10303001'] = self.dealQueryMoneyReply
+            self._dealReplyDict['10303002'] = self.dealQueryPositionReply
+            self._dealReplyDict['10303003'] = self.dealQueryOrderTodayReply
+            self._dealReplyDict['10303004'] = self.dealQueryMatchTodayReply
 
             self._localIp = c_char_p("1:" + socket.gethostbyname(socket.gethostname()))
             self._ea.AxE_Init(None, None, onMsgHandle, py_object(self._eventEngine))
@@ -416,4 +419,10 @@ class Ma(object):
                 logger.info("set the _session to %s", retdict['SESSION_ID'])
 
     def dealQueryMoneyReply(self, ret_):
+        pass
+    def dealQueryPositionReply(self, ret_):
+        pass
+    def dealQueryOrderTodayReply(self, ret_):
+        pass
+    def dealQueryMatchTodayReply(self, ret_):
         pass
