@@ -22,6 +22,8 @@ class MainEngine(object):
     def logon(self):
         self._trade.logonEa()
 
+
+
     def onTimer(self,event):
         try:
             for func in self._todolist:
@@ -32,10 +34,3 @@ class MainEngine(object):
 
     def AxeagleListen(self,event):
         pass
-
-
-
-
-
-
-

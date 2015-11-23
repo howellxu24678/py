@@ -92,6 +92,9 @@ class Ma(object):
                         self._acc,
                         self._pwd)
             self._session = None
+            self._int_org = None
+            self._szTradeAcct = None
+            self._shTradeAcct = None
 
             self._dealReplyDict = {}
             self._dealReplyDict['10301105'] = self.dealLogonBackendReply
@@ -134,7 +137,9 @@ class Ma(object):
             self._ma.maCli_SetValueS(hHandle_,
                                      c_char_p(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")),
                                      fixDict['F_RUNTIME'])
-            self._ma.maCli_SetValueN(hHandle_, c_int(0), fixDict['F_OP_ORG'])
+            if self._int_org is None:
+                self._int_org = c_int(0)
+            self._ma.maCli_SetValueN(hHandle_, self._int_org, fixDict['F_OP_ORG'])
         except BaseException,e:
             logger.exception(e)
             raise e
@@ -151,7 +156,6 @@ class Ma(object):
         logger.debug("AxE_SendMsg:%s", msg)
         self._ea.AxE_SendMsg(self._acc, msg, len(msg))
 
-
     def logonEa(self):
         loginfo = NewLoginInfo()
         loginfo.account = self._acc.value
@@ -161,13 +165,7 @@ class Ma(object):
         loginfo.serverCount = c_int(1)
         loginfo.servers[0].szIp = self._ip
         loginfo.servers[0].nPort = c_int(self._port)
-
-        iret = self._ea.AxE_NewMultiLogin(byref(loginfo))
-        logger.debug("login info:%s", loginfo)
-        if iret != 0:
-            logger.error("Failed to login AxEagle, errorcode:%s", iret)
-        else:
-            logger.info("Success to login AxEagle")
+        self._ea.AxE_NewMultiLogin(byref(loginfo))
 
     def logonBackend(self):
         try:
@@ -292,6 +290,64 @@ class Ma(object):
             logger.exception(e)
             raise e
 
+    def buySellOrder(self):
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_BeginWrite(hHandle)
+            reqid = self.genReqId()
+            funid = "10302001"
+            msgid = create_string_buffer(32+1)
+            self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+            self.setPkgHead(hHandle, "B", "R", "T", funid, msgid)
+            self.setRegular(hHandle)
+
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_SetValueS(hHandle, '00', fixDict['STKBD'])
+            self._ma.maCli_SetValueS(hHandle, '002227', fixDict['STK_CODE'])
+            self._ma.maCli_SetValueN(hHandle, 100, fixDict['ORDER_QTY'])
+            self._ma.maCli_SetValueN(hHandle, 100, fixDict['STK_BIZ'])
+            self._ma.maCli_SetValueN(hHandle, 124, fixDict['STK_BIZ_ACTION'])
+            self._ma.maCli_SetValueS(hHandle, self._szTradeAcct, fixDict['TRDACCT'])
+            self._ma.maCli_EndWrite(hHandle)
+
+            b64bizdata = self.genBizData(hHandle)
+            self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
+    def quantOrder(self):
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_BeginWrite(hHandle)
+            reqid = self.genReqId()
+            funid = "10388101"
+            msgid = create_string_buffer(32+1)
+            self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+            self.setPkgHead(hHandle, "B", "R", "T", funid, msgid)
+            self.setRegular(hHandle)
+
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_SetValueS(hHandle, self._szTradeAcct, fixDict['TRDACCT'])
+            self._ma.maCli_SetValueS(hHandle, '00', fixDict['STKBD'])
+            self._ma.maCli_SetValueS(hHandle, '000078', fixDict['TRD_CODE'])
+            self._ma.maCli_SetValueN(hHandle, 100, fixDict['ORDER_QTY'])
+            self._ma.maCli_SetValueN(hHandle, 100, fixDict['STK_BIZ'])
+            self._ma.maCli_SetValueN(hHandle, 124, fixDict['STK_BIZ_ACTION'])
+            self._ma.maCli_SetValueN(hHandle, 0, fixDict['ATTR_CODE'])
+            self._ma.maCli_EndWrite(hHandle)
+
+            b64bizdata = self.genBizData(hHandle)
+            self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
     def genBizData(self, hHandle_):
         ilen = c_int(0)
         pBizData = c_char_p(0)
@@ -380,7 +436,7 @@ class Ma(object):
         irowcount = c_int(0)
         self._ma.maCli_GetRowCount(hHandle_, byref(irowcount))
         for i in range(1, irowcount.value + 1):
-            self._ma.maCli_ReadRow(hHandle_, 1)
+            self._ma.maCli_ReadRow(hHandle_, i)
             retdict = {}
 
 
@@ -417,6 +473,19 @@ class Ma(object):
             if len(retdict['SESSION_ID']) > 0:
                 self._session = c_char_p(retdict['SESSION_ID'])
                 logger.info("set the _session to %s", retdict['SESSION_ID'])
+            if not "STK_TRDACCT" in retdict:
+                logger.error("STK_TRDACCT is not in the reply of 10301105")
+                return
+
+            if retdict["STKEX"] == '0':
+                self._szTradeAcct = c_char_p(retdict["STK_TRDACCT"])
+                logger.info("szTradeAcct:%s", retdict["STK_TRDACCT"])
+            elif retdict["STKEX"] == '1':
+                self._shTradeAcct = c_char_p(retdict["STK_TRDACCT"])
+                logger.info("shTradeAcct:%s", retdict["STK_TRDACCT"])
+
+            self._int_org = c_int(int(retdict["INT_ORG"]))
+
 
     def dealQueryMoneyReply(self, ret_):
         pass

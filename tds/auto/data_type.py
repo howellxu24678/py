@@ -15,24 +15,35 @@ fixDict["ORDER_QTY"] = c_char_p("38")#委托数量
 fixDict["ORDER_STATUS"] = c_char_p("39")#委托状态
 fixDict["STK_BIZ_ACTION"] = c_char_p("40")#业务行为
 fixDict["STK_BIZ_ACTION"] = c_char_p("40")#证券业务行为
+fixDict["STK_BIZ_ACTION"] = c_char_p("40")#业务活动
+fixDict["TRD_BIZ_ACCTION"] = c_char_p("40")#业务活动
 fixDict["RAW_ORDER_ID"] = c_char_p("41")#原合同序号
 fixDict["ORDER_PRICE"] = c_char_p("44")#委托价格
 fixDict["STK_CODE"] = c_char_p("48")#证券代码
+fixDict["TRD_CODE"] = c_char_p("48")#品种代码
 fixDict["STK_NAME"] = c_char_p("55")#证券名称
 fixDict["ORDER_TEXT"] = c_char_p("58")#委托扩展
 fixDict["ORDER_BSN"] = c_char_p("66")#委托批号
 fixDict["STKEX"] = c_char_p("207")#交易市场
+fixDict["EXCHANGE"] = c_char_p("207")#交易所
 fixDict["MATCHED_QTY"] = c_char_p("387")#已成交数量
 fixDict["STK_TRDACCT"] = c_char_p("448")#证券账户
 fixDict["TRDACCT"] = c_char_p("448")#交易账户
 fixDict["TRDACCT"] = c_char_p("448")#证券账户
 fixDict["STK_CLS"] = c_char_p("461")#证券类别
 fixDict["STKBD"] = c_char_p("625")#交易板块
+fixDict["BGN_EXE_TIME"] = c_char_p("916")#执行开始时间
+fixDict["END_EXE_TIME"] = c_char_p("917")#执行结束时间
 fixDict["OFFER_STIME"] = c_char_p("8500")#申报时间
 fixDict["STK_PREBLN"] = c_char_p("8501")#证券昨日余额
 fixDict["MATCHED_AMT"] = c_char_p("8504")#成交金额
 fixDict["MATCHED_AMT"] = c_char_p("8504")#已成交金额
 fixDict["REPAY_CONTRACT_AMT"] = c_char_p("8504")#偿还金额
+fixDict["CONTINGENT_CONDITION"] = c_char_p("8713")#触发条件
+fixDict["FORCE_CLOSE_REASON"] = c_char_p("8715")#强平原因
+fixDict["BUSINESS_UNIT"] = c_char_p("8717")#业务单元
+fixDict["IS_SWAP_ORDER"] = c_char_p("8720")#互换单标志
+fixDict["GTD_DATA"] = c_char_p("8723")#GTD日期
 fixDict["F_OP_USER"] = c_char_p("8810")#操作用户代码
 fixDict["F_OP_ROLE"] = c_char_p("8811")#操作用户角色
 fixDict["F_OP_SITE"] = c_char_p("8812")#操作站点
@@ -61,9 +72,12 @@ fixDict["IS_WITHDRAWN"] = c_char_p("8838")#已撤单标志
 fixDict["MATCHED_TIME"] = c_char_p("8840")#成交时间
 fixDict["MATCHED_PRICE"] = c_char_p("8841")#成交价格
 fixDict["STK_BIZ"] = c_char_p("8842")#证券业务
+fixDict["STK_BIZ"] = c_char_p("8842")#交易业务
+fixDict["TRD_BIZ"] = c_char_p("8842")#交易业务
 fixDict["STKPBU"] = c_char_p("8843")#交易单元
 fixDict["TRD_DATE"] = c_char_p("8844")#交易日期
 fixDict["ORDER_TIME"] = c_char_p("8845")#委托时间
+fixDict["VALID_DATE"] = c_char_p("8859")#截止日期
 fixDict["FUND_PREBLN"] = c_char_p("8860")#资金昨日余额
 fixDict["FUND_AVL"] = c_char_p("8861")#资金可用金额
 fixDict["FUND_FRZ"] = c_char_p("8862")#资金冻结金额
@@ -87,6 +101,7 @@ fixDict["MKT_VAL"] = c_char_p("8879")#市值
 fixDict["CUST_CODE"] = c_char_p("8902")#客户代码
 fixDict["INT_ORG"] = c_char_p("8911")#内部机构
 fixDict["COMPONET_STK_CODE"] = c_char_p("8911")#成份股代码
+fixDict["CLI_REMARK"] = c_char_p("8914")#备用信息
 fixDict["CUACCT_CODE"] = c_char_p("8920")#资产账户
 fixDict["CUACCT_ATTR"] = c_char_p("8921")#资产账户属性
 fixDict["TRDACCT_SN"] = c_char_p("8928")#账户序号
@@ -98,6 +113,13 @@ fixDict["TREG_STATUS"] = c_char_p("8934")#指定状态
 fixDict["BREG_STATUS"] = c_char_p("8935")#回购状态
 fixDict["BOND_INT"] = c_char_p("8960")#债券利息
 fixDict["COMPONET_STKBD"] = c_char_p("8962")#成份股板块
+fixDict["TRD_CODE_CLS"] = c_char_p("8970")#品种类型
+fixDict["SPREAD_NAME"] = c_char_p("8971")#组合名称
+fixDict["UNDL_CODE"] = c_char_p("8972")#标的代码
+fixDict["EXERCISE_PRICE"] = c_char_p("8973")#行权价
+fixDict["CON_UNIT"] = c_char_p("8974")#合约单位
+fixDict["STOP_PRICE"] = c_char_p("8975")#触发价格
+fixDict["CON_EXP_DATE"] = c_char_p("8976")#合约到期日
 fixDict["FUND_BLN"] = c_char_p("8984")#资金余额
 fixDict["STK_BLN"] = c_char_p("8985")#证券余额
 fixDict["ACCT_TYPE"] = c_char_p("8987")#账户类型
@@ -121,6 +143,7 @@ fixDict["USE_SCOPE"] = c_char_p("9082")#使用范围
 fixDict["CHANNEL_ID"] = c_char_p("9082")#通道号
 fixDict["FUND_VALUE"] = c_char_p("9082")#资金资产
 fixDict["CANCEL_LIST"] = c_char_p("9082")#撤单列表
+fixDict["OPT_NUM"] = c_char_p("9082")#合约编码
 fixDict["AUTH_TYPE"] = c_char_p("9083")#认证类型
 fixDict["STK_VALUE"] = c_char_p("9083")#市值
 fixDict["PUBLISH_CTRL_FLAG"] = c_char_p("9083")#股票风控标志
@@ -131,11 +154,18 @@ fixDict["COST_PRICE"] = c_char_p("9090")#成本价格
 fixDict["PRO_INCOME"] = c_char_p("9091")#参考盈亏
 fixDict["STK_CAL_MKTVAL"] = c_char_p("9092")#市值计算标识
 fixDict["STK_QTY"] = c_char_p("9093")#当前拥股数
+fixDict["ORDER_ID_EX"] = c_char_p("9093")#外部合同序号
 fixDict["CURRENT_PRICE"] = c_char_p("9094")#最新价格
 fixDict["PROFIT_PRICE"] = c_char_p("9095")#参考成本价
 fixDict["STK_DIFF"] = c_char_p("9096")#可申赎数量
 fixDict["STK_TRD_UNFRZ"] = c_char_p("9097")#已申赎数量
 fixDict["INCOME"] = c_char_p("9098")#盈亏
+fixDict["ORDER_ATTR"] = c_char_p("9100")#高级属性
+fixDict["ATTR_CODE"] = c_char_p("9101")#属性代码
+fixDict["CLI_ORDER_NO"] = c_char_p("9102")#客户端委托编号
+fixDict["EXE_STATUS"] = c_char_p("9103")#执行状态
+fixDict["EXE_INFO"] = c_char_p("9104")#执行信息
+fixDict["ORDER_NO"] = c_char_p("9106")#委托编号
 fixDict["REPAY_OPENING_DATE"] = c_char_p("9121")#偿还合约日期
 fixDict["REPAY_STK_CODE"] = c_char_p("9218")#偿还证券代码
 fixDict["STK_REMAIN"] = c_char_p("9398")#余券可用数量
@@ -325,6 +355,21 @@ replyMsgParam["10303004"] = {'BOND_INT': 'None',
                              'STK_NAME': 's,16',
                              'STK_TRDACCT': 's,10',
                              }
+#量化委托
+replyMsgParam["10388101"] = {'CLI_ORDER_NO': 's,32',
+                             'CUACCT_CODE': 'l',
+                             'EXE_INFO': 's,128',
+                             'EXE_STATUS': 'c',
+                             'ORDER_BSN': 'n',
+                             'ORDER_DATE': 'n',
+                             'ORDER_NO': 'n',
+                             'ORDER_QTY': 'l',
+                             'ORDER_TIME': 's,32',
+                             'TRD_BIZ': 'n',
+                             'TRD_BIZ_ACCTION': 'n',
+                             'TRD_CODE': 's,8',
+                             'UNDL_CODE': 's,16',
+                             }
 #应答第一结果集
 replyMsgParam["88888888"] = {'MSG_CODE': 'n',
                              'MSG_DEBUG': 's,1024',
@@ -341,4 +386,5 @@ funNameDict["10303001"] = u"可用资金查询"
 funNameDict["10303002"] = u"可用股份查询"
 funNameDict["10303003"] = u"当日委托查询"
 funNameDict["10303004"] = u"当日成交查询"
+funNameDict["10388101"] = u"量化委托"
 funNameDict["88888888"] = u"应答第一结果集"
