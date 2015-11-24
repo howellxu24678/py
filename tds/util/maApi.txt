@@ -1,3 +1,5 @@
+#input#88888888
+#input#固定入参
 #input#列名	列代码	列类型	必输	FIX域	说明
 #input#操作用户代码	F_OP_USER	VARCHAR(32)	√	8810
 #input#操作用户角色	F_OP_ROLE	CHAR(1)	√	8811	字典DD[USER_ROLE]
@@ -8,15 +10,6 @@
 #input#调用时间	F_RUNTIME	VARCHAR(32)	√	8816	格式:YYYY-MM-DD HH24:MI:SS.nnn
 #input#操作机构	F_OP_ORG	SMALLINT	√	8821	操作者的分支机构
 
-
-#input#列名	列代码	列类型	必输	FIX域	说明
-#input#账户类型	ACCT_TYPE	VARCHAR(2)	√	8987	‘U’:客户代码
-#input#账户标识	ACCT_ID	VARCHAR(32)	√	9081
-#input#使用范围	USE_SCOPE	CHAR(1)	√	9082	‘0’:交易密码
-#input#加密因子	ENCRYPT_KEY	VARCHAR(32)	√	9086	如：使用功能号(10301105)加密因子
-#input#认证类型	AUTH_TYPE	CHAR(1)	√	9083	‘0’--密码
-#input#认证数据	AUTH_DATA	VARCHAR(256)	√	9084	此字段使用maCli_ComEncrypt函数，对客户交易密码，用ENCRYPT_KEY字段中的值作为Key进行加密后得到的密文数据。
-
 88888888
 应答第一结果集
 列名	列代码	列类型	FIX域	说明
@@ -24,6 +17,16 @@
 信息级别	MSG_LEVEL	CHAR(1)	8818
 信息正文	MSG_TEXT	VARCHAR(256)	8819
 调试信息	MSG_DEBUG	VARCHAR(1024)	8820
+
+#input#10301105
+#input#用户登录(API)
+#input#列名	列代码	列类型	必输	FIX域	说明
+#input#账户类型	ACCT_TYPE	VARCHAR(2)	√	8987	‘U’:客户代码
+#input#账户标识	ACCT_ID	VARCHAR(32)	√	9081
+#input#使用范围	USE_SCOPE	CHAR(1)	√	9082	‘0’:交易密码
+#input#加密因子	ENCRYPT_KEY	VARCHAR(32)	√	9086	如：使用功能号(10301105)加密因子
+#input#认证类型	AUTH_TYPE	CHAR(1)	√	9083	‘0’--密码
+#input#认证数据	AUTH_DATA	VARCHAR(256)	√	9084	此字段使用maCli_ComEncrypt函数，对客户交易密码，用ENCRYPT_KEY字段中的值作为Key进行加密后得到的密文数据。
 
 10301105
 用户登录(API)
@@ -47,7 +50,8 @@
 内部机构	INT_ORG	SMALLINT	8911
 
 
-
+#input#10303001
+#input#可用资金查询
 #input#列名	列代码	列类型	必输	FIX域	说明
 #input#客户代码	CUST_CODE	BIGINT	X	8902	两项不能同时为空
 #input#资产账户	CUACCT_CODE	BIGINT	X	8920
@@ -78,7 +82,8 @@
 资产账户属性	CUACCT_ATTR	CHAR(1)	8921	字典[CUACCT_ATTR]
 
 
-
+#input#10303002
+#input#可用股份查询
 #input#列名	列代码	列类型	必输	FIX域	说明
 #input#客户代码	CUST_CODE	BIGINT	X	8902	两项不能同时为空
 #input#资产账户	CUACCT_CODE	BIGINT	X	8920	两项不能同时为空
@@ -128,7 +133,8 @@
 盈亏	INCOME	CMONEY	9098	证券市值减证券买入成本（实时）
 余券可用数量	STK_REMAIN	BIGINT	9398
 
-
+#input#10303003
+#input#当日委托查询
 #input#列名	列代码	列类型	必输	FIX域	说明
 #input#客户代码	CUST_CODE	BIGINT	X	8902	两项不能同时为空
 #input#资产账户	CUACCT_CODE	BIGINT	X	8920	两项不能同时为空
@@ -184,7 +190,8 @@
 操作站点	OP_SITE	VARCHAR(32)	8812
 操作渠道	CHANNEL	CHAR(1)   	8813
 
-
+#input#10303004
+#input#当日成交查询
 #input#列名	列代码	列类型	必输	FIX域	说明
 #input#客户代码	CUST_CODE	BIGINT	X	8902	两项不能同时为空
 #input#资产账户	CUACCT_CODE	BIGINT	X	8920	两项不能同时为空
@@ -233,7 +240,8 @@
 撤单标志	IS_WITHDRAW	CHAR(1)	8836	字典[IS_WITHDRAW]
 委托状态	ORDER_STATUS	CHAR(1)	39	此状态为处理该笔成交后的委托状态，不是该笔委托的最终委托状态
 
-
+#input#10302001
+#input#买卖委托
 #input#列名	列代码	列类型	必输	FIX域	说明
 #input#客户代码	CUST_CODE	BIGINT	X	8902
 #input#资产账户	CUACCT_CODE	BIGINT	√	8920
@@ -279,6 +287,8 @@
 证券账户	TRDACCT	VARCHAR(10)	448
 账户序号	CUACCT_SN	INTEGER	8928
 
+#input#10302004
+#input#委托撤单
 #input#列名	列代码	列类型	必输	FIX域	说明
 #input#资产账户	CUACCT_CODE	BIGINT	√	8920
 #input#交易板块	STKBD	CHAR(2)	√	625	字典[STKBD]
@@ -307,6 +317,8 @@
 撤单列表	CANCEL_LIST	VARCHAR(256)	9082	格式: 原委托序号#撤单委托序号#内部撤单标志#错误信息|......|
 
 
+#input#10388101
+#input#量化委托
 #input#列名	列代码	列类型	必输	FIX域	说明
 #input#资产账户	CUACCT_CODE	BIGINT	√	8920
 #input#客户代码	CUST_CODE	BIGINT	X	8902

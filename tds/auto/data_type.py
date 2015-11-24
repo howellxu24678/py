@@ -388,3 +388,46 @@ funNameDict["10303003"] = u"当日委托查询"
 funNameDict["10303004"] = u"当日成交查询"
 funNameDict["10388101"] = u"量化委托"
 funNameDict["88888888"] = u"应答第一结果集"
+
+
+requireFixidxDict = {}
+#用户登录(API)
+requireFixidxDict["10301105"] = {'ACCT_ID': None,
+                                 'ACCT_TYPE': None,
+                                 'AUTH_DATA': None,
+                                 'AUTH_TYPE': None,
+                                 'ENCRYPT_KEY': None,
+                                 'USE_SCOPE': None,
+                                 }
+#买卖委托
+requireFixidxDict["10302001"] = {'CUACCT_CODE': None,
+                                 'ORDER_QTY': None,
+                                 'STKBD': None,
+                                 'STK_BIZ': None,
+                                 'STK_BIZ_ACTION': None,
+                                 'STK_CODE': None,
+                                 'TRDACCT': None,
+                                 }
+#委托撤单
+requireFixidxDict["10302004"] = {'CUACCT_CODE': None,
+                                 'STKBD': None,
+                                 }
+#量化委托
+requireFixidxDict["10388101"] = {'ATTR_CODE': None,
+                                 'CUACCT_CODE': None,
+                                 'ORDER_QTY': None,
+                                 'STKBD': None,
+                                 'STK_BIZ': None,
+                                 'STK_BIZ_ACTION': None,
+                                 'TRDACCT': None,
+                                 }
+#应答第一结果集
+requireFixidxDict["88888888"] = {'F_CHANNEL': None,
+                                 'F_FUNCTION': None,
+                                 'F_OP_ORG': None,
+                                 'F_OP_ROLE': None,
+                                 'F_OP_SITE': None,
+                                 'F_OP_USER': None,
+                                 'F_RUNTIME': None,
+                                 'F_SESSION': None,
+                                 }

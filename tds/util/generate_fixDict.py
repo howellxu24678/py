@@ -6,6 +6,7 @@ import  re
 globalFix2Line = {}
 globalReplyMsgParam = {}
 globalFunid2Name = {}
+globalRequireFixIdx = {}
 curfunid = None
 curfunname = None
 
@@ -51,16 +52,32 @@ def processFixDict(line):
             globalFix2Line[k].append(py_line)
 
 def processInput(line):
-    content = line.strip().split('\t')
-    if len(content) > 4 and content[4].isdigit():
-        fixidx = content[4].strip()
-        py_line = 'fixDict["%s"] = c_char_p("%s")#%s\n' % (content[1].strip(), fixidx, content[0].strip())
-        k = int(fixidx)
-        global  globalFix2Line
-        if not k in  globalFix2Line:
-            globalFix2Line[k] = [py_line,]
-        elif k in globalFix2Line and not py_line in globalFix2Line[k]:
-            globalFix2Line[k].append(py_line)
+    if line.strip().isdigit():
+        global curfunid
+        curfunid = int(line.strip())
+    elif len(line.strip().split('\t')) == 1 and len(line.strip()) > 0:
+        global curfunname
+        curfunname = line.strip()
+        globalFunid2Name[curfunid] = curfunname
+    else:
+        content = line.strip().split('\t')
+        if len(content) > 4 and content[4].isdigit():
+            fixidx = content[4].strip()
+            py_line = 'fixDict["%s"] = c_char_p("%s")#%s\n' % (content[1].strip(), fixidx, content[0].strip())
+            k = int(fixidx)
+            global  globalFix2Line
+            if not k in  globalFix2Line:
+                globalFix2Line[k] = [py_line,]
+            elif k in globalFix2Line and not py_line in globalFix2Line[k]:
+                globalFix2Line[k].append(py_line)
+
+            if content[3].strip().decode('gbk').encode('utf-8') == '√':
+                global globalRequireFixIdx
+                if not curfunid in globalRequireFixIdx:
+                    globalRequireFixIdx[curfunid] = {content[1].strip() : None}
+                else:
+                    globalRequireFixIdx[curfunid][content[1].strip()] = None
+
 
 def process_line(line):
     if line == '\n' or len(line.strip()) == 0:
@@ -99,8 +116,8 @@ def main():
         fpy.write('replyMsgParam = {}\n')
         for k in sorted(globalReplyMsgParam.keys()):
             to_write = '#%s\nreplyMsgParam["%s"] = {' % (globalFunid2Name[k],k)
-            for kinner in sorted(globalReplyMsgParam[k].keys()):
-                to_write += "'%s': '%s',\n" % (kinner,globalReplyMsgParam[k][kinner])
+            for k_inner in sorted(globalReplyMsgParam[k].keys()):
+                to_write += "'%s': '%s',\n" % (k_inner, globalReplyMsgParam[k][k_inner])
                 to_write += "                             "
             to_write += "}\n"
             fpy.write(to_write.decode('gbk').encode('utf-8'))
@@ -111,6 +128,18 @@ def main():
         fpy.write('funNameDict = {}\n')
         for k in sorted(globalFunid2Name.keys()):
             to_write = 'funNameDict["%s"] = u"%s"\n' % (k, globalFunid2Name[k])
+            fpy.write(to_write.decode('gbk').encode('utf-8'))
+
+
+        fpy.write('\n')
+        fpy.write('\n')
+        fpy.write('requireFixidxDict = {}\n')
+        for k in sorted(globalRequireFixIdx.keys()):
+            to_write = '#%s\nrequireFixidxDict["%s"] = {' % (globalFunid2Name[k],k)
+            for k_inner in sorted(globalRequireFixIdx[k].keys()):
+                to_write += "'%s': %s,\n" % (k_inner, globalRequireFixIdx[k][k_inner])
+                to_write += "                                 "
+            to_write += "}\n"
             fpy.write(to_write.decode('gbk').encode('utf-8'))
 
         fcpp.close()
