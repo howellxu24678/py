@@ -20,7 +20,9 @@ class Strategy(object):
     def __init__(self, cf, code, eventEngine_):
         self._code = code
         self._eventEngine = eventEngine_
-        self._eventEngine.register(EVENT_MARKETDATA_CONTRACT + self._code, self.OnTick)
+        self._eventEngine.register(EVENT_TIMER, self.OnTimerCall)
+        self._eventEngine.register(EVENT_5MKLINE_CONTRACT + self._code, self.OnNewKLine)
+
         self._quote = quote.Quote5mKline(cf, code)
         self._name = self._quote._name
         self._latestStatus = 'init'
@@ -32,7 +34,9 @@ class Strategy(object):
         self._quote.OnTick(tick, self.OnNewKLine)
         self.OnTimerCall()
         
-    def OnNewKLine(self, kline):
+    def OnNewKLine(self, event):
+        logger.debug("code：%s OnNewKLine", self._code)
+        kline = event.dict_['5mkline']
         try:
             isNeedBuy, isNeedSell = td(kline)
             logger.info("code:%s,isNeedBuy:%s,isNeedSell:%s", self._code, isNeedBuy, isNeedSell)
@@ -53,7 +57,7 @@ class Strategy(object):
         except BaseException,e:
             logger.exception(e)
             
-    def OnTimerCall(self):
+    def OnTimerCall(self, event):
         logger.debug("code：%s OnTimerCall", self._code)
             
     def DealBuy(self):

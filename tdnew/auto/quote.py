@@ -35,9 +35,11 @@ class RealTimeQuote(object):
             self._eventEngine.put(event)
 
 class Quote5mKline(object):
-    def __init__(self,cf, code):
+    def __init__(self, cf, code, eventEngine_):
         self._code = code
-        
+        self._eventEngine = eventEngine_
+        self._eventEngine.register(EVENT_MARKETDATA_CONTRACT + self._code, self.OnTick)
+
         markettime = cf.get("DEFAULT", "markettime").split(',')
         self._marketimerange = []
         for i in range(len(markettime)):
@@ -81,7 +83,8 @@ class Quote5mKline(object):
                 return True
         return False
         
-    def OnTick(self, tick, calback):
+    def OnTick(self, event):
+        tick = event.dict_['tick']
         if not self.CheckIfInTheMarketTimeRange(tick['time']):
             logger.warn("code:%s, time:%s is not in the market time range", self._code, tick['time'])            
             return
@@ -97,7 +100,10 @@ class Quote5mKline(object):
         curMa60 = GetSMA(self._df5mKline['close'].values[-60:])
         
         if(dt64CurTimeSlice > dt64LastTimeStamp):
-            calback(self._df5mKline)
+            event = Event(type_=EVENT_5MKLINE_CONTRACT + self._code)
+            event.dict_['5mkline'] = self._df5mKline
+            self._eventEngine.put(event)
+
             self._df5mKline.loc[dt64CurTimeSlice] = {'open':curTickPrice, \
              'high':curTickPrice, \
              'close':curTickPrice, \
