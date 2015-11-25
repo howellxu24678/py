@@ -16,7 +16,6 @@ class MainEngine(object):
 
         self._trade = Ma(cf, self._eventEngine)
         self._trade.logonEa()
-        self._eventEngine.register(EVENT_TRADE, self.onTimer)
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
         self._eventEngine.start()
 
