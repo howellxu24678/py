@@ -74,6 +74,16 @@ def onMsg(pMsg, iLen, pAccount, pParam):
 onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, py_object)
 onMsgHandle = onMsgFv(onMsg)
 
+
+def getStkBD(code):
+    if code[:2] == '00' or code[:2] == '300' or code[:2] == '15':
+        return '00'
+    elif code[:2] == '60' or code[:2] == '15':
+        return '10'
+
+    return 'unknow'
+
+
 class Ma(object):
     def __init__(self, cf, eventEngine_):
         try:
@@ -81,6 +91,7 @@ class Ma(object):
             self._ea = WinDLL("GxTS.dll")
             self._eventEngine = eventEngine_
             self._eventEngine.register(EVENT_AXEAGLE, self.onRecvMsg)
+            self._eventEngine.register(EVENT_TRADE, self.quantOrder)
 
             self._ip = cf.get("ma", "ip")
             self._port = cf.getint("ma","port")
@@ -109,7 +120,7 @@ class Ma(object):
         except BaseException,e:
             logger.exception(e)
             raise e
-        
+
     def setPkgHead(self, hHandle_, pkgtype_, msgtype_, funtype_, funid_, msgid_):
         try:
             self._ma.maCli_SetHdrValueC(hHandle_, c_char(pkgtype_), defineDict['MACLI_HEAD_FID_PKT_TYPE'])
@@ -194,6 +205,28 @@ class Ma(object):
             b64bizdata = self.genBizData(hHandle)
 
             self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
+    def monitorQuery(self, funid_):
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_BeginWrite(hHandle)
+            reqid = self.genReqId()
+            msgid = create_string_buffer(32+1)
+            self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+            self.setPkgHead(hHandle, "B", "R", "Q", funid_, msgid)
+            self.setRegular(hHandle)
+
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_EndWrite(hHandle)
+
+            b64bizdata = self.genBizData(hHandle)
+            self.sendReqMsg(b64bizdata, reqid, funid_, msgid)
+
         except BaseException,e:
             logger.exception(e)
             raise e
@@ -319,7 +352,14 @@ class Ma(object):
             logger.exception(e)
             raise e
 
-    def quantOrder(self):
+    def quantOrder(self, event):
+        code =  event.dict_['code']
+        qty = int(event.dict_['number'])
+        stkbiz = 0
+        if event.dict_['direction'] == 'buy':
+            stkbiz = 100
+        elif event.dict_['direction'] == 'sell':
+            stkbiz = 101
         try:
             hHandle = c_void_p(0)
             self._ma.maCli_Init(byref(hHandle))
@@ -334,10 +374,10 @@ class Ma(object):
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._szTradeAcct, fixDict['TRDACCT'])
-            self._ma.maCli_SetValueS(hHandle, '00', fixDict['STKBD'])
-            self._ma.maCli_SetValueS(hHandle, '000078', fixDict['TRD_CODE'])
-            self._ma.maCli_SetValueN(hHandle, 100, fixDict['ORDER_QTY'])
-            self._ma.maCli_SetValueN(hHandle, 100, fixDict['STK_BIZ'])
+            self._ma.maCli_SetValueS(hHandle, getStkBD(code), fixDict['STKBD'])
+            self._ma.maCli_SetValueS(hHandle, code, fixDict['TRD_CODE'])
+            self._ma.maCli_SetValueN(hHandle, qty, fixDict['ORDER_QTY'])
+            self._ma.maCli_SetValueN(hHandle, stkbiz, fixDict['STK_BIZ'])
             self._ma.maCli_SetValueN(hHandle, 124, fixDict['STK_BIZ_ACTION'])
             self._ma.maCli_SetValueN(hHandle, 0, fixDict['ATTR_CODE'])
             self._ma.maCli_EndWrite(hHandle)
@@ -485,7 +525,6 @@ class Ma(object):
                 logger.info("shTradeAcct:%s", retdict["STK_TRDACCT"])
 
             self._int_org = c_int(int(retdict["INT_ORG"]))
-
 
     def dealQueryMoneyReply(self, ret_):
         pass

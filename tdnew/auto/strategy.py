@@ -19,24 +19,21 @@ logger = logging.getLogger("run")
 class Strategy(object):
     def __init__(self, cf, code, eventEngine_):
         self._code = code
-        self._eventEngine = eventEngine_
-        self._eventEngine.register(EVENT_TIMER, self.OnTimerCall)
-        self._eventEngine.register(EVENT_5MKLINE_CONTRACT + self._code, self.OnNewKLine)
-
         self._quote = quote.Quote5mKline(cf, code)
         self._name = self._quote._name
+        self._eventEngine = eventEngine_
+
+        self._eventEngine.register(EVENT_MARKETDATA_CONTRACT + self._code, self.OnTick)
+        self._eventEngine.register(EVENT_TIMER, self.OnTimerCall)
+
         self._latestStatus = 'init'
 
-        
     def OnTick(self, event):
+        logger.debug("code：%s OnTick", self._code)
         tick = event.dict_['tick']
-        logger.debug("code：%s OnTick", self._code)        
         self._quote.OnTick(tick, self.OnNewKLine)
-        self.OnTimerCall()
-        
-    def OnNewKLine(self, event):
-        logger.debug("code：%s OnNewKLine", self._code)
-        kline = event.dict_['5mkline']
+
+    def OnNewKLine(self, kline):
         try:
             isNeedBuy, isNeedSell = td(kline)
             logger.info("code:%s,isNeedBuy:%s,isNeedSell:%s", self._code, isNeedBuy, isNeedSell)
@@ -69,10 +66,7 @@ class Strategy(object):
 class Stg_Signal(Strategy):
     def __init__(self, cf, code, eventEngine_):
         super(Stg_Signal, self).__init__(cf, code, eventEngine_)
-        self._sendmail = sendmail.sendmail(cf.get("DEFAULT", "smtp_server"),
-                            cf.get("DEFAULT", "from_addr"),
-                            cf.get("DEFAULT", "password"),
-                            "Signal")
+
         self.GenToAddrList(cf)
                 
     def GenToAddrList(self, cf):
@@ -94,9 +88,13 @@ class Stg_Signal(Strategy):
             self._to_addr_list.append(cf.get("signal", "from_addr"))
             
     def SendMail(self, status):
+        event = Event(type_=EVENT_SENDMAIL)
+        event.dict_['remarks'] = 'Signal'
+        event.dict_['content'] = 'code:%s, name:%s, 5min %s' % (self._code, self._name, status)
+        event.dict_['to_addr'] = self._to_addr_list
+        self._eventEngine.put(event)
         logger.info('sendmail code:%s, 5min %s, to_addr:%s', self._code, status, self._to_addr_list)
-        self._sendmail.send('code:%s, name:%s, 5min %s' % (self._code, self._name, status), self._to_addr_list)
-        
+
     def DealBuy(self):
         self.SendMail('buy')
     
@@ -105,13 +103,9 @@ class Stg_Signal(Strategy):
         
     
 class Stg_Autotrader(Strategy):
-    def __init__(self, cf, code, trade_, eventEngine_):
+    def __init__(self, cf, code, eventEngine_):
         super(Stg_Autotrader, self).__init__(cf, code, eventEngine_)
-        self._sendmail = sendmail.sendmail(cf.get("DEFAULT", "smtp_server"),
-            cf.get("DEFAULT", "from_addr"),
-            cf.get("DEFAULT", "password"),
-            "Autotrader")
-        self._trade = trade_
+
         #控制当天买入不能卖出
         self._todayHaveBuy = False
         self._bNeedToSellAtOpen = False
@@ -138,9 +132,6 @@ class Stg_Autotrader(Strategy):
         self._bNeedRetryWhileOrderFailed = self._retry > 0
         self._bOrderOk = True
 
-            
-
-                    
     #检测需不需要在开盘卖掉（如果最后一个真实的买入信号发生在上一个交易日，并且最后一个是卖出信号）
     def IsNeedToSellAtOpen(self):
         if IsLastTradingDay(self._lastBuyPoint.date()) and self._latestStatus == 'sell':
@@ -200,7 +191,7 @@ class Stg_Autotrader(Strategy):
             
         return iBuyIndex,iSellIndex
             
-    def OnTimerCall(self):
+    def OnTimerCall(self, event):
         try:
             if self._bNeedToSellAtOpen and self._latestStatus == 'sell' and datetime.datetime.now().time() > self._sellTime:
                 logger.info("deal the sell at open issue")
@@ -226,62 +217,15 @@ class Stg_Autotrader(Strategy):
                 logger.warn(msg)
                 self._sendmail.send(msg, self._to_addr_list)
 
+    def sendOrder(self, direction):
+        event = Event(type_= EVENT_TRADE)
+        event.dict_['direction'] = direction
+        event.dict_['code'] = self._code
+        event.dict_['number'] = self._stock_number
+        self._eventEngine.put(event)
         
     def DealBuy(self):
-        try:
-            logger.info("start to buy:%s with number:%s", self._code, self._stock_number)
-
-            self._trade.maximizeFocusWindow()
-            before = self._trade.getMoneyInfo()
-            self._trade.buy(self._code, None, self._stock_number)
-            after = self._trade.getMoneyInfo()
-
-        except BaseException,e:
-            logger.exception(e)
-            self._bOrderOk = False
-            self._trade.initTradeHandle()
-            raise e
-
-        logger.info("DealBuy MoneyInfo before:%s, after:%s", before, after)
-        if before - after > 1:
-            self._bOrderOk = True
-            self._todayHaveBuy = True
-            msg = "success to buy:%s %s with number:%s"%(self._code, self._name, self._stock_number)
-            logger.info(msg)
-            self._sendmail.send(msg, self._to_addr_list)
-        else:
-            self._bOrderOk = False
-            msg = "failed to buy:%s %s with number:%s"%(self._code, self._name, self._stock_number)
-            logger.warn(msg)
-            self._sendmail.send(msg, self._to_addr_list)
+        self.sendOrder("buy")
 
     def DealSell(self):
-        try:
-            if self._todayHaveBuy:
-                msg = "code:%s today have buy, so cant sell today"%self._code
-                logger.warn(msg)
-                self._sendmail.send(msg, self._to_addr_list)
-
-            logger.info("start to sell:%s with number:%s", self._code, self._stock_number)
-            self._trade.maximizeFocusWindow()
-            before = self._trade.getMoneyInfo()
-            self._trade.sell(self._code, None, self._stock_number)
-            after = self._trade.getMoneyInfo()
-
-        except BaseException,e:
-            logger.exception(e)
-            self._bOrderOk = False
-            self._trade.initTradeHandle()
-            raise e
-
-        logger.info("DealSell MoneyInfo before:%s, after:%s", before, after)
-        if after - before > 1:
-            self._bOrderOk = True
-            msg = "success to sell:%s %s with number:%s"%(self._code, self._name, self._stock_number)
-            logger.info(msg)
-            self._sendmail.send(msg, self._to_addr_list)
-        else:
-            self._bOrderOk = False
-            msg = "failed to sell:%s %s with number:%s"%(self._code, self._name, self._stock_number)
-            logger.warn(msg)
-            self._sendmail.send(msg, self._to_addr_list)
+        self.sendOrder("sell")

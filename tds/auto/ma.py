@@ -198,6 +198,28 @@ class Ma(object):
             logger.exception(e)
             raise e
 
+    def monitorQuery(self, funid_):
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_BeginWrite(hHandle)
+            reqid = self.genReqId()
+            msgid = create_string_buffer(32+1)
+            self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+            self.setPkgHead(hHandle, "B", "R", "Q", funid_, msgid)
+            self.setRegular(hHandle)
+
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_EndWrite(hHandle)
+
+            b64bizdata = self.genBizData(hHandle)
+            self.sendReqMsg(b64bizdata, reqid, funid_, msgid)
+
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
     def queryMoney(self):
         try:
             hHandle = c_void_p(0)

@@ -44,6 +44,7 @@ fixDict["FORCE_CLOSE_REASON"] = c_char_p("8715")#强平原因
 fixDict["BUSINESS_UNIT"] = c_char_p("8717")#业务单元
 fixDict["IS_SWAP_ORDER"] = c_char_p("8720")#互换单标志
 fixDict["GTD_DATA"] = c_char_p("8723")#GTD日期
+fixDict["UPDATE_TIME"] = c_char_p("8757")#最后修改时间
 fixDict["F_OP_USER"] = c_char_p("8810")#操作用户代码
 fixDict["F_OP_ROLE"] = c_char_p("8811")#操作用户角色
 fixDict["F_OP_SITE"] = c_char_p("8812")#操作站点
@@ -123,6 +124,7 @@ fixDict["CON_EXP_DATE"] = c_char_p("8976")#合约到期日
 fixDict["FUND_BLN"] = c_char_p("8984")#资金余额
 fixDict["STK_BLN"] = c_char_p("8985")#证券余额
 fixDict["ACCT_TYPE"] = c_char_p("8987")#账户类型
+fixDict["SUBSYS_SN"] = c_char_p("8988")#子系统编码
 fixDict["QUERY_POS"] = c_char_p("8991")#定位串
 fixDict["QRY_POS"] = c_char_p("8991")#定位串
 fixDict["QRY_POS"] = c_char_p("8991")#定位串查询
@@ -134,16 +136,19 @@ fixDict["OFFER_RET_MSG"] = c_char_p("9080")#申报信息
 fixDict["MATCHED_TYPE"] = c_char_p("9080")#成交类型
 fixDict["SECURITY_LEVEL"] = c_char_p("9080")#安全手段
 fixDict["CANCEL_STATUS"] = c_char_p("9080")#内部撤单标志
+fixDict["SUBSYS"] = c_char_p("9080")#子系统
 fixDict["ACCT_ID"] = c_char_p("9081")#账户标识
 fixDict["MARKET_VALUE"] = c_char_p("9081")#资产总值
 fixDict["FLAG"] = c_char_p("9081")#查询标志
 fixDict["SECURITY_INFO"] = c_char_p("9081")#安全信息
 fixDict["MSG_OK"] = c_char_p("9081")#内撤信息
+fixDict["NODE_ID_ORG"] = c_char_p("9081")#原节点编号
 fixDict["USE_SCOPE"] = c_char_p("9082")#使用范围
 fixDict["CHANNEL_ID"] = c_char_p("9082")#通道号
 fixDict["FUND_VALUE"] = c_char_p("9082")#资金资产
 fixDict["CANCEL_LIST"] = c_char_p("9082")#撤单列表
 fixDict["OPT_NUM"] = c_char_p("9082")#合约编码
+fixDict["NODE_ID_NOW"] = c_char_p("9082")#现节点编号
 fixDict["AUTH_TYPE"] = c_char_p("9083")#认证类型
 fixDict["STK_VALUE"] = c_char_p("9083")#市值
 fixDict["PUBLISH_CTRL_FLAG"] = c_char_p("9083")#股票风控标志
@@ -164,7 +169,9 @@ fixDict["ORDER_ATTR"] = c_char_p("9100")#高级属性
 fixDict["ATTR_CODE"] = c_char_p("9101")#属性代码
 fixDict["CLI_ORDER_NO"] = c_char_p("9102")#客户端委托编号
 fixDict["EXE_STATUS"] = c_char_p("9103")#执行状态
+fixDict["EXE_STATUSES"] = c_char_p("9103")#执行状态
 fixDict["EXE_INFO"] = c_char_p("9104")#执行信息
+fixDict["EXE_QTY"] = c_char_p("9105")#执行数量
 fixDict["ORDER_NO"] = c_char_p("9106")#委托编号
 fixDict["REPAY_OPENING_DATE"] = c_char_p("9121")#偿还合约日期
 fixDict["REPAY_STK_CODE"] = c_char_p("9218")#偿还证券代码
@@ -370,6 +377,54 @@ replyMsgParam["10388101"] = {'CLI_ORDER_NO': 's,32',
                              'TRD_CODE': 's,8',
                              'UNDL_CODE': 's,16',
                              }
+#量化委托查询
+replyMsgParam["10388301"] = {'ATTR_CODE': 'n',
+                             'BGN_EXE_TIME': 'n',
+                             'CLI_ORDER_NO': 's,32',
+                             'CLI_REMARK': 's,32',
+                             'CON_EXP_DATE': 'n',
+                             'CON_UNIT': 'l',
+                             'CUACCT_CODE': 'l',
+                             'CUST_CODE': 'l',
+                             'END_EXE_TIME': 'n',
+                             'EXCHANGE': 'c',
+                             'EXERCISE_PRICE': 'd',
+                             'EXE_INFO': 's,128',
+                             'EXE_QTY': 'l',
+                             'EXE_STATUS': 'c',
+                             'INT_ORG': 'n',
+                             'MATCHED_AMT': 'd',
+                             'MATCHED_QTY': 'l',
+                             'OPT_NUM': 's,16',
+                             'ORDER_ATTR': 's,256',
+                             'ORDER_BSN': 'n',
+                             'ORDER_DATE': 'n',
+                             'ORDER_NO': 'n',
+                             'ORDER_PRICE': 'd',
+                             'ORDER_QTY': 'l',
+                             'ORDER_TIME': 's,32',
+                             'QRY_POS': 's,32',
+                             'SPREAD_NAME': 's,64',
+                             'STKBD': 'None',
+                             'STK_BIZ': 'n',
+                             'STK_BIZ_ACTION': 'n',
+                             'STOP_PRICE': 'd',
+                             'TRDACCT': 's,10',
+                             'TRD_CODE': 's,8',
+                             'TRD_CODE_CLS': 'n',
+                             'UNDL_CODE': 's,16',
+                             'UPDATE_TIME': 's,32',
+                             'VALID_DATE': 'n',
+                             'WITHDRAWN_QTY': 'l',
+                             }
+#客户所在节点编号查询
+replyMsgParam["10388302"] = {'CUACCT_CODE': 'l',
+                             'CUST_CODE': 'l',
+                             'NODE_ID_NOW': 'n',
+                             'NODE_ID_ORG': 'n',
+                             'SUBSYS': 'n',
+                             'SUBSYS_SN': 'n',
+                             }
 #应答第一结果集
 replyMsgParam["88888888"] = {'MSG_CODE': 'n',
                              'MSG_DEBUG': 's,1024',
@@ -387,6 +442,8 @@ funNameDict["10303002"] = u"可用股份查询"
 funNameDict["10303003"] = u"当日委托查询"
 funNameDict["10303004"] = u"当日成交查询"
 funNameDict["10388101"] = u"量化委托"
+funNameDict["10388301"] = u"量化委托查询"
+funNameDict["10388302"] = u"客户所在节点编号查询"
 funNameDict["88888888"] = u"应答第一结果集"
 
 
@@ -420,6 +477,14 @@ requireFixidxDict["10388101"] = {'ATTR_CODE': None,
                                  'STK_BIZ': None,
                                  'STK_BIZ_ACTION': None,
                                  'TRDACCT': None,
+                                 }
+#量化委托查询
+requireFixidxDict["10388301"] = {'CUACCT_CODE': None,
+                                 'QUERY_FLAG': None,
+                                 'QUERY_NUM': None,
+                                 }
+#客户所在节点编号查询
+requireFixidxDict["10388302"] = {'CUACCT_CODE': None,
                                  }
 #应答第一结果集
 requireFixidxDict["88888888"] = {'F_CHANNEL': None,
