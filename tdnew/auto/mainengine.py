@@ -7,17 +7,19 @@ from datetime import datetime
 from strategy import *
 from quote import *
 import base64
+import time
 logger = logging.getLogger("run")
 
 class MainEngine(object):
     def __init__(self, cf):
         self._eventEngine = EventEngine(cf.getint("DEFAULT", "timer"))
-        self.autoTrade(cf)
-
         self._trade = Ma(cf, self._eventEngine)
         self._trade.logonEa()
+        #time.sleep(5)
+        self.autoTrade(cf)
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
         self._eventEngine.start()
+
 
         self.isSend = False
     def autoTrade(self,cf):
@@ -37,6 +39,7 @@ class MainEngine(object):
 
         #一次批量获取代码的最新行情
         self._realtimequote = RealTimeQuote(cf, list(self._codeset), self._eventEngine)
+        #self._realtimequote.start()
 
     def monitor(self,cf):
         pass
@@ -44,14 +47,29 @@ class MainEngine(object):
     def logon(self):
         self._trade.logonEa()
 
-    def onTimer(self,event):
-        if not self.isSend:
+    def onTimer(self, event):
+        if int(datetime.datetime.now().strftime("%H%M%S")) % 10000 == 0:
             event = Event(type_= EVENT_TRADE)
             event.dict_['direction'] = 'sell'
             event.dict_['code'] = '000012'
             event.dict_['number'] = '200'
             self._eventEngine.put(event)
             logger.info("sell 000012")
+
+        if not self.isSend:
+            event = Event(type_= EVENT_TRADE)
+            event.dict_['direction'] = 'buy'
+            event.dict_['code'] = '000012'
+            event.dict_['number'] = '400'
+            self._eventEngine.put(event)
+            logger.info("buy 000012")
+
+            # event = Event(type_= EVENT_TRADE)
+            # event.dict_['direction'] = 'sell'
+            # event.dict_['code'] = '000012'
+            # event.dict_['number'] = '200'
+            # self._eventEngine.put(event)
+            # logger.info("sell 000012")
             self.isSend = True
         # try:
         #     for func in self._todolist:

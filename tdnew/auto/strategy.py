@@ -29,7 +29,7 @@ class Strategy(object):
         self._latestStatus = 'init'
 
     def OnTick(self, event):
-        logger.debug("code：%s OnTick", self._code)
+        #logger.debug("code:%s OnTick", self._code)
         tick = event.dict_['tick']
         self._quote.OnTick(tick, self.OnNewKLine)
 
@@ -55,7 +55,8 @@ class Strategy(object):
             logger.exception(e)
             
     def OnTimerCall(self, event):
-        logger.debug("code：%s OnTimerCall", self._code)
+        pass
+        #logger.debug("code:%s OnTimerCall", self._code)
             
     def DealBuy(self):
         pass
@@ -211,17 +212,23 @@ class Stg_Autotrader(Strategy):
                 else:
                     msg = "failed to retry %s:%s %s with number:%s"%(self._latestStatus, self._code, self._name, self._stock_number)
                     logger.warn(msg)
-                    self._sendmail.send(msg, self._to_addr_list)
+                    #self._sendmail.send(msg, self._to_addr_list)
         except BaseException,e:
                 msg = "occur exception when %s:%s %s with number:%s"%(self._latestStatus, self._code, self._name, self._stock_number)
                 logger.warn(msg)
-                self._sendmail.send(msg, self._to_addr_list)
+                #self._sendmail.send(msg, self._to_addr_list)
 
     def sendOrder(self, direction):
         event = Event(type_= EVENT_TRADE)
         event.dict_['direction'] = direction
         event.dict_['code'] = self._code
         event.dict_['number'] = self._stock_number
+        self._eventEngine.put(event)
+
+        event = Event(type_=EVENT_SENDMAIL)
+        event.dict_['remarks'] = 'AutoTrade'
+        event.dict_['content'] = 'code:%s, name:%s, 5min %s' % (self._code, self._name, direction)
+        event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
         
     def DealBuy(self):

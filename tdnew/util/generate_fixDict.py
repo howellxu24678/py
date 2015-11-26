@@ -15,7 +15,7 @@ typeDict = {'BIGINT':'l', 'SMALLINT':'n','CHAR(1)':'c','INTEGER':'n','CMONEY':'d
 def getValue(subcontent):
     if subcontent in typeDict:
         return typeDict[subcontent]
-    elif "VARCHAR" in subcontent:
+    elif "VARCHAR" in subcontent or "CHAR" in subcontent:
         return  's,' + re.findall(r'\d+', subcontent)[0]
 
 def processReplyMsgParam(line):

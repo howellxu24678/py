@@ -11,6 +11,8 @@ from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
 import smtplib
 from eventengine import *
+import logging
+logger = logging.getLogger("run")
 
 def _format_addr(s):
     name, addr = parseaddr(s)
@@ -32,6 +34,7 @@ class sendmail(object):
         remarks = event.dict_['remarks']
         content = event.dict_['content']
         to_addr = event.dict_['to_addr']
+        logger.info('sendmail %s:%s, to_addr:%s', remarks, content, self._to_addr_list)
 
         msg = MIMEText(content, 'plain', 'utf-8')
         msg['From'] = self._from_addr

@@ -75,15 +75,6 @@ onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, py_object)
 onMsgHandle = onMsgFv(onMsg)
 
 
-def getStkBD(code):
-    if code[:2] == '00' or code[:2] == '300' or code[:2] == '15':
-        return '00'
-    elif code[:2] == '60' or code[:2] == '15':
-        return '10'
-
-    return 'unknow'
-
-
 class Ma(object):
     def __init__(self, cf, eventEngine_):
         try:
@@ -91,7 +82,7 @@ class Ma(object):
             self._ea = WinDLL("GxTS.dll")
             self._eventEngine = eventEngine_
             self._eventEngine.register(EVENT_AXEAGLE, self.onRecvMsg)
-            self._eventEngine.register(EVENT_TRADE, self.quantOrder)
+            self._eventEngine.register(EVENT_TRADE, self.onQuantOrder)
 
             self._ip = cf.get("ma", "ip")
             self._port = cf.getint("ma","port")
@@ -104,8 +95,7 @@ class Ma(object):
                         self._pwd)
             self._session = None
             self._int_org = None
-            self._szTradeAcct = None
-            self._shTradeAcct = None
+            self._bd2tradacc_dict = {}
 
             self._dealReplyDict = {}
             self._dealReplyDict['10301105'] = self.dealLogonBackendReply
@@ -113,6 +103,7 @@ class Ma(object):
             self._dealReplyDict['10303002'] = self.dealQueryPositionReply
             self._dealReplyDict['10303003'] = self.dealQueryOrderTodayReply
             self._dealReplyDict['10303004'] = self.dealQueryMatchTodayReply
+            self._dealReplyDict['10388101'] = self.dealQuantOrderReply
 
             self._localIp = c_char_p("1:" + socket.gethostbyname(socket.gethostname()))
             self._ea.AxE_Init(None, None, onMsgHandle, py_object(self._eventEngine))
@@ -131,7 +122,6 @@ class Ma(object):
             self._ma.maCli_SetHdrValueS(hHandle_, msgid_, defineDict['MACLI_HEAD_FID_MSG_ID'])
         except BaseException,e:
             logger.exception(e)
-            raise e
 
     def setRegular(self, hHandle_):
         try:
@@ -153,7 +143,7 @@ class Ma(object):
             self._ma.maCli_SetValueN(hHandle_, self._int_org, fixDict['F_OP_ORG'])
         except BaseException,e:
             logger.exception(e)
-            raise e
+
     def genReqId(self):
         return int(datetime.datetime.now().strftime("%H%M%S%f")[0:-3])
 
@@ -207,7 +197,64 @@ class Ma(object):
             self.sendReqMsg(b64bizdata, reqid, funid, msgid)
         except BaseException,e:
             logger.exception(e)
-            raise e
+
+    def subOrderAck(self):
+        '''
+        订阅委托确认
+        :return:
+        '''
+        try:
+            for trdacc in self._bd2tradacc_dict.values():
+                hHandle = c_void_p(0)
+                self._ma.maCli_Init(byref(hHandle))
+                self._ma.maCli_BeginWrite(hHandle)
+                reqid = self.genReqId()
+                funid = "00102012"
+                msgid = create_string_buffer(32+1)
+                self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+                self.setPkgHead(hHandle, "S", "R", "Q", funid, msgid)
+                self.setRegular(hHandle)
+                self._ma.maCli_SetValueS(hHandle, c_char_p("TSU_ORDER"), c_char_p("TOPIC"))
+                self._ma.maCli_SetValueS(hHandle, c_char_p(trdacc), c_char_p("FILTER"))
+                self._ma.maCli_SetValueS(hHandle, c_char_p(trdacc), c_char_p("SUB_ID"))
+                self._ma.maCli_SetValueC(hHandle, c_char('1'), c_char_p("DATA_SET"))
+                self._ma.maCli_EndWrite(hHandle)
+
+                b64bizdata = self.genBizData(hHandle)
+                self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+                logger.info("subOrderAck %s", trdacc)
+        except BaseException,e:
+            logger.exception(e)
+
+    def subMatchAck(self):
+        '''
+        订阅成交回报
+        :return:
+        '''
+        try:
+            for bd,trdacc in self._bd2tradacc_dict.iteritems():
+                hHandle = c_void_p(0)
+                self._ma.maCli_Init(byref(hHandle))
+                self._ma.maCli_BeginWrite(hHandle)
+                reqid = self.genReqId()
+                funid = "00102012"
+                msgid = create_string_buffer(32+1)
+                self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+                self.setPkgHead(hHandle, "S", "R", "Q", funid, msgid)
+                self.setRegular(hHandle)
+                self._ma.maCli_SetValueS(hHandle, c_char_p("MATCH" + bd), c_char_p("TOPIC"))
+                self._ma.maCli_SetValueS(hHandle, c_char_p(trdacc), c_char_p("FILTER"))
+                self._ma.maCli_SetValueS(hHandle, c_char_p(trdacc), c_char_p("SUB_ID"))
+                self._ma.maCli_SetValueC(hHandle, c_char('1'), c_char_p("DATA_SET"))
+                self._ma.maCli_EndWrite(hHandle)
+
+                b64bizdata = self.genBizData(hHandle)
+                self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+                logger.info("subMatchAck %s,%s", bd, trdacc)
+        except BaseException,e:
+            logger.exception(e)
 
     def monitorQuery(self, funid_):
         try:
@@ -229,7 +276,6 @@ class Ma(object):
 
         except BaseException,e:
             logger.exception(e)
-            raise e
 
     def queryMoney(self):
         try:
@@ -252,7 +298,6 @@ class Ma(object):
 
         except BaseException,e:
             logger.exception(e)
-            raise e
 
     def queryPosition(self):
         try:
@@ -298,7 +343,6 @@ class Ma(object):
 
         except BaseException,e:
             logger.exception(e)
-            raise e
 
     def queryMatchToday(self):
         try:
@@ -321,7 +365,18 @@ class Ma(object):
 
         except BaseException,e:
             logger.exception(e)
-            raise e
+
+
+    def getStkBdTrdAcc(self, code):
+        try:
+            if code[:2] == '00' or code[:2] == '300' or code[:2] == '15':
+                return c_char_p('00'),self._bd2tradacc_dict['00']
+            elif code[:2] == '60' or code[:2] == '15':
+                return c_char_p('10'),self._bd2tradacc_dict['10']
+        except BaseException,e:
+            logger.exception(e)
+
+        return 'unknow','unknow'
 
     def buySellOrder(self):
         try:
@@ -342,7 +397,7 @@ class Ma(object):
             self._ma.maCli_SetValueN(hHandle, 100, fixDict['ORDER_QTY'])
             self._ma.maCli_SetValueN(hHandle, 100, fixDict['STK_BIZ'])
             self._ma.maCli_SetValueN(hHandle, 124, fixDict['STK_BIZ_ACTION'])
-            self._ma.maCli_SetValueS(hHandle, self._szTradeAcct, fixDict['TRDACCT'])
+            self._ma.maCli_SetValueS(hHandle, self._bd2tradacc_dict['00'], fixDict['TRDACCT'])
             self._ma.maCli_EndWrite(hHandle)
 
             b64bizdata = self.genBizData(hHandle)
@@ -352,7 +407,7 @@ class Ma(object):
             logger.exception(e)
             raise e
 
-    def quantOrder(self, event):
+    def onQuantOrder(self, event):
         code =  event.dict_['code']
         qty = int(event.dict_['number'])
         stkbiz = 0
@@ -360,6 +415,7 @@ class Ma(object):
             stkbiz = 100
         elif event.dict_['direction'] == 'sell':
             stkbiz = 101
+
         try:
             hHandle = c_void_p(0)
             self._ma.maCli_Init(byref(hHandle))
@@ -373,8 +429,9 @@ class Ma(object):
             self.setRegular(hHandle)
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
-            self._ma.maCli_SetValueS(hHandle, self._szTradeAcct, fixDict['TRDACCT'])
-            self._ma.maCli_SetValueS(hHandle, getStkBD(code), fixDict['STKBD'])
+            stdbd, trdacct = self.getStkBdTrdAcc(code)
+            self._ma.maCli_SetValueS(hHandle, stdbd, fixDict['STKBD'])
+            self._ma.maCli_SetValueS(hHandle, trdacct, fixDict['TRDACCT'])
             self._ma.maCli_SetValueS(hHandle, code, fixDict['TRD_CODE'])
             self._ma.maCli_SetValueN(hHandle, qty, fixDict['ORDER_QTY'])
             self._ma.maCli_SetValueN(hHandle, stkbiz, fixDict['STK_BIZ'])
@@ -386,7 +443,6 @@ class Ma(object):
             self.sendReqMsg(b64bizdata, reqid, funid, msgid)
         except BaseException,e:
             logger.exception(e)
-            raise e
 
     def genBizData(self, hHandle_):
         ilen = c_int(0)
@@ -403,7 +459,7 @@ class Ma(object):
         logger.debug("pMsg:%s", event.dict_["pMsg"])
         msgSplitList = event.dict_["pMsg"].split('\1')
         cmdId = msgSplitList[0]
-        if cmdId == "40002":
+        if cmdId == "40002" or cmdId == "40020":
             msgstr = base64.decodestring(msgSplitList[5])
             logger.debug("pMsg:%s, iLen:%s, pAccount:%s",
                         msgstr,
@@ -415,6 +471,9 @@ class Ma(object):
         if cmdId == "40000":
             self.logonBackend()
 
+    def parseSubMsg(self, hHandle_):
+        pass
+
     def parseMsg(self, msgstr_):
         try:
             hHandle = c_void_p(0)
@@ -423,6 +482,12 @@ class Ma(object):
             funid = create_string_buffer(8+1)
             self._ma.maCli_GetHdrValueS(hHandle, funid, len(funid), defineDict['MACLI_HEAD_FID_FUNC_ID'])
             logger.debug("fundid:%s", funid.value)
+
+            #处理订阅类消息
+            if funid.value[:2] == '00':
+                logger.info("00 msg:%s", msgstr_)
+                return  self.parseSubMsg(hHandle)
+
             itablecount = c_int(0)
             self._ma.maCli_GetTableCount(hHandle, byref(itablecount))
             logger.debug("itablecount:%s", itablecount)
@@ -452,7 +517,6 @@ class Ma(object):
 
         except BaseException,e:
             logger.exception(e)
-            raise e
 
     def parseFirstTable(self, hHandle_):
         self._ma.maCli_OpenTable(hHandle_, 1)
@@ -506,25 +570,22 @@ class Ma(object):
         return ret
 
     def dealLogonBackendReply(self, ret_):
-        for retdict in ret_:
-            if not 'SESSION_ID' in retdict:
-                logger.error("SESSION_ID is not in the reply of 10301105")
-                return
-            if len(retdict['SESSION_ID']) > 0:
-                self._session = c_char_p(retdict['SESSION_ID'])
-                logger.info("set the _session to %s", retdict['SESSION_ID'])
-            if not "STK_TRDACCT" in retdict:
-                logger.error("STK_TRDACCT is not in the reply of 10301105")
-                return
+        try:
+            for retdict in ret_:
+                if len(retdict['SESSION_ID']) > 0:
+                    self._session = c_char_p(retdict['SESSION_ID'])
+                    logger.info("set the _session to %s", retdict['SESSION_ID'])
+                self._int_org = c_int(int(retdict["INT_ORG"]))
+                logger.info("set the _int_org to %s", self._int_org)
 
-            if retdict["STKEX"] == '0':
-                self._szTradeAcct = c_char_p(retdict["STK_TRDACCT"])
-                logger.info("szTradeAcct:%s", retdict["STK_TRDACCT"])
-            elif retdict["STKEX"] == '1':
-                self._shTradeAcct = c_char_p(retdict["STK_TRDACCT"])
-                logger.info("shTradeAcct:%s", retdict["STK_TRDACCT"])
+                if not retdict["STKBD"] in self._bd2tradacc_dict:
+                    self._bd2tradacc_dict[retdict["STKBD"]] = retdict["STK_TRDACCT"]
 
-            self._int_org = c_int(int(retdict["INT_ORG"]))
+            self.subOrderAck()
+            self.subMatchAck()
+
+        except BaseException,e:
+            logger.exception(e)
 
     def dealQueryMoneyReply(self, ret_):
         pass
@@ -534,3 +595,17 @@ class Ma(object):
         pass
     def dealQueryMatchTodayReply(self, ret_):
         pass
+    def dealQuantOrderReply(self, ret_):
+        try:
+            for retdict in ret_:
+                logger.info("ORDER_BSN:%s, ORDER_NO:%s, ORDER_TIME:%s, EXE_STATUS:%s, EXE_INFO:%s, TRD_CODE:%s, TRD_BIZ:%s",
+                            retdict["ORDER_BSN"],
+                            retdict["ORDER_NO"],
+                            retdict["ORDER_TIME"],
+                            retdict["EXE_STATUS"],
+                            retdict["EXE_INFO"],
+                            retdict["TRD_CODE"],
+                            retdict["TRD_BIZ"])
+
+        except BaseException,e:
+            logger.exception(e)

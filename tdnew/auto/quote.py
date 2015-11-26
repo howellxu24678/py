@@ -19,14 +19,28 @@ from eventengine import *
 class RealTimeQuote(object):
     def __init__(self, cf, codelist, eventEngine_):
         self._codelist = codelist
+        logger.info("codelist:%s", self._codelist)
         self._eventEngine = eventEngine_
-        self._eventEngine.register(EVENT_TIMER, self.TimerCall)
+        #self._eventEngine.register(EVENT_TIMER, self.TimerCall)
+        self._sched  = BackgroundScheduler()
 
-    def TimerCall(self, event_):
+    def start(self):
+        self._sched.add_job(self.TimerCall, 'interval',  seconds=3)
+        self._sched.start()
+        logger.info('RealTimeQuote start')
+
+    def stop(self):
+        logger.info('RealTimeQuote stop')
+        self._sched.shutdown()
+
+    def TimerCall(self):
         '''
         定时根据代码列表获取最新行情
         :return:
         '''
+        if len(self._codelist) < 1:
+            return
+
         rtQuote = GetRealTimeQuote(self._codelist)
         for i in range(rtQuote.shape[0]):
             itQuote = rtQuote.ix[i]
