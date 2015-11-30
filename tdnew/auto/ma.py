@@ -471,8 +471,38 @@ class Ma(object):
         if cmdId == "40000":
             self.logonBackend()
 
-    def parseSubMsg(self, hHandle_):
+    def parseTsuOrderMsg(self, hHandle_):
+        cuacc = c_int64(0)
+        self._ma.maCli_GetValueL(hHandle_, byref(cuacc), 'CUACCT_CODE')
+        orderno = c_int(0)
+        self._ma.maCli_GetValueN(hHandle_, byref(orderno), 'ORDER_NO')
+        stkcode = create_string_buffer(8+1)
+        self._ma.maCli_GetValueS(hHandle_, byref(stkcode), len(stkcode), 'STK_CODE')
+        stkbd = create_string_buffer(2+1)
+        self._ma.maCli_GetValueS(hHandle_, byref(stkbd), len(stkbd), 'STKBD')
+        orderqty = c_long(0)
+        self._ma.maCli_GetValueL(hHandle_, byref(orderqty), 'ORDER_QTY')
+        orderprice = c_double(0.0)
+        self._ma.maCli_GetValueD(hHandle_, byref(orderprice), 'ORDER_PRICE')
+        logger.info("CUACCT_CODE:%s,ORDER_NO:%s,STK_CODE:%s,STKBD:%s,ORDER_QTY:%s,ORDER_PRICE:%s",
+                    cuacc.value,
+                    orderno.value,
+                    stkcode.value,
+                    stkbd.value,
+                    orderqty.value,
+                    orderprice.value)
+
+    def parseMatchMsg(self, hHandle_):
         pass
+
+    def parseSubMsg(self, hHandle_):
+        topic = create_string_buffer(12+1)
+        self._ma.maCli_GetHdrValueS(hHandle_, topic, len(topic), defineDict['MACLI_HEAD_FID_PUB_TOPIC'])
+        if topic.value == 'TSU_ORDER':
+            self.parseTsuOrderMsg(hHandle_)
+        elif topic.value[:5] == 'MATCH':
+            self.parseMatchMsg(hHandle_)
+        logger.info("topic:%s", topic.value)
 
     def parseMsg(self, msgstr_):
         try:
