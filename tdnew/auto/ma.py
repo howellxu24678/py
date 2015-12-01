@@ -40,6 +40,17 @@ maHeadDict['MACLI_HEAD_FID_PUB_TOPIC'] = c_int(1073152)
 maHeadDict['MACLI_HEAD_FID_USER_SESSION'] = c_int(1871872)
 
 
+#成交类型【MATCHED_TYPE】
+defineDict["MATCHED_TYPE"] = {
+    '0': u'内部撤单成交',
+    '1': u'非法委托撤单成交',
+    '2': u'交易所成交',
+}
+
+#根据返回的字典项获得对应的说明（这样使得便于阅读）
+def getDictDetail(k, v):
+    return  str(v)+defineDict[k][str(v)]
+
 class STU(Structure):
     def __str__(self):
         ss = ""
@@ -491,18 +502,18 @@ class Ma(object):
         self._ma.maCli_GetValueN(hHandle_, byref(stkbizaction), 'STK_BIZ_ACTION')
         exestatus = c_char('0')
         self._ma.maCli_GetValueC(hHandle_, byref(exestatus), 'EXE_STATUS')
-        logger.info("OrderAck: CUACCT_CODE:%s,ORDER_NO:%s,STK_CODE:%s,"
+        logger.info("#OrderAck# CUACCT_CODE:%s,ORDER_NO:%s,STK_CODE:%s,"
                     "STKBD:%s,ORDER_QTY:%s,ORDER_PRICE:%s,"
                     "STK_BIZ:%s,STK_BIZ_ACTION:%s,EXE_STATUS:%s",
                     cuacc.value,
                     orderno.value,
                     stkcode.value,
-                    stkbd.value,
+                    getDictDetail("STKBD", stkbd.value),
                     orderqty.value,
                     orderprice.value,
-                    stkbiz.value,
-                    stkbizaction.value,
-                    exestatus.value)
+                    getDictDetail("STK_BIZ", stkbiz.value),
+                    getDictDetail("STK_BIZ_ACTION", stkbizaction.value),
+                    getDictDetail("EXE_STATUS", exestatus.value))
 
     def parseMatchMsg(self, hHandle_):
         cuacc = c_int64(0)
@@ -527,7 +538,7 @@ class Ma(object):
         self._ma.maCli_GetValueC(hHandle_, byref(matchtype), 'MATCHED_TYPE')
         orderstatus = c_char('0')
         self._ma.maCli_GetValueC(hHandle_, byref(orderstatus), 'ORDER_STATUS')
-        logger.info("MatchStatus: CUACCT_CODE:%s,ORDER_NO:%s,"
+        logger.info("#MatchStatus# CUACCT_CODE:%s,ORDER_NO:%s,"
                     "MATCHED_SN:%s,STK_CODE:%s,STKBD:%s,MATCHED_QTY:%s,"
                     "MATCHED_PRICE:%s,STK_BIZ:%s,STK_BIZ_ACTION:%s,"
                     "MATCHED_TYPE:%s,ORDER_STATUS:%s",
@@ -535,13 +546,13 @@ class Ma(object):
                     orderno.value,
                     matchsn.value,
                     stkcode.value,
-                    stkbd.value,
+                    getDictDetail("STKBD", stkbd.value),
                     matchqty.value,
                     matchprice.value,
-                    stkbiz.value,
-                    stkbizaction.value,
-                    matchtype.value,
-                    orderstatus.value)
+                    getDictDetail("STK_BIZ", stkbiz.value),
+                    getDictDetail("STK_BIZ_ACTION", stkbizaction.value),
+                    getDictDetail("MATCHED_TYPE", matchtype.value),
+                    getDictDetail("ORDER_STATUS", orderstatus.value))
 
     def parseSubMsg(self, hHandle_):
         topic = create_string_buffer(12+1)
@@ -550,7 +561,8 @@ class Ma(object):
             self.parseTsuOrderMsg(hHandle_)
         elif topic.value[:5] == 'MATCH':
             self.parseMatchMsg(hHandle_)
-        logger.info("topic:%s", topic.value)
+        if len(topic.value) > 1:
+            logger.info("topic:%s", topic.value)
 
     def parseMsg(self, msgstr_):
         try:
@@ -676,14 +688,16 @@ class Ma(object):
     def dealQuantOrderReply(self, ret_):
         try:
             for retdict in ret_:
-                logger.info("ORDER_BSN:%s, ORDER_NO:%s, ORDER_TIME:%s, EXE_STATUS:%s, EXE_INFO:%s, TRD_CODE:%s, TRD_BIZ:%s",
+                logger.info("#OrderReply# ORDER_BSN:%s, ORDER_NO:%s, ORDER_TIME:%s, EXE_STATUS:%s, "
+                            "EXE_INFO:%s, TRD_CODE:%s, TRD_BIZ:%s, TRD_BIZ_ACCTION:%s",
                             retdict["ORDER_BSN"],
                             retdict["ORDER_NO"],
                             retdict["ORDER_TIME"],
-                            retdict["EXE_STATUS"],
+                            getDictDetail("EXE_STATUS", retdict["EXE_STATUS"]),
                             retdict["EXE_INFO"],
                             retdict["TRD_CODE"],
-                            retdict["TRD_BIZ"])
+                            getDictDetail("STK_BIZ", retdict["TRD_BIZ"]),
+                            getDictDetail("STK_BIZ_ACTION", retdict["TRD_BIZ_ACCTION"]))
 
         except BaseException,e:
             logger.exception(e)

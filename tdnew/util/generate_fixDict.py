@@ -136,10 +136,10 @@ def main():
         fpy.write('\n')
         fpy.write('replyMsgParam = {}\n')
         for k in sorted(globalReplyMsgParam.keys()):
-            to_write = '#%s\nreplyMsgParam["%s"] = {' % (globalFunid2Name[k],k)
+            to_write = '#%s\nreplyMsgParam["%s"] = {\n' % (globalFunid2Name[k],k)
             for k_inner in sorted(globalReplyMsgParam[k].keys()):
-                to_write += "'%s': '%s',\n" % (k_inner, globalReplyMsgParam[k][k_inner])
-                to_write += "                             "
+                to_write += "    '%s': '%s',\n" % (k_inner, globalReplyMsgParam[k][k_inner])
+                #to_write += "                             "
             to_write += "}\n"
             fpy.write(to_write.decode('gbk').encode('utf-8'))
 
@@ -156,10 +156,10 @@ def main():
         fpy.write('\n')
         fpy.write('requireFixidxDict = {}\n')
         for k in sorted(globalRequireFixIdx.keys()):
-            to_write = '#%s\nrequireFixidxDict["%s"] = {' % (globalFunid2Name[k],k)
+            to_write = '#%s\nrequireFixidxDict["%s"] = {\n' % (globalFunid2Name[k],k)
             for k_inner in sorted(globalRequireFixIdx[k].keys()):
-                to_write += "'%s': %s,\n" % (k_inner, globalRequireFixIdx[k][k_inner])
-                to_write += "                                 "
+                to_write += "    '%s': %s,\n" % (k_inner, globalRequireFixIdx[k][k_inner])
+                #to_write += "                                 "
             to_write += "}\n"
             fpy.write(to_write.decode('gbk').encode('utf-8'))
 
