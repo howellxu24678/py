@@ -49,7 +49,11 @@ defineDict["MATCHED_TYPE"] = {
 
 #根据返回的字典项获得对应的说明（这样使得便于阅读）
 def getDictDetail(k, v):
-    return  str(v)+defineDict[k][str(v)]
+    try:
+        return str(v)+defineDict[k][str(v)]
+    except:
+        return k+'unknow'
+
 
 class STU(Structure):
     def __str__(self):
