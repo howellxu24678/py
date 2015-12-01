@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'xujh'
 
-import  re
+import re
 
 globalFix2Line = {}
 globalReplyMsgParam = {}
@@ -79,7 +79,7 @@ def processInput(line):
                     globalRequireFixIdx[curfunid][content[1].strip()] = None
 
 
-def process_line(line):
+def process_mapi_line(line):
     if line == '\n' or len(line.strip()) == 0:
         return
 
@@ -89,10 +89,30 @@ def process_line(line):
         processFixDict(line)
         processReplyMsgParam(line)
 
+#字典定义：globaldefineDict['ORDER_STATUS'] = {'0': u'未报'...}
+globaldefineDict = {}
+#字典注释：ORDER_STATUS -》2.2.12委托状态【ORDER_STATUS】
+defineDictNote = {}
+curdict = None
+def process_madict_line(line):
+    if line == '\n' or len(line.strip()) == 0:
+        return
+    global curdict
+    content = line.strip().split('\t')
+    if len(content) >= 2 and re.match(r'\d.\d.\d', content[0]):
+
+        curdict = re.findall(r'\w+', content[1].strip())[0]
+        defineDictNote[curdict] = content[0].strip() + content[1].strip()
+    elif len(content) >= 2 and content[0].strip().isalnum():
+        if not curdict in globaldefineDict:
+            globaldefineDict[curdict] = {content[0].strip(): content[1].strip()}
+        else:
+            globaldefineDict[curdict][content[0].strip()] = content[1].strip()
+
+
 def main():
     """主函数"""
     try:
-        fcpp = open('maApi.txt','r')
         filepath = "../auto/data_type.py"
         fpy = open(filepath, 'w')
 
@@ -104,8 +124,9 @@ def main():
         fpy.write('fixDict = {}\n')
         fpy.write('\n')
 
-        for line in fcpp:
-            process_line(line)
+        fmapi = open('maApi.txt','r')
+        for line in fmapi:
+            process_mapi_line(line)
 
         for k in sorted(globalFix2Line.keys()):
             for py_line in globalFix2Line[k]:
@@ -142,14 +163,33 @@ def main():
             to_write += "}\n"
             fpy.write(to_write.decode('gbk').encode('utf-8'))
 
-        fcpp.close()
+
+        fpy.write('\n')
+        fpy.write('\n')
+        fpy.write('defineDict = {}\n')
+        fdict = open('maDict.txt','r')
+        for line in fdict:
+            process_madict_line(line)
+
+        for k in sorted(globaldefineDict.keys()):
+            to_write = '#%s\ndefineDict["%s"] = {\n' % (defineDictNote[k], k)
+            for k_inner in sorted(globaldefineDict[k].keys()):
+                to_write += "    '%s': u'%s',\n" % (k_inner, globaldefineDict[k][k_inner])
+                #to_write += "                              "
+            to_write += "}\n"
+            fpy.write(to_write.decode('gbk').encode('utf-8'))
+
+
+        print defineDictNote
+        print globaldefineDict
+        fmapi.close()
+        fdict.close()
         fpy.close()
 
         print u'%s生成过程完成'%filepath
     except BaseException,e:
         print u'%s生成过程出错'%filepath
         print e
-
 
 if __name__ == '__main__':
     main()

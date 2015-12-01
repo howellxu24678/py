@@ -44,6 +44,8 @@ class RealTimeQuote(object):
         rtQuote = GetRealTimeQuote(self._codelist)
         for i in range(rtQuote.shape[0]):
             itQuote = rtQuote.ix[i]
+            if float(itQuote['amount']) <= 0.01:
+                continue
             event = Event(type_=EVENT_MARKETDATA_CONTRACT + itQuote['code'])
             event.dict_['tick'] = itQuote
             self._eventEngine.put(event)

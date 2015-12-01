@@ -10,34 +10,35 @@ import base64
 import socket
 logger = logging.getLogger("run")
 
-defineDict = {}
-defineDict['MACLI_HEAD_FID_PKT_LEN'] = c_int(0)
-defineDict['MACLI_HEAD_FID_PKT_CRC'] = c_int(1)
-defineDict['MACLI_HEAD_FID_PKT_ID'] = c_int(2)
-defineDict['MACLI_HEAD_FID_PKT_VER'] = c_int(3)
-defineDict['MACLI_HEAD_FID_PKT_TYPE'] = c_int(4)
-defineDict['MACLI_HEAD_FID_MSG_TYPE'] = c_int(5)
-defineDict['MACLI_HEAD_FID_RESEND_FLAG'] = c_int(6)
-defineDict['MACLI_HEAD_FID_TIMESTAMP'] = c_int(7)
-defineDict['MACLI_HEAD_FID_MSG_ID'] = c_int(8)
-defineDict['MACLI_HEAD_FID_CORR_ID'] = c_int(9)
-defineDict['MACLI_HEAD_FID_FUNC_ID'] = c_int(11)
-defineDict['MACLI_HEAD_FID_SRC_NODE'] = c_int(12)
-defineDict['MACLI_HEAD_FID_DEST_NODE'] = c_int(13)
-defineDict['MACLI_HEAD_FID_PAGE_FLAG'] = c_int(14)
-defineDict['MACLI_HEAD_FID_PAGE_NO'] = c_int(15)
-defineDict['MACLI_HEAD_FID_PAGE_CNT'] = c_int(16)
-defineDict['MACLI_HEAD_FID_BODY_LEN'] = c_int(21)
-defineDict['MACLI_HEAD_FID_PKT_HEAD_END'] = c_int(25)
-defineDict['MACLI_HEAD_FID_PKT_HEAD_LEN'] = c_int(35)
-defineDict['MACLI_HEAD_FID_PKT_HEAD_MSG'] = c_int(41)
-defineDict['MACLI_HEAD_FID_PKT_BODY_MSG'] = c_int(42)
-defineDict['MACLI_HEAD_FID_PKT_MSG'] = c_int(43)
-defineDict['MACLI_HEAD_FID_FUNC_TYPE'] = c_int(1052672)
-defineDict['MACLI_HEAD_FID_BIZ_CHANNEL'] = c_int(1052674)
-defineDict['MACLI_HEAD_FID_TOKEN_FLAG'] = c_int(1069056)
-defineDict['MACLI_HEAD_FID_PUB_TOPIC'] = c_int(1073152)
-defineDict['MACLI_HEAD_FID_USER_SESSION'] = c_int(1871872)
+maHeadDict = {}
+maHeadDict['MACLI_HEAD_FID_PKT_LEN'] = c_int(0)
+maHeadDict['MACLI_HEAD_FID_PKT_CRC'] = c_int(1)
+maHeadDict['MACLI_HEAD_FID_PKT_ID'] = c_int(2)
+maHeadDict['MACLI_HEAD_FID_PKT_VER'] = c_int(3)
+maHeadDict['MACLI_HEAD_FID_PKT_TYPE'] = c_int(4)
+maHeadDict['MACLI_HEAD_FID_MSG_TYPE'] = c_int(5)
+maHeadDict['MACLI_HEAD_FID_RESEND_FLAG'] = c_int(6)
+maHeadDict['MACLI_HEAD_FID_TIMESTAMP'] = c_int(7)
+maHeadDict['MACLI_HEAD_FID_MSG_ID'] = c_int(8)
+maHeadDict['MACLI_HEAD_FID_CORR_ID'] = c_int(9)
+maHeadDict['MACLI_HEAD_FID_FUNC_ID'] = c_int(11)
+maHeadDict['MACLI_HEAD_FID_SRC_NODE'] = c_int(12)
+maHeadDict['MACLI_HEAD_FID_DEST_NODE'] = c_int(13)
+maHeadDict['MACLI_HEAD_FID_PAGE_FLAG'] = c_int(14)
+maHeadDict['MACLI_HEAD_FID_PAGE_NO'] = c_int(15)
+maHeadDict['MACLI_HEAD_FID_PAGE_CNT'] = c_int(16)
+maHeadDict['MACLI_HEAD_FID_BODY_LEN'] = c_int(21)
+maHeadDict['MACLI_HEAD_FID_PKT_HEAD_END'] = c_int(25)
+maHeadDict['MACLI_HEAD_FID_PKT_HEAD_LEN'] = c_int(35)
+maHeadDict['MACLI_HEAD_FID_PKT_HEAD_MSG'] = c_int(41)
+maHeadDict['MACLI_HEAD_FID_PKT_BODY_MSG'] = c_int(42)
+maHeadDict['MACLI_HEAD_FID_PKT_MSG'] = c_int(43)
+maHeadDict['MACLI_HEAD_FID_FUNC_TYPE'] = c_int(1052672)
+maHeadDict['MACLI_HEAD_FID_BIZ_CHANNEL'] = c_int(1052674)
+maHeadDict['MACLI_HEAD_FID_TOKEN_FLAG'] = c_int(1069056)
+maHeadDict['MACLI_HEAD_FID_PUB_TOPIC'] = c_int(1073152)
+maHeadDict['MACLI_HEAD_FID_USER_SESSION'] = c_int(1871872)
+
 
 class STU(Structure):
     def __str__(self):
@@ -114,12 +115,12 @@ class Ma(object):
 
     def setPkgHead(self, hHandle_, pkgtype_, msgtype_, funtype_, funid_, msgid_):
         try:
-            self._ma.maCli_SetHdrValueC(hHandle_, c_char(pkgtype_), defineDict['MACLI_HEAD_FID_PKT_TYPE'])
-            self._ma.maCli_SetHdrValueC(hHandle_, c_char(msgtype_), defineDict['MACLI_HEAD_FID_MSG_TYPE'])
-            self._ma.maCli_SetHdrValueS(hHandle_, c_char_p('01'), defineDict['MACLI_HEAD_FID_PKT_VER'])
-            self._ma.maCli_SetHdrValueC(hHandle_, c_char(funtype_), defineDict['MACLI_HEAD_FID_FUNC_TYPE'])
-            self._ma.maCli_SetHdrValueS(hHandle_, c_char_p(funid_), defineDict['MACLI_HEAD_FID_FUNC_ID'])
-            self._ma.maCli_SetHdrValueS(hHandle_, msgid_, defineDict['MACLI_HEAD_FID_MSG_ID'])
+            self._ma.maCli_SetHdrValueC(hHandle_, c_char(pkgtype_), maHeadDict['MACLI_HEAD_FID_PKT_TYPE'])
+            self._ma.maCli_SetHdrValueC(hHandle_, c_char(msgtype_), maHeadDict['MACLI_HEAD_FID_MSG_TYPE'])
+            self._ma.maCli_SetHdrValueS(hHandle_, c_char_p('01'), maHeadDict['MACLI_HEAD_FID_PKT_VER'])
+            self._ma.maCli_SetHdrValueC(hHandle_, c_char(funtype_), maHeadDict['MACLI_HEAD_FID_FUNC_TYPE'])
+            self._ma.maCli_SetHdrValueS(hHandle_, c_char_p(funid_), maHeadDict['MACLI_HEAD_FID_FUNC_ID'])
+            self._ma.maCli_SetHdrValueS(hHandle_, msgid_, maHeadDict['MACLI_HEAD_FID_MSG_ID'])
         except BaseException,e:
             logger.exception(e)
 
@@ -484,20 +485,67 @@ class Ma(object):
         self._ma.maCli_GetValueL(hHandle_, byref(orderqty), 'ORDER_QTY')
         orderprice = c_double(0.0)
         self._ma.maCli_GetValueD(hHandle_, byref(orderprice), 'ORDER_PRICE')
-        logger.info("CUACCT_CODE:%s,ORDER_NO:%s,STK_CODE:%s,STKBD:%s,ORDER_QTY:%s,ORDER_PRICE:%s",
+        stkbiz = c_int(0)
+        self._ma.maCli_GetValueN(hHandle_, byref(stkbiz), 'STK_BIZ')
+        stkbizaction = c_int(0)
+        self._ma.maCli_GetValueN(hHandle_, byref(stkbizaction), 'STK_BIZ_ACTION')
+        exestatus = c_char('0')
+        self._ma.maCli_GetValueC(hHandle_, byref(exestatus), 'EXE_STATUS')
+        logger.info("OrderAck: CUACCT_CODE:%s,ORDER_NO:%s,STK_CODE:%s,"
+                    "STKBD:%s,ORDER_QTY:%s,ORDER_PRICE:%s,"
+                    "STK_BIZ:%s,STK_BIZ_ACTION:%s,EXE_STATUS:%s",
                     cuacc.value,
                     orderno.value,
                     stkcode.value,
                     stkbd.value,
                     orderqty.value,
-                    orderprice.value)
+                    orderprice.value,
+                    stkbiz.value,
+                    stkbizaction.value,
+                    exestatus.value)
 
     def parseMatchMsg(self, hHandle_):
-        pass
+        cuacc = c_int64(0)
+        self._ma.maCli_GetValueL(hHandle_, byref(cuacc), 'CUACCT_CODE')
+        orderno = c_int(0)
+        self._ma.maCli_GetValueN(hHandle_, byref(orderno), 'ORDER_NO')
+        matchsn = create_string_buffer(16+1)
+        self._ma.maCli_GetValueS(hHandle_, byref(matchsn), len(matchsn), 'MATCHED_SN')
+        stkcode = create_string_buffer(8+1)
+        self._ma.maCli_GetValueS(hHandle_, byref(stkcode), len(stkcode), 'STK_CODE')
+        stkbd = create_string_buffer(2+1)
+        self._ma.maCli_GetValueS(hHandle_, byref(stkbd), len(stkbd), 'STKBD')
+        matchqty = c_long(0)
+        self._ma.maCli_GetValueL(hHandle_, byref(matchqty), 'MATCHED_QTY')
+        matchprice = c_double(0.0)
+        self._ma.maCli_GetValueD(hHandle_, byref(matchprice), 'MATCHED_PRICE')
+        stkbiz = c_int(0)
+        self._ma.maCli_GetValueN(hHandle_, byref(stkbiz), 'STK_BIZ')
+        stkbizaction = c_int(0)
+        self._ma.maCli_GetValueN(hHandle_, byref(stkbizaction), 'STK_BIZ_ACTION')
+        matchtype = c_char('0')
+        self._ma.maCli_GetValueC(hHandle_, byref(matchtype), 'MATCHED_TYPE')
+        orderstatus = c_char('0')
+        self._ma.maCli_GetValueC(hHandle_, byref(orderstatus), 'ORDER_STATUS')
+        logger.info("MatchStatus: CUACCT_CODE:%s,ORDER_NO:%s,"
+                    "MATCHED_SN:%s,STK_CODE:%s,STKBD:%s,MATCHED_QTY:%s,"
+                    "MATCHED_PRICE:%s,STK_BIZ:%s,STK_BIZ_ACTION:%s,"
+                    "MATCHED_TYPE:%s,ORDER_STATUS:%s",
+                    cuacc.value,
+                    orderno.value,
+                    matchsn.value,
+                    stkcode.value,
+                    stkbd.value,
+                    matchqty.value,
+                    matchprice.value,
+                    stkbiz.value,
+                    stkbizaction.value,
+                    matchtype.value,
+                    orderstatus.value)
 
     def parseSubMsg(self, hHandle_):
         topic = create_string_buffer(12+1)
-        self._ma.maCli_GetHdrValueS(hHandle_, topic, len(topic), defineDict['MACLI_HEAD_FID_PUB_TOPIC'])
+        self._ma.maCli_GetHdrValueS(hHandle_, topic, len(topic), maHeadDict['MACLI_HEAD_FID_PUB_TOPIC'])
         if topic.value == 'TSU_ORDER':
             self.parseTsuOrderMsg(hHandle_)
         elif topic.value[:5] == 'MATCH':
@@ -510,12 +558,12 @@ class Ma(object):
             self._ma.maCli_Init(byref(hHandle))
             self._ma.maCli_Parse(hHandle, c_char_p(msgstr_), c_int(len(msgstr_)))
             funid = create_string_buffer(8+1)
-            self._ma.maCli_GetHdrValueS(hHandle, funid, len(funid), defineDict['MACLI_HEAD_FID_FUNC_ID'])
+            self._ma.maCli_GetHdrValueS(hHandle, funid, len(funid), maHeadDict['MACLI_HEAD_FID_FUNC_ID'])
             logger.debug("fundid:%s", funid.value)
 
             #处理订阅类消息
             if funid.value[:2] == '00':
-                logger.info("00 msg:%s", msgstr_)
+                logger.debug("00 msg:%s", msgstr_)
                 return  self.parseSubMsg(hHandle)
 
             itablecount = c_int(0)

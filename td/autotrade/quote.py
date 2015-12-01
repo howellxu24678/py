@@ -40,6 +40,8 @@ class RealTimeQuote(object):
         rtQuote = GetRealTimeQuote(self._codelist)
         for i in range(rtQuote.shape[0]):
             itQuote = rtQuote.ix[i]
+            if float(itQuote['amount']) <= 0.01:
+                continue
             if itQuote['code'] in self._codelistSignal:
                 self._codelistSignal[itQuote['code']].OnTick(itQuote)
             if itQuote['code'] in self._codelistAutoTrade:
