@@ -6,6 +6,7 @@ from ma import *
 from datetime import datetime
 from strategy import *
 from quote import *
+from sendmail import *
 import base64
 import time
 logger = logging.getLogger("run")
@@ -14,6 +15,7 @@ class MainEngine(object):
     def __init__(self, cf):
         self._eventEngine = EventEngine(cf.getint("DEFAULT", "timer"))
         self._trade = Ma(cf, self._eventEngine)
+        self._mail = SendMail(cf, self._eventEngine)
         self._trade.logonEa()
         #time.sleep(5)
         self.autoTrade(cf)
@@ -39,7 +41,7 @@ class MainEngine(object):
 
         #一次批量获取代码的最新行情
         self._realtimequote = RealTimeQuote(cf, list(self._codeset), self._eventEngine)
-        #self._realtimequote.start()
+        self._realtimequote.start()
 
     def monitor(self,cf):
         pass
@@ -59,10 +61,10 @@ class MainEngine(object):
         if not self.isSend:
             event = Event(type_= EVENT_TRADE)
             event.dict_['direction'] = 'buy'
-            event.dict_['code'] = '000012'
+            event.dict_['code'] = '002673'
             event.dict_['number'] = '400'
             self._eventEngine.put(event)
-            logger.info("buy 000012")
+            logger.info("buy 002673")
 
             # event = Event(type_= EVENT_TRADE)
             # event.dict_['direction'] = 'sell'

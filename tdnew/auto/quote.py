@@ -5,12 +5,14 @@ Created on Mon Aug 17 17:11:33 2015
 @author: guosen
 """
 
-from apscheduler.schedulers.background import BackgroundScheduler
 import os
+
+from apscheduler.schedulers.background import BackgroundScheduler
 import talib as ta
 import pandas as pd
+
 from util import *
-import logging
+
 logger = logging.getLogger()
 from eventengine import *
     

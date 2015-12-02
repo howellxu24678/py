@@ -21,7 +21,7 @@ def _format_addr(s):
         addr.encode('utf-8') if isinstance(addr, unicode) else addr))
 
 
-class sendmail(object):
+class SendMail(object):
     def __init__(self, cf, eventEngine_):
         self._smtp_server = cf.get("DEFAULT", "smtp_server")
         self._from_addr = cf.get("DEFAULT", "from_addr")
@@ -34,7 +34,7 @@ class sendmail(object):
         remarks = event.dict_['remarks']
         content = event.dict_['content']
         to_addr = event.dict_['to_addr']
-        logger.info('sendmail %s:%s, to_addr:%s', remarks, content, self._to_addr_list)
+        logger.info('sendmail %s:%s, to_addr:%s', remarks, content, to_addr)
 
         msg = MIMEText(content, 'plain', 'utf-8')
         msg['From'] = self._from_addr

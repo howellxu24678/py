@@ -8,11 +8,10 @@ Created on Mon Aug 17 18:13:52 2015
 #import quote
 
 
-import sendmail
 import quote
 from util import *
-import logging
 from eventengine import *
+
 logger = logging.getLogger("run")
 
 
@@ -23,7 +22,9 @@ class Strategy(object):
         self._name = self._quote._name
         self._eventEngine = eventEngine_
 
+        #订阅合约的行情
         self._eventEngine.register(EVENT_MARKETDATA_CONTRACT + self._code, self.OnTick)
+        #定时事件
         self._eventEngine.register(EVENT_TIMER, self.OnTimerCall)
 
         self._latestStatus = 'init'
@@ -63,7 +64,8 @@ class Strategy(object):
     
     def DealSell(self):
         pass
-        
+
+
 class Stg_Signal(Strategy):
     def __init__(self, cf, code, eventEngine_):
         super(Stg_Signal, self).__init__(cf, code, eventEngine_)
@@ -107,6 +109,8 @@ class Stg_Autotrader(Strategy):
     def __init__(self, cf, code, eventEngine_):
         super(Stg_Autotrader, self).__init__(cf, code, eventEngine_)
 
+        #订阅合约的成交
+        self._eventEngine.register(EVENT_MATCH_CONTRACT + self._code, self.onMatch)
         #控制当天买入不能卖出
         self._todayHaveBuy = False
         self._bNeedToSellAtOpen = False
@@ -132,6 +136,19 @@ class Stg_Autotrader(Strategy):
         self._curRetryCount = 0
         self._bNeedRetryWhileOrderFailed = self._retry > 0
         self._bOrderOk = True
+
+
+    def onMatch(self,event_):
+        event = Event(type_= EVENT_SENDMAIL)
+        event.dict_['remarks'] = 'Autotrader'
+        event.dict_['content'] = self._code + ' ' + event_.dict_['ORDER_STATUS'] \
+                                 + ' ' + event_.dict_['MATCHED_TYPE'] \
+                                 + ' ' + str(event_.dict_['MATCHED_QTY']) \
+                                 + ' ' + str(event_.dict_['MATCHED_PRICE'])
+        event.dict_['to_addr'] = self._to_addr_list
+        self._eventEngine.put(event)
+        logger.info("put sendmail event code:%s, remarks:%s, content:%s, to_addr_list:%s",
+                    self._code, event.dict_['remarks'], event.dict_['content'], event.dict_['to_addr'])
 
     #检测需不需要在开盘卖掉（如果最后一个真实的买入信号发生在上一个交易日，并且最后一个是卖出信号）
     def IsNeedToSellAtOpen(self):

@@ -107,8 +107,8 @@ class Ma(object):
             logger.info("ip:%s, port:%s, account:%s, password:%s",
                         self._ip,
                         self._port,
-                        self._acc,
-                        self._pwd)
+                        self._acc.value,
+                        self._pwd.value)
             self._session = None
             self._int_org = None
             self._bd2tradacc_dict = {}
@@ -558,6 +558,14 @@ class Ma(object):
                     getDictDetail("MATCHED_TYPE", matchtype.value),
                     getDictDetail("ORDER_STATUS", orderstatus.value))
 
+        event = Event(type_= EVENT_MATCH_CONTRACT + stkcode.value)
+        event.dict_['ORDER_STATUS'] = getDictDetail("ORDER_STATUS", orderstatus.value)
+        event.dict_['MATCHED_TYPE'] = getDictDetail("MATCHED_TYPE", matchtype.value)
+        event.dict_['MATCHED_QTY'] = matchqty.value
+        event.dict_['MATCHED_PRICE'] = matchprice.value
+        self._eventEngine.put(event)
+
+
     def parseSubMsg(self, hHandle_):
         topic = create_string_buffer(12+1)
         self._ma.maCli_GetHdrValueS(hHandle_, topic, len(topic), maHeadDict['MACLI_HEAD_FID_PUB_TOPIC'])
@@ -566,7 +574,7 @@ class Ma(object):
         elif topic.value[:5] == 'MATCH':
             self.parseMatchMsg(hHandle_)
         if len(topic.value) > 1:
-            logger.info("topic:%s", topic.value)
+            logger.debug("topic:%s", topic.value)
 
     def parseMsg(self, msgstr_):
         try:
@@ -670,7 +678,7 @@ class Ma(object):
                     self._session = c_char_p(retdict['SESSION_ID'])
                     logger.info("set the _session to %s", retdict['SESSION_ID'])
                 self._int_org = c_int(int(retdict["INT_ORG"]))
-                logger.info("set the _int_org to %s", self._int_org)
+                logger.info("set the _int_org to %s", self._int_org.value)
 
                 if not retdict["STKBD"] in self._bd2tradacc_dict:
                     self._bd2tradacc_dict[retdict["STKBD"]] = retdict["STK_TRDACCT"]

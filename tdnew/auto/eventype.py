@@ -16,6 +16,7 @@ EVENT_TIMER = 'eTimer'                          # 计时器事件，每隔1秒�
 EVENT_AXEAGLE = 'axeagel'
 EVENT_MARKETDATA = 'eMarketData'                # 行情推送事件
 EVENT_MARKETDATA_CONTRACT = 'eMarketData.'      # 特定合约的行情快照事件
+EVENT_MATCH_CONTRACT = 'eMatch.'                # 特定合约的成交事件
 EVENT_SENDMAIL = 'eSendMail'                    # 发送邮件事件
 EVENT_TRADE = 'eTrade'                          # 交易事件
 

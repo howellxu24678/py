@@ -86,7 +86,7 @@ class Stg_Signal(Strategy):
             self._to_addr_list.append(cf.get("signal", "from_addr"))
             
     def SendMail(self, status):
-        logger.info('sendmail code:%s, 5min %s, to_addr:%s', self._code, status, self._to_addr_list)
+        logger.info('SendMail code:%s, 5min %s, to_addr:%s', self._code, status, self._to_addr_list)
         self._sendmail.send('code:%s, name:%s, 5min %s' % (self._code, self._name, status), self._to_addr_list)
         
     def DealBuy(self):
