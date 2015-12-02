@@ -61,17 +61,32 @@ class MainEngine(object):
         if not self.isSend:
             event = Event(type_= EVENT_TRADE)
             event.dict_['direction'] = 'buy'
-            event.dict_['code'] = '002673'
+            event.dict_['code'] = '600496'
             event.dict_['number'] = '400'
             self._eventEngine.put(event)
-            logger.info("buy 002673")
+            logger.info("buy 600851")
 
             # event = Event(type_= EVENT_TRADE)
-            # event.dict_['direction'] = 'sell'
+            # event.dict_['direction'] = 'buy'
             # event.dict_['code'] = '000012'
             # event.dict_['number'] = '200'
             # self._eventEngine.put(event)
-            # logger.info("sell 000012")
+            # logger.info("buy 000012")
+            #
+            # event = Event(type_= EVENT_TRADE)
+            # event.dict_['direction'] = 'sell'
+            # event.dict_['code'] = '600496'
+            # event.dict_['number'] = '400'
+            # self._eventEngine.put(event)
+            # logger.info("sell 600502")
+            #
+            # event = Event(type_= EVENT_TRADE)
+            # event.dict_['direction'] = 'sell'
+            # event.dict_['code'] = '000001'
+            # event.dict_['number'] = '200'
+            # self._eventEngine.put(event)
+            # logger.info("sell 000001")
+
             self.isSend = True
         # try:
         #     for func in self._todolist:

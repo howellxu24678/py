@@ -52,7 +52,7 @@ def getDictDetail(k, v):
     try:
         return str(v)+defineDict[k][str(v)]
     except:
-        return k+'unknow'
+        return str(v)+'unknow'
 
 
 class STU(Structure):
@@ -451,7 +451,7 @@ class Ma(object):
             self._ma.maCli_SetValueS(hHandle, code, fixDict['TRD_CODE'])
             self._ma.maCli_SetValueN(hHandle, qty, fixDict['ORDER_QTY'])
             self._ma.maCli_SetValueN(hHandle, stkbiz, fixDict['STK_BIZ'])
-            self._ma.maCli_SetValueN(hHandle, 124, fixDict['STK_BIZ_ACTION'])
+            self._ma.maCli_SetValueN(hHandle, 121, fixDict['STK_BIZ_ACTION'])
             self._ma.maCli_SetValueN(hHandle, 0, fixDict['ATTR_CODE'])
             self._ma.maCli_EndWrite(hHandle)
 
