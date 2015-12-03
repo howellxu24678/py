@@ -17,11 +17,10 @@ class MainEngine(object):
         self._trade = Ma(cf, self._eventEngine)
         self._mail = SendMail(cf, self._eventEngine)
         self._trade.logonEa()
-        #time.sleep(5)
+        time.sleep(5)
         self.autoTrade(cf)
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
         self._eventEngine.start()
-
 
         self.isSend = False
     def autoTrade(self,cf):
@@ -52,48 +51,8 @@ class MainEngine(object):
     def onTimer(self, event):
         if int(datetime.datetime.now().strftime("%H%M%S")) % 10000 == 0:
             event = Event(type_= EVENT_TRADE)
-            event.dict_['direction'] = 'sell'
+            event.dict_['direction'] = 'buy'
             event.dict_['code'] = '000012'
             event.dict_['number'] = '200'
             self._eventEngine.put(event)
-            logger.info("sell 000012")
-
-        if not self.isSend:
-            event = Event(type_= EVENT_TRADE)
-            event.dict_['direction'] = 'buy'
-            event.dict_['code'] = '600496'
-            event.dict_['number'] = '400'
-            self._eventEngine.put(event)
-            logger.info("buy 600851")
-
-            # event = Event(type_= EVENT_TRADE)
-            # event.dict_['direction'] = 'buy'
-            # event.dict_['code'] = '000012'
-            # event.dict_['number'] = '200'
-            # self._eventEngine.put(event)
-            # logger.info("buy 000012")
-            #
-            # event = Event(type_= EVENT_TRADE)
-            # event.dict_['direction'] = 'sell'
-            # event.dict_['code'] = '600496'
-            # event.dict_['number'] = '400'
-            # self._eventEngine.put(event)
-            # logger.info("sell 600502")
-            #
-            # event = Event(type_= EVENT_TRADE)
-            # event.dict_['direction'] = 'sell'
-            # event.dict_['code'] = '000001'
-            # event.dict_['number'] = '200'
-            # self._eventEngine.put(event)
-            # logger.info("sell 000001")
-
-            self.isSend = True
-        # try:
-        #     for func in self._todolist:
-        #         logger.debug("timer to run %s", getattr(self._trade, func))
-        #         getattr(self._trade, func)()
-        # except BaseException,e:
-        #     logger.exception(e)
-
-    def AxeagleListen(self,event):
-        pass
+            logger.info("buy 000012")

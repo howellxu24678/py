@@ -7,6 +7,8 @@ from auto import quote
 import os
 import ConfigParser
 import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 baseconfdir="conf"
 loggingconf= "logging.config"

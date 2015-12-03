@@ -79,7 +79,7 @@ class NewLoginInfo(STU):
 
 
 def onMsg(pMsg, iLen, pAccount, pParam):
-    logger.debug("onAxEagle callback msgLen:%s", iLen)
+    logger.debug("onAxEagle callback msgLen:%s, msg:%s", iLen, pMsg)
     event = Event(type_=EVENT_AXEAGLE)
     event.dict_['pMsg'] = pMsg
     event.dict_['iLen'] = iLen
@@ -123,6 +123,8 @@ class Ma(object):
 
             self._localIp = c_char_p("1:" + socket.gethostbyname(socket.gethostname()))
             self._ea.AxE_Init(None, None, onMsgHandle, py_object(self._eventEngine))
+
+            self._matchsnlist = []
 
         except BaseException,e:
             logger.exception(e)
@@ -336,7 +338,6 @@ class Ma(object):
 
         except BaseException,e:
             logger.exception(e)
-            raise e
 
     def queryOrderToday(self):
         try:
@@ -391,8 +392,8 @@ class Ma(object):
                 return c_char_p('10'),self._bd2tradacc_dict['10']
         except BaseException,e:
             logger.exception(e)
+            return 'unknow','unknow'
 
-        return 'unknow','unknow'
 
     def buySellOrder(self):
         try:
@@ -421,7 +422,6 @@ class Ma(object):
 
         except BaseException,e:
             logger.exception(e)
-            raise e
 
     def onQuantOrder(self, event):
         code =  event.dict_['code']
@@ -475,6 +475,12 @@ class Ma(object):
         logger.debug("pMsg:%s", event.dict_["pMsg"])
         msgSplitList = event.dict_["pMsg"].split('\1')
         cmdId = msgSplitList[0]
+        errno = msgSplitList[2]
+
+        if int(errno) != 0:
+            logger.error("%s", event.dict_["pMsg"])
+            return
+
         if cmdId == "40002" or cmdId == "40020":
             msgstr = base64.decodestring(msgSplitList[5])
             logger.debug("pMsg:%s, iLen:%s, pAccount:%s",
@@ -506,18 +512,39 @@ class Ma(object):
         self._ma.maCli_GetValueN(hHandle_, byref(stkbizaction), 'STK_BIZ_ACTION')
         exestatus = c_char('0')
         self._ma.maCli_GetValueC(hHandle_, byref(exestatus), 'EXE_STATUS')
-        logger.info("#OrderAck# CUACCT_CODE:%s,ORDER_NO:%s,STK_CODE:%s,"
-                    "STKBD:%s,ORDER_QTY:%s,ORDER_PRICE:%s,"
-                    "STK_BIZ:%s,STK_BIZ_ACTION:%s,EXE_STATUS:%s",
-                    cuacc.value,
-                    orderno.value,
-                    stkcode.value,
-                    getDictDetail("STKBD", stkbd.value),
-                    orderqty.value,
-                    orderprice.value,
-                    getDictDetail("STK_BIZ", stkbiz.value),
-                    getDictDetail("STK_BIZ_ACTION", stkbizaction.value),
-                    getDictDetail("EXE_STATUS", exestatus.value))
+        errorid = c_int(0)
+        self._ma.maCli_GetValueN(hHandle_, byref(errorid), 'ERROR_ID')
+        errormsg = create_string_buffer(256+1)
+        self._ma.maCli_GetValueS(hHandle_, byref(errormsg), len(errormsg), 'ERROR_MSG')
+
+        if errorid != 0:
+            logger.error("#OrderAck# errorid:%s, errormsg:%s, CUACCT_CODE:%s,ORDER_NO:%s,STK_CODE:%s,"
+                         "STKBD:%s,ORDER_QTY:%s,ORDER_PRICE:%s,"
+                         "STK_BIZ:%s,STK_BIZ_ACTION:%s,EXE_STATUS:%s",
+                         errorid.value,
+                         errormsg.value.decode('gbk').encode('utf-8'),
+                         cuacc.value,
+                         orderno.value,
+                         stkcode.value,
+                         getDictDetail("STKBD", stkbd.value),
+                         orderqty.value,
+                         orderprice.value,
+                         getDictDetail("STK_BIZ", stkbiz.value),
+                         getDictDetail("STK_BIZ_ACTION", stkbizaction.value),
+                         getDictDetail("EXE_STATUS", exestatus.value))
+        else:
+            logger.info("#OrderAck# CUACCT_CODE:%s,ORDER_NO:%s,STK_CODE:%s,"
+                        "STKBD:%s,ORDER_QTY:%s,ORDER_PRICE:%s,"
+                        "STK_BIZ:%s,STK_BIZ_ACTION:%s,EXE_STATUS:%s",
+                        cuacc.value,
+                        orderno.value,
+                        stkcode.value,
+                        getDictDetail("STKBD", stkbd.value),
+                        orderqty.value,
+                        orderprice.value,
+                        getDictDetail("STK_BIZ", stkbiz.value),
+                        getDictDetail("STK_BIZ_ACTION", stkbizaction.value),
+                        getDictDetail("EXE_STATUS", exestatus.value))
 
     def parseMatchMsg(self, hHandle_):
         cuacc = c_int64(0)
@@ -557,13 +584,14 @@ class Ma(object):
                     getDictDetail("STK_BIZ_ACTION", stkbizaction.value),
                     getDictDetail("MATCHED_TYPE", matchtype.value),
                     getDictDetail("ORDER_STATUS", orderstatus.value))
-
-        event = Event(type_= EVENT_MATCH_CONTRACT + stkcode.value)
-        event.dict_['ORDER_STATUS'] = getDictDetail("ORDER_STATUS", orderstatus.value)
-        event.dict_['MATCHED_TYPE'] = getDictDetail("MATCHED_TYPE", matchtype.value)
-        event.dict_['MATCHED_QTY'] = matchqty.value
-        event.dict_['MATCHED_PRICE'] = matchprice.value
-        self._eventEngine.put(event)
+        if not matchsn.value in self._matchsnlist:
+            self._matchsnlist.append(matchsn.value)
+            event = Event(type_= EVENT_MATCH_CONTRACT + stkcode.value)
+            event.dict_['ORDER_STATUS'] = getDictDetail("ORDER_STATUS", orderstatus.value)
+            event.dict_['MATCHED_TYPE'] = getDictDetail("MATCHED_TYPE", matchtype.value)
+            event.dict_['MATCHED_QTY'] = matchqty.value
+            event.dict_['MATCHED_PRICE'] = matchprice.value
+            self._eventEngine.put(event)
 
 
     def parseSubMsg(self, hHandle_):
@@ -587,7 +615,6 @@ class Ma(object):
 
             #处理订阅类消息
             if funid.value[:2] == '00':
-                logger.debug("00 msg:%s", msgstr_)
                 return  self.parseSubMsg(hHandle)
 
             itablecount = c_int(0)

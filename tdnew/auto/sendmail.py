@@ -31,18 +31,21 @@ class SendMail(object):
 
         
     def onSend(self, event):
-        remarks = event.dict_['remarks']
-        content = event.dict_['content']
-        to_addr = event.dict_['to_addr']
-        logger.info('sendmail %s:%s, to_addr:%s', remarks, content, to_addr)
+        try:
+            remarks = event.dict_['remarks']
+            content = event.dict_['content']
+            to_addr = event.dict_['to_addr']
+            logger.info('sendmail %s:%s, to_addr:%s', remarks, content, to_addr)
 
-        msg = MIMEText(content, 'plain', 'utf-8')
-        msg['From'] = self._from_addr
-        msg['To'] = ', '.join(to_addr)
-        msg['Subject'] = Header(u'%s 的提醒……' % remarks, 'utf-8').encode()
-        
-        server = smtplib.SMTP(self._smtp_server, 25)
-        server.set_debuglevel(1)
-        server.login(self._from_addr, self._password)
-        server.sendmail(self._from_addr, to_addr, msg.as_string())
-        server.quit()
+            msg = MIMEText(content, 'plain', 'utf-8')
+            msg['From'] = self._from_addr
+            msg['To'] = ', '.join(to_addr)
+            msg['Subject'] = Header(u'%s 的提醒……' % remarks, 'utf-8').encode()
+
+            server = smtplib.SMTP(self._smtp_server, 25)
+            server.set_debuglevel(1)
+            server.login(self._from_addr, self._password)
+            server.sendmail(self._from_addr, to_addr, msg.as_string())
+            server.quit()
+        except BaseException,e:
+            logger.exception(e)
