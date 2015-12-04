@@ -11,7 +11,7 @@ logger = logging.getLogger("run")
 
 class MainEngine(object):
     def __init__(self, cf):
-        self._eventEngine = EventEngine(cf.getint("DEFAULT", "timer"))
+        self._eventEngine = EventEngine(cf.getint("main", "timer"))
         self._trade = Ma(cf, self._eventEngine)
         self._mail = SendMail(cf, self._eventEngine)
         self._trade.logonEa()
@@ -20,9 +20,20 @@ class MainEngine(object):
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
         self._eventEngine.start()
 
+        self._requireconfig = {}
+        for i in cf.items('requireinput'):
+            self._requireconfig[i[0].upper()] = i[1]
+        self._requireconfig['CUACCT_CODE'] = cf.get("ma", "account")
+
         self._todolist = cf.get("ma", "todolist").strip().split(',')
-        for re in requireFixColDict.iterkeys():
-            pass
+        for todofunid in self._todolist:
+            if todofunid in requireFixColDict:
+                for k in requireFixColDict[todofunid].iterkeys():
+                    if not k in self._requireconfig:
+                        raise RuntimeError, "cant find the %s in %s" % (k, self._requireconfig)
+                    else:
+                        requireFixColDict[todofunid][k] = self._requireconfig[k]
+        print requireFixColDict
 
     def monitor(self,cf):
         pass
