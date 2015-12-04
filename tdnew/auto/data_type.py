@@ -399,9 +399,9 @@ funNameDict["10388101"] = u"量化委托"
 funNameDict["88888888"] = u"应答第一结果集"
 
 
-requireFixidxDict = {}
+requireFixColDict = {}
 #用户登录(API)
-requireFixidxDict["10301105"] = {
+requireFixColDict["10301105"] = {
     'ACCT_ID': None,
     'ACCT_TYPE': None,
     'AUTH_DATA': None,
@@ -410,7 +410,7 @@ requireFixidxDict["10301105"] = {
     'USE_SCOPE': None,
 }
 #买卖委托
-requireFixidxDict["10302001"] = {
+requireFixColDict["10302001"] = {
     'CUACCT_CODE': None,
     'ORDER_QTY': None,
     'STKBD': None,
@@ -420,12 +420,12 @@ requireFixidxDict["10302001"] = {
     'TRDACCT': None,
 }
 #委托撤单
-requireFixidxDict["10302004"] = {
+requireFixColDict["10302004"] = {
     'CUACCT_CODE': None,
     'STKBD': None,
 }
 #量化委托
-requireFixidxDict["10388101"] = {
+requireFixColDict["10388101"] = {
     'ATTR_CODE': None,
     'CUACCT_CODE': None,
     'ORDER_QTY': None,
@@ -435,7 +435,7 @@ requireFixidxDict["10388101"] = {
     'TRDACCT': None,
 }
 #应答第一结果集
-requireFixidxDict["88888888"] = {
+requireFixColDict["88888888"] = {
     'F_CHANNEL': None,
     'F_FUNCTION': None,
     'F_OP_ORG': None,

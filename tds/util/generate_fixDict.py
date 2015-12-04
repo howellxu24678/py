@@ -6,7 +6,7 @@ import  re
 globalFix2Line = {}
 globalReplyMsgParam = {}
 globalFunid2Name = {}
-globalRequireFixIdx = {}
+globalRequireFixCol = {}
 curfunid = None
 curfunname = None
 
@@ -72,7 +72,7 @@ def processInput(line):
                 globalFix2Line[k].append(py_line)
 
             if content[3].strip().decode('gbk').encode('utf-8') == '√':
-                global globalRequireFixIdx
+                global globalRequireFixCol
                 if not curfunid in globalRequireFixIdx:
                     globalRequireFixIdx[curfunid] = {content[1].strip() : None}
                 else:
@@ -134,10 +134,10 @@ def main():
         fpy.write('\n')
         fpy.write('\n')
         fpy.write('requireFixidxDict = {}\n')
-        for k in sorted(globalRequireFixIdx.keys()):
+        for k in sorted(globalRequireFixCol.keys()):
             to_write = '#%s\nrequireFixidxDict["%s"] = {' % (globalFunid2Name[k],k)
-            for k_inner in sorted(globalRequireFixIdx[k].keys()):
-                to_write += "'%s': %s,\n" % (k_inner, globalRequireFixIdx[k][k_inner])
+            for k_inner in sorted(globalRequireFixCol[k].keys()):
+                to_write += "'%s': %s,\n" % (k_inner, globalRequireFixCol[k][k_inner])
                 to_write += "                                 "
             to_write += "}\n"
             fpy.write(to_write.decode('gbk').encode('utf-8'))

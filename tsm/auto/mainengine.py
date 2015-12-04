@@ -21,7 +21,8 @@ class MainEngine(object):
         self._eventEngine.start()
 
         self._todolist = cf.get("ma", "todolist").strip().split(',')
-
+        for re in requireFixColDict.iterkeys():
+            pass
 
     def monitor(self,cf):
         pass
