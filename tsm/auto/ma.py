@@ -287,6 +287,11 @@ class Ma(object):
             self.setRegular(hHandle)
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+
+            if funid_ in requireFixColDict:
+                for k,v in requireFixColDict[funid_].items():
+                    self._ma.maCli_SetValueS(hHandle, c_char_p(v), fixDict[k])
+
             self._ma.maCli_EndWrite(hHandle)
 
             b64bizdata = self.genBizData(hHandle)
@@ -629,6 +634,10 @@ class Ma(object):
                             funNameDict[funid.value])
                 ret = self.parseSecondTable(hHandle, funid)
                 logger.debug("ret:%s", ret)
+
+                event = Event(type_= EVENT_QUERY_RET + funid.value)
+                event.dict_['ret'] = ret
+                self._eventEngine.put(event)
 
                 if funid.value in self._dealReplyDict:
                     self._dealReplyDict[funid.value](ret)

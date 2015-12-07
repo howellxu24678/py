@@ -20,6 +20,9 @@ class MainEngine(object):
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
         self._eventEngine.start()
 
+
+
+    def processRequireInput(self,cf):
         self._requireconfig = {}
         for i in cf.items('requireinput'):
             self._requireconfig[i[0].upper()] = i[1]
@@ -33,10 +36,19 @@ class MainEngine(object):
                         raise RuntimeError, "cant find the %s in %s" % (k, self._requireconfig)
                     else:
                         requireFixColDict[todofunid][k] = self._requireconfig[k]
-        print requireFixColDict
+
+    def processReplyFixCol(self,cf):
+        self._replyFixCol = {}
+        for i in cf.items('replyfixcol'):
+            self._replyFixCol[i[0]] = i[1]
+
+        print "_replyFixCol is ", self._replyFixCol
 
     def monitor(self,cf):
-        pass
+        self.processRequireInput(cf)
+        self.processReplyFixCol(cf)
+
+
 
     def logon(self):
         self._trade.logonEa()
