@@ -477,7 +477,6 @@ class Ma(object):
         return  b64bizdata
 
     def onRecvMsg(self,event):
-        logger.debug("pMsg:%s", event.dict_["pMsg"])
         msgSplitList = event.dict_["pMsg"].split('\1')
         cmdId = msgSplitList[0]
         errno = msgSplitList[2]

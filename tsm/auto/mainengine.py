@@ -30,6 +30,8 @@ class MainEngine(object):
 
         self._todolist = cf.get("ma", "todolist").strip().split(',')
         for todofunid in self._todolist:
+            self._eventEngine.register(EVENT_QUERY_RET + todofunid, self.onQueryRet)
+
             if todofunid in requireFixColDict:
                 for k in requireFixColDict[todofunid].iterkeys():
                     if not k in self._requireconfig:
@@ -48,11 +50,25 @@ class MainEngine(object):
         self.processRequireInput(cf)
         self.processReplyFixCol(cf)
 
+    def onQueryRet(self, event_):
+        funid = event_.type_.split('.')[1]
+        if not funid in self._replyFixCol:
+            return
 
+        ret = event_.dict_['ret']
+        tinyret = []
+        for r in ret:
+            tinyretdict = {}
+            for k,v in r.items():
+                if k in self._replyFixCol[funid] or self._replyFixCol[funid].strip() == '':
+                    tinyretdict[k] = v
+            tinyret.append(tinyretdict)
+        logger.info('funid:%s, funname:%s, ret:%s', funid, funNameDict[funid], tinyret)
 
     def logon(self):
         self._trade.logonEa()
 
     def onTimer(self, event):
         for fundid in self._todolist:
+            logger.info("onTimer fundid:%s", fundid)
             self._trade.monitorQuery(fundid)
