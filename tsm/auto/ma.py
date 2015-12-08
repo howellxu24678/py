@@ -8,6 +8,7 @@ import datetime
 import logging
 import base64
 import socket
+import re
 logger = logging.getLogger("run")
 
 maHeadDict = {}
@@ -79,7 +80,7 @@ class NewLoginInfo(STU):
 
 
 def onMsg(pMsg, iLen, pAccount, pParam):
-    logger.debug("onAxEagle callback msgLen:%s, msg:%s", iLen, pMsg)
+    logger.debug("onAxEagle callback msgLen:%s, msg:%s", iLen, pMsg.decode('gbk'))
     event = Event(type_=EVENT_AXEAGLE)
     event.dict_['pMsg'] = pMsg
     event.dict_['iLen'] = iLen
@@ -470,7 +471,7 @@ class Ma(object):
         pBizData = c_char_p(0)
         self._ma.maCli_Make(hHandle_, byref(pBizData), byref(ilen))
 
-        logger.debug("before b64encode:%s", pBizData.value)
+        #logger.debug("before b64encode:%s", pBizData.value)
         b64bizdata = base64.encodestring(pBizData.value)
         self._ma.maCli_Close(hHandle_)
         self._ma.maCli_Exit(hHandle_)
@@ -488,7 +489,7 @@ class Ma(object):
         if cmdId == "40002" or cmdId == "40020":
             msgstr = base64.decodestring(msgSplitList[5])
             logger.debug("pMsg:%s, iLen:%s, pAccount:%s",
-                        msgstr,
+                        msgstr.decode("gbk"),
                         event.dict_["iLen"],
                         event.dict_["pAccount"])
 
@@ -625,7 +626,7 @@ class Ma(object):
             self._ma.maCli_GetTableCount(hHandle, byref(itablecount))
             logger.debug("itablecount:%s", itablecount)
             msgcode, msglevel, msgtext = self.parseFirstTable(hHandle)
-            logger.debug("msgcode:%s, msglevel:%s, msgtext:%s", msgcode.value, msglevel.value, msgtext.value)
+            logger.debug("msgcode:%s, msglevel:%s, msgtext:%s", msgcode.value, msglevel.value, msgtext.value.decode("gbk"))
 
             if msgcode.value == 0:
                 logger.info("reply funid:%s name:%s success with second table result",
@@ -702,7 +703,13 @@ class Ma(object):
                     len_ = int(type_.split(',')[1]) + 1
                     s = create_string_buffer(len_)
                     self._ma.maCli_GetValueS(hHandle_, byref(s), len_, fixDict[fixidx_])
-                    retdict[fixidx_] = s.value
+                    zhPattern = re.compile(u'[\u4e00-\u9fa5]+')
+                    match = zhPattern.search(s.value.decode("gbk"))
+                    if match:
+                        retdict[fixidx_] = s.value.decode("gbk")
+                        logger.debug("%s", s.value.decode("gbk"))
+                    else:
+                        retdict[fixidx_] = s.value
             ret.append(retdict)
         return ret
 
