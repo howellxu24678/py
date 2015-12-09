@@ -9,6 +9,7 @@ import logging
 import base64
 import socket
 import re
+import json
 logger = logging.getLogger("run")
 
 maHeadDict = {}
@@ -130,6 +131,9 @@ class Ma(object):
         except BaseException,e:
             logger.exception(e)
             raise e
+
+    def getAccState(self):
+        return self._ea.AxE_GetAccountState(self._acc)
 
     def setPkgHead(self, hHandle_, pkgtype_, msgtype_, funtype_, funid_, msgid_):
         try:
@@ -633,7 +637,7 @@ class Ma(object):
                             funid.value,
                             funNameDict[funid.value])
                 ret = self.parseSecondTable(hHandle, funid)
-                logger.debug("ret:%s", ret)
+                logger.debug("ret:%s", json.dumps(ret,ensure_ascii=False, indent=2))
 
                 event = Event(type_= EVENT_QUERY_RET + funid.value)
                 event.dict_['ret'] = ret
@@ -680,8 +684,6 @@ class Ma(object):
         for i in range(1, irowcount.value + 1):
             self._ma.maCli_ReadRow(hHandle_, i)
             retdict = {}
-
-
             for fixidx_,type_ in replyMsgParam[funid_.value].iteritems():
                 if type_ == 'l':
                     l = c_int64(0)
@@ -707,7 +709,6 @@ class Ma(object):
                     match = zhPattern.search(s.value.decode("gbk"))
                     if match:
                         retdict[fixidx_] = s.value.decode("gbk")
-                        logger.debug("%s", s.value.decode("gbk"))
                     else:
                         retdict[fixidx_] = s.value
             ret.append(retdict)
