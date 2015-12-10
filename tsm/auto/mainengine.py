@@ -11,9 +11,38 @@ import json
 logger = logging.getLogger("run")
 
 
-class Monitor(object):
-    def __init__(self, cf, ee):
-        self._eventEngine = ee
+
+
+
+class MainEngine(object):
+    def __init__(self, cf):
+        self._eventEngine = EventEngine(cf.getint("main", "timer"))
+        self._trade = Ma(cf, self._eventEngine)
+        self._mail = SendMail(cf, self._eventEngine)
+        self._trade.logonEa()
+        time.sleep(5)
+
+        self._eventEngine.register(EVENT_TIMER, self.onTimer)
+        self._eventEngine.start()
+
+
+    def onTimer(self, event):
+        pass
+
+
+class Monitor(MainEngine):
+    def __init__(self, cf):
+        super(Monitor, self).__init__(cf)
+        self._ip = cf.get("ma", "ip")
+        self._port = cf.get("ma", "port")
+
+        #记录上一个账号状态
+        self._lastAccState = None
+        self._haveSendMail = False
+        self._to_addr_list = cf.get("monitor", "reveiver").strip().split(",")
+        self.processRequireInput(cf)
+        self.processReplyFixCol(cf)
+        self.parseWorkTime(cf)
 
     def processRequireInput(self,cf):
         self._requireconfig = {}
@@ -37,7 +66,7 @@ class Monitor(object):
         for i in cf.items('replyfixcol'):
             self._replyFixCol[i[0]] = i[1]
 
-        print "_replyFixCol is ", self._replyFixCol
+        logger.info("replyFixCol:%s", self._replyFixCol)
 
     def parseWorkTime(self,cf):
         worktime = cf.get("monitor", "workingtime").split(',')
@@ -45,12 +74,6 @@ class Monitor(object):
         for i in range(len(worktime)):
             self._worktimerange.append(worktime[i].split('~'))
         logger.info("worktimerange:%s", self._worktimerange)
-
-    def monitor(self,cf):
-        self._offlinetime = cf.getint("monitor", "offlinetime")
-        self.processRequireInput(cf)
-        self.processReplyFixCol(cf)
-        self.parseWorkTime(cf)
 
     def onQueryRet(self, event_):
         funid = event_.type_.split('.')[1]
@@ -70,24 +93,28 @@ class Monitor(object):
                     funNameDict[funid],
                     json.dumps(tinyret,ensure_ascii=False, indent=2))
 
+    def sendMail(self, state):
+        event = Event(type_=EVENT_SENDMAIL)
+        event.dict_['remarks'] = 'Monitor'
+        content = ""
+        if state == 0:
+            content = "disconnect"
+        elif state == 1:
+            content = "connect"
+
+        event.dict_['content'] = '%s! ip:%s, port:%s' % (content, self._ip, self._port)
+        event.dict_['to_addr'] = self._to_addr_list
+        self._eventEngine.put(event)
 
     def checkAccStata(self):
-        if self._trade.getAccState() == 1:
-            self._accState = 1
-            return
-
-        #如果状态从正常状态到异常，表示有异常，需要按照特定规则 发送邮件
-        if self._accState == 1:
-            self._checkofflinetime = datetime.now()
-            self._accState = 0
-
-        elif self._accState == 0:
-            timedelta_ms = (datetime.now() - self._checkofflinetime).total_seconds() * 1000
-            if timedelta_ms > self._offlinetime:
-                pass
-
-                #sendmail
-
+        curAccState = self._trade.getAccState()
+        if curAccState == 0 and not self._haveSendMail:
+            self.sendMail(curAccState)
+            self._haveSendMail = True
+            self._lastAccState = curAccState
+        elif curAccState != self._lastAccState:
+            self.sendMail(curAccState)
+            self._lastAccState = curAccState
 
     def checkisworkingtime(self):
         time = datetime.now().strftime("%H:%M")
@@ -96,26 +123,16 @@ class Monitor(object):
                 return True
         return False
 
-
-class MainEngine(object):
-    def __init__(self, cf):
-        self._eventEngine = EventEngine(cf.getint("main", "timer"))
-        self._trade = Ma(cf, self._eventEngine)
-        self._mail = SendMail(cf, self._eventEngine)
-        self._trade.logonEa()
-        time.sleep(5)
-        self.monitor(cf)
-        self._accState = None
-        self._eventEngine.register(EVENT_TIMER, self.onTimer)
-        self._eventEngine.start()
-
-
     def onTimer(self, event):
         if not self.checkisworkingtime():
-            logger.info("now is not working time")
+            logger.debug("now is not working time")
             return
 
         self.checkAccStata()
+
+        #断线时不进行定时的业务查询
+        if self._trade.getAccState() == 0:
+            return
         for fundid in self._todolist:
             logger.info("onTimer fundid:%s", fundid)
             self._trade.monitorQuery(fundid)

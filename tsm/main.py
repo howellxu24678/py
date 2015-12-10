@@ -14,7 +14,7 @@ businessconf= "business.ini"
 
 def main():
     try:
-        from auto.mainengine import MainEngine
+        from auto.mainengine import Monitor
         from PyQt4.QtCore import QCoreApplication
         """主程序入口"""
         app = QCoreApplication(sys.argv)
@@ -25,7 +25,7 @@ def main():
         cf = ConfigParser.ConfigParser()
         cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
 
-        me = MainEngine(cf)
+        me = Monitor(cf)
 
         sys.exit(app.exec_())
     except BaseException,e:

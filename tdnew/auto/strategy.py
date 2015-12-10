@@ -249,7 +249,19 @@ class Stg_Autotrader(Strategy):
         self._eventEngine.put(event)
         
     def DealBuy(self):
+        self._todayHaveBuy = True
         self.sendOrder("buy")
 
     def DealSell(self):
+        #控制当天买入当天不能卖出
+        if self._todayHaveBuy:
+            msg = "code:%s today have buy, so cant sell today" % self._code
+            logger.warn(msg)
+            event = Event(type_=EVENT_SENDMAIL)
+            event.dict_['remarks'] = 'AutoTrade'
+            event.dict_['content'] = msg
+            event.dict_['to_addr'] = self._to_addr_list
+            self._eventEngine.put(event)
+            return
+
         self.sendOrder("sell")
