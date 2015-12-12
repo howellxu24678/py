@@ -10,10 +10,6 @@ import time
 import json
 logger = logging.getLogger("run")
 
-
-
-
-
 class MainEngine(object):
     def __init__(self, cf):
         self._eventEngine = EventEngine(cf.getint("main", "timer"))
@@ -33,6 +29,7 @@ class MainEngine(object):
 class Monitor(MainEngine):
     def __init__(self, cf):
         super(Monitor, self).__init__(cf)
+        self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
         self._ip = cf.get("ma", "ip")
         self._port = cf.get("ma", "port")
 
@@ -43,6 +40,9 @@ class Monitor(MainEngine):
         self.processRequireInput(cf)
         self.processReplyFixCol(cf)
         self.parseWorkTime(cf)
+
+        self._funidCosOnlyList = cf.get("monitor", "cos_only").strip().split(",")
+        self._funidCosOrCounterList = cf.get("monitor", "cos_or_counter").strip().split(",")
 
     def processRequireInput(self,cf):
         self._requireconfig = {}
@@ -98,11 +98,11 @@ class Monitor(MainEngine):
         event.dict_['remarks'] = 'Monitor'
         content = ""
         if state == 0:
-            content = "disconnect"
+            content = u"交易网关连接断开！可能原因：1.交易网关没有正常运行;2.到交易网关的网络不稳定或者不连通"
         elif state == 1:
-            content = "connect"
+            content = u"交易网关连接正常"
 
-        event.dict_['content'] = '%s! ip:%s, port:%s' % (content, self._ip, self._port)
+        event.dict_['content'] = u'%s 网关参数:[ip:%s, port:%s]' % (content, self._ip, self._port)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
@@ -136,3 +136,31 @@ class Monitor(MainEngine):
         for fundid in self._todolist:
             logger.info("onTimer fundid:%s", fundid)
             self._trade.monitorQuery(fundid)
+
+        # #for test
+        # event = Event(type_=EVENT_FIRST_TABLE_ERROR)
+        # event.dict_['funid'] = '10303001'
+        # event.dict_['name'] = funNameDict['10388301']
+        # event.dict_['msgcode'] = '123'
+        # event.dict_['msglevel'] = '3'
+        # event.dict_['msgtext'] = u"查询股份异常"
+        # self._eventEngine.put(event)
+
+    def onFirstTableError(self, event_):
+        event = Event(type_=EVENT_SENDMAIL)
+        event.dict_['remarks'] = 'Monitor'
+        content = u"功能编号:%s 名称:%s,返回错误结果:[错误码:%s, 错误级别:%s, 错误信息:%s],可能原因:" % (event_.dict_['funid'],
+                                                       event_.dict_['name'],
+                                                       event_.dict_['msgcode'],
+                                                       event_.dict_['msglevel'],
+                                                       event_.dict_['msgtext'])
+
+        if event_.dict_['funid'] in self._funidCosOnlyList:
+            content += u"cos 交易服务运行异常"
+        elif event_.dict_['funid'] in self._funidCosOrCounterList:
+            content += u"cos 交易服务运行异常或者柜台运行异常"
+
+        event.dict_['content'] = u'%s 网关参数:[ip:%s, port:%s]' % (content, self._ip, self._port)
+        event.dict_['to_addr'] = self._to_addr_list
+        self._eventEngine.put(event)
+

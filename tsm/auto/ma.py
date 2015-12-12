@@ -654,6 +654,14 @@ class Ma(object):
                              funid.value,
                              funNameDict[funid.value],
                              msgcode.value)
+                event = Event(type_=EVENT_FIRST_TABLE_ERROR)
+                event.dict_['funid'] = funid.value
+                event.dict_['name'] = funNameDict[funid.value]
+                event.dict_['msgcode'] = msgcode.value
+                event.dict_['msglevel'] = msglevel.value
+                event.dict_['msgtext'] = msgtext.value.decode("gbk")
+                self._eventEngine.put(event)
+
             self._ma.maCli_Close(hHandle)
             self._ma.maCli_Exit(hHandle)
 
