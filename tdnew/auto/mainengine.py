@@ -170,7 +170,7 @@ class Monitor(MainEngine):
 
 from quote import *
 from strategy import *
-class AutoTrade(MainEngine):
+class Trade(MainEngine):
     def __init__(self, cf):
         try:
             super(AutoTrade, self).__init__(cf)
