@@ -13,20 +13,23 @@ loggingconf= "logging.config"
 businessconf= "business.ini"
 
 def main():
-    from auto.mainengine import MainEngine
-    from PyQt4.QtCore import QCoreApplication
-    """主程序入口"""
-    app = QCoreApplication(sys.argv)
+    try:
+        from auto.mainengine import Monitor
+        from PyQt4.QtCore import QCoreApplication
+        """主程序入口"""
+        app = QCoreApplication(sys.argv)
 
-    logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
-    logger = logging.getLogger("run")
+        logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
+        logger = logging.getLogger("run")
 
-    cf = ConfigParser.ConfigParser()
-    cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
+        cf = ConfigParser.ConfigParser()
+        cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
 
-    me = MainEngine(cf)
+        me = Monitor(cf)
 
-    sys.exit(app.exec_())
+        sys.exit(app.exec_())
+    except BaseException,e:
+        logger.exception(e)
 
 
 if __name__ == '__main__':

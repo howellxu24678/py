@@ -1,4 +1,4 @@
-# encoding: UTF-8
+# -*- coding: utf-8 -*-
 
 # 系统模块
 from Queue import Queue, Empty

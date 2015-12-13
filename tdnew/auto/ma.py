@@ -8,6 +8,8 @@ import datetime
 import logging
 import base64
 import socket
+import re
+import json
 logger = logging.getLogger("run")
 
 maHeadDict = {}
@@ -79,7 +81,7 @@ class NewLoginInfo(STU):
 
 
 def onMsg(pMsg, iLen, pAccount, pParam):
-    logger.debug("onAxEagle callback msgLen:%s, msg:%s", iLen, pMsg)
+    logger.debug("onAxEagle callback msgLen:%s, msg:%s", iLen, pMsg.decode('gbk'))
     event = Event(type_=EVENT_AXEAGLE)
     event.dict_['pMsg'] = pMsg
     event.dict_['iLen'] = iLen
@@ -129,6 +131,9 @@ class Ma(object):
         except BaseException,e:
             logger.exception(e)
             raise e
+
+    def getAccState(self):
+        return self._ea.AxE_GetAccountState(self._acc)
 
     def setPkgHead(self, hHandle_, pkgtype_, msgtype_, funtype_, funid_, msgid_):
         try:
@@ -287,6 +292,11 @@ class Ma(object):
             self.setRegular(hHandle)
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+
+            if funid_ in requireFixColDict:
+                for k,v in requireFixColDict[funid_].items():
+                    self._ma.maCli_SetValueS(hHandle, c_char_p(v), fixDict[k])
+
             self._ma.maCli_EndWrite(hHandle)
 
             b64bizdata = self.genBizData(hHandle)
@@ -465,14 +475,13 @@ class Ma(object):
         pBizData = c_char_p(0)
         self._ma.maCli_Make(hHandle_, byref(pBizData), byref(ilen))
 
-        logger.debug("before b64encode:%s", pBizData.value)
+        #logger.debug("before b64encode:%s", pBizData.value)
         b64bizdata = base64.encodestring(pBizData.value)
         self._ma.maCli_Close(hHandle_)
         self._ma.maCli_Exit(hHandle_)
         return  b64bizdata
 
     def onRecvMsg(self,event):
-        logger.debug("pMsg:%s", event.dict_["pMsg"])
         msgSplitList = event.dict_["pMsg"].split('\1')
         cmdId = msgSplitList[0]
         errno = msgSplitList[2]
@@ -484,7 +493,7 @@ class Ma(object):
         if cmdId == "40002" or cmdId == "40020":
             msgstr = base64.decodestring(msgSplitList[5])
             logger.debug("pMsg:%s, iLen:%s, pAccount:%s",
-                        msgstr,
+                        msgstr.decode("gbk"),
                         event.dict_["iLen"],
                         event.dict_["pAccount"])
 
@@ -621,14 +630,18 @@ class Ma(object):
             self._ma.maCli_GetTableCount(hHandle, byref(itablecount))
             logger.debug("itablecount:%s", itablecount)
             msgcode, msglevel, msgtext = self.parseFirstTable(hHandle)
-            logger.debug("msgcode:%s, msglevel:%s, msgtext:%s", msgcode.value, msglevel.value, msgtext.value)
+            logger.debug("msgcode:%s, msglevel:%s, msgtext:%s", msgcode.value, msglevel.value, msgtext.value.decode("gbk"))
 
             if msgcode.value == 0:
                 logger.info("reply funid:%s name:%s success with second table result",
                             funid.value,
                             funNameDict[funid.value])
                 ret = self.parseSecondTable(hHandle, funid)
-                logger.debug("ret:%s", ret)
+                logger.debug("ret:%s", json.dumps(ret,ensure_ascii=False, indent=2))
+
+                event = Event(type_= EVENT_QUERY_RET + funid.value)
+                event.dict_['ret'] = ret
+                self._eventEngine.put(event)
 
                 if funid.value in self._dealReplyDict:
                     self._dealReplyDict[funid.value](ret)
@@ -641,6 +654,14 @@ class Ma(object):
                              funid.value,
                              funNameDict[funid.value],
                              msgcode.value)
+                event = Event(type_=EVENT_FIRST_TABLE_ERROR)
+                event.dict_['funid'] = funid.value
+                event.dict_['name'] = funNameDict[funid.value]
+                event.dict_['msgcode'] = msgcode.value
+                event.dict_['msglevel'] = msglevel.value
+                event.dict_['msgtext'] = msgtext.value.decode("gbk")
+                self._eventEngine.put(event)
+
             self._ma.maCli_Close(hHandle)
             self._ma.maCli_Exit(hHandle)
 
@@ -671,8 +692,6 @@ class Ma(object):
         for i in range(1, irowcount.value + 1):
             self._ma.maCli_ReadRow(hHandle_, i)
             retdict = {}
-
-
             for fixidx_,type_ in replyMsgParam[funid_.value].iteritems():
                 if type_ == 'l':
                     l = c_int64(0)
@@ -694,7 +713,12 @@ class Ma(object):
                     len_ = int(type_.split(',')[1]) + 1
                     s = create_string_buffer(len_)
                     self._ma.maCli_GetValueS(hHandle_, byref(s), len_, fixDict[fixidx_])
-                    retdict[fixidx_] = s.value
+                    zhPattern = re.compile(u'[\u4e00-\u9fa5]+')
+                    match = zhPattern.search(s.value.decode("gbk"))
+                    if match:
+                        retdict[fixidx_] = s.value.decode("gbk")
+                    else:
+                        retdict[fixidx_] = s.value
             ret.append(retdict)
         return ret
 

@@ -23,11 +23,15 @@ def _format_addr(s):
 
 class SendMail(object):
     def __init__(self, cf, eventEngine_):
-        self._smtp_server = cf.get("DEFAULT", "smtp_server")
-        self._from_addr = cf.get("DEFAULT", "from_addr")
-        self._password = cf.get("DEFAULT", "password")
-        self._eventEngine = eventEngine_
-        self._eventEngine.register(EVENT_SENDMAIL, self.onSend)
+        try:
+            self._smtp_server = cf.get("main", "smtp_server")
+            self._from_addr = cf.get("main", "from_addr")
+            self._password = cf.get("main", "password")
+            self._eventEngine = eventEngine_
+            self._eventEngine.register(EVENT_SENDMAIL, self.onSend)
+        except BaseException,e:
+            logger.exception(e)
+            raise e
 
         
     def onSend(self, event):

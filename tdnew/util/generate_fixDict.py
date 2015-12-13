@@ -116,7 +116,7 @@ def main():
         filepath = "../auto/data_type.py"
         fpy = open(filepath, 'w')
 
-        fpy.write('# encoding: UTF-8\n')
+        fpy.write('# -*- coding: utf-8 -*-\n')
         fpy.write('# auto generate by generate_fixDict.py\n')
         fpy.write('\n')
         fpy.write('from ctypes import *\n')

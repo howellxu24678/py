@@ -28,21 +28,25 @@ class MainEngine(object):
 
 class Monitor(MainEngine):
     def __init__(self, cf):
-        super(Monitor, self).__init__(cf)
-        self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
-        self._ip = cf.get("ma", "ip")
-        self._port = cf.get("ma", "port")
+        try:
+            super(Monitor, self).__init__(cf)
+            self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
+            self._ip = cf.get("ma", "ip")
+            self._port = cf.get("ma", "port")
 
-        #记录上一个账号状态
-        self._lastAccState = None
-        self._haveSendMail = False
-        self._to_addr_list = cf.get("monitor", "reveiver").strip().split(",")
-        self.processRequireInput(cf)
-        self.processReplyFixCol(cf)
-        self.parseWorkTime(cf)
+            #记录上一个账号状态
+            self._lastAccState = None
+            self._haveSendMail = False
+            self._to_addr_list = cf.get("monitor", "reveiver").strip().split(",")
+            self.processRequireInput(cf)
+            self.processReplyFixCol(cf)
+            self.parseWorkTime(cf)
 
-        self._funidCosOnlyList = cf.get("monitor", "cos_only").strip().split(",")
-        self._funidCosOrCounterList = cf.get("monitor", "cos_or_counter").strip().split(",")
+            self._funidCosOnlyList = cf.get("monitor", "cos_only").strip().split(",")
+            self._funidCosOrCounterList = cf.get("monitor", "cos_or_counter").strip().split(",")
+        except BaseException,e:
+            logger.exception(e)
+            raise e
 
     def processRequireInput(self,cf):
         self._requireconfig = {}
