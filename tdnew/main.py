@@ -15,6 +15,7 @@ businessconf= "business.ini"
 def main():
     try:
         from auto.mainengine import Monitor
+        from auto.mainengine import Trade
         from PyQt4.QtCore import QCoreApplication
         """主程序入口"""
         app = QCoreApplication(sys.argv)

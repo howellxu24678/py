@@ -173,7 +173,7 @@ from strategy import *
 class Trade(MainEngine):
     def __init__(self, cf):
         try:
-            super(AutoTrade, self).__init__(cf)
+            super(Trade, self).__init__(cf)
 
             self._stglist = []
             self._codeset = set()
