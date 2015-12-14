@@ -8,14 +8,21 @@ from sendmail import *
 from data_type import *
 import time
 import json
+from winautotrade import *
 logger = logging.getLogger("run")
 
 class MainEngine(object):
     def __init__(self, cf):
         self._eventEngine = EventEngine(cf.getint("main", "timer"))
-        self._trade = Ma(cf, self._eventEngine)
+        self._trade = None
+        trader = cf.get("trade", "trader")
+        if trader == "ma":
+            self._trade = Ma(cf, self._eventEngine)
+            self._trade.logonEa()
+        elif trader == "tdx":
+            self._trade = TdxWinTrade(cf, self._eventEngine)
+
         self._mail = SendMail(cf, self._eventEngine)
-        self._trade.logonEa()
         time.sleep(5)
 
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
@@ -195,3 +202,17 @@ class Trade(MainEngine):
         except BaseException,e:
             logger.exception(e)
             raise e
+
+    # def onTimer(self, event):
+    #     event = Event(type_= EVENT_TRADE)
+    #     event.dict_['direction'] = "buy"
+    #     event.dict_['code'] = "000001"
+    #     event.dict_['number'] = "100"
+    #     self._eventEngine.put(event)
+    #
+    #     event = Event(type_= EVENT_TRADE)
+    #     event.dict_['direction'] = "sell"
+    #     event.dict_['code'] = "002515"
+    #     event.dict_['number'] = "100"
+    #     self._eventEngine.put(event)
+

@@ -5,11 +5,11 @@ from data_type import *
 from eventengine import *
 
 import datetime
-import logging
 import base64
 import socket
 import re
 import json
+import logging
 logger = logging.getLogger("run")
 
 maHeadDict = {}
@@ -81,12 +81,15 @@ class NewLoginInfo(STU):
 
 
 def onMsg(pMsg, iLen, pAccount, pParam):
-    logger.debug("onAxEagle callback msgLen:%s, msg:%s", iLen, pMsg.decode('gbk'))
-    event = Event(type_=EVENT_AXEAGLE)
-    event.dict_['pMsg'] = pMsg
-    event.dict_['iLen'] = iLen
-    event.dict_['pAccount'] = pAccount
-    pParam.put(event)
+    try:
+        logger.debug("onAxEagle callback msgLen:%s, msg:%s", iLen, pMsg.decode('gbk'))
+        event = Event(type_=EVENT_AXEAGLE)
+        event.dict_['pMsg'] = pMsg
+        event.dict_['iLen'] = iLen
+        event.dict_['pAccount'] = pAccount
+        pParam.put(event)
+    except BaseException,e:
+        logger.exception(e)
 
 
 onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, py_object)

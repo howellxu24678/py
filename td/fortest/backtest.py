@@ -21,7 +21,8 @@ quickfixconf= "quickfix.ini"
 logdir='log'
 logfilepath = os.path.join(os.getcwd(), logdir, datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')+'td.log')
 
-logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
+
+logging.config.fileConfig(os.path.join(os.getcwd(), "..", baseconfdir, loggingconf))
 logger = logging.getLogger()
 
 def td(kline):
