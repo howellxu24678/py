@@ -138,7 +138,7 @@ class Monitor(MainEngine):
         if self._trade.getAccState() == 0:
             return
         for fundid in self._todolist:
-            logger.info("onTimer fundid:%s", fundid)
+            logger.debug("onTimer fundid:%s", fundid)
             self._trade.monitorQuery(fundid)
 
         # #for test
