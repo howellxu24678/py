@@ -106,7 +106,7 @@ class Stg_Signal(Strategy):
         
     
 class Stg_Autotrader(Strategy):
-    def __init__(self, cf, code, eventEngine_):
+    def __init__(self, cf, code, number, eventEngine_):
         super(Stg_Autotrader, self).__init__(cf, code, eventEngine_)
 
         #订阅合约的成交
@@ -115,7 +115,7 @@ class Stg_Autotrader(Strategy):
         self._todayHaveBuy = False
         self._bNeedToSellAtOpen = False
         self._sellTime = datetime.datetime.strptime(cf.get("autotrader", "selltime"), "%H:%M").time()
-        self._stock_number = cf.get("autotrader", self._code)
+        self._stock_number = number
         self.GenToAddrList(cf)
         self._iBuyIndex, self._iSellIndex = self.LookBackRealBuySellPoint()
         
@@ -236,21 +236,22 @@ class Stg_Autotrader(Strategy):
                 #self._sendmail.send(msg, self._to_addr_list)
 
     def sendOrder(self, direction):
-        event = Event(type_= EVENT_TRADE)
+        event = Event(type_= EVENT_TRADE_CONTRACT + self._code)
         event.dict_['direction'] = direction
         event.dict_['code'] = self._code
         event.dict_['number'] = self._stock_number
         self._eventEngine.put(event)
 
-        event = Event(type_=EVENT_SENDMAIL)
-        event.dict_['remarks'] = 'AutoTrade'
-        event.dict_['content'] = 'code:%s, name:%s, 5min %s' % (self._code, self._name, direction)
-        event.dict_['to_addr'] = self._to_addr_list
-        self._eventEngine.put(event)
+        # event = Event(type_=EVENT_SENDMAIL)
+        # event.dict_['remarks'] = 'AutoTrade'
+        # event.dict_['content'] = 'code:%s, name:%s, 5min %s' % (self._code, self._name, direction)
+        # event.dict_['to_addr'] = self._to_addr_list
+        # self._eventEngine.put(event)
         
     def DealBuy(self):
-        self._todayHaveBuy = True
-        self.sendOrder("buy")
+        if not self._todayHaveBuy:
+            self._todayHaveBuy = True
+            self.sendOrder("buy")
 
     def DealSell(self):
         #控制当天买入当天不能卖出

@@ -10,12 +10,19 @@ logger = logging.getLogger("run")
 class TdxWinTrade(object):
     def __init__(self, cf, eventEngine_):
         try:
+            self._cf = cf
             self.initTradeHandle()
             self._eventEngine = eventEngine_
-            self._eventEngine.register(EVENT_TRADE, self.onOrder)
         except BaseException,e:
             logger.exception(e)
             raise e
+
+    def initAsTrader(self):
+        codelist = self._cf.get("tdx", "codelist").strip().split(',')
+        for code in codelist:
+            self._eventEngine.register(EVENT_TRADE_CONTRACT + code, self.onOrder)
+        self._to_addr_list = self._cf.get("tdx", "reveiver")
+        logger.info("ma deal with codelist:%s, toaddrlist:%s", codelist, self._to_addr_list)
 
     def initTradeHandle(self):
         self.__app = pywinauto.application.Application()

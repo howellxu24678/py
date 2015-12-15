@@ -56,12 +56,12 @@ class Quote5mKline(object):
     def __init__(self,cf, code):
         self._code = code
         
-        markettime = cf.get("trade", "workingtime").split(',')
+        markettime = cf.get("strategy", "workingtime").split(',')
         self._marketimerange = []
         for i in range(len(markettime)):
             self._marketimerange.append(markettime[i].split('~'))
         
-        self.GetHistDataFromFile(cf.get("trade", "hqdatadir"))
+        self.GetHistDataFromFile(cf.get("strategy", "hqdatadir"))
         self.CheckHistoryData()
         
     def GetHistDataFromFile(self, hqdatadir):

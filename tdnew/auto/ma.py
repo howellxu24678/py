@@ -99,11 +99,12 @@ onMsgHandle = onMsgFv(onMsg)
 class Ma(object):
     def __init__(self, cf, eventEngine_):
         try:
+            self._cf = cf
             self._ma = WinDLL("maCliApi.dll")
             self._ea = WinDLL("GxTS.dll")
             self._eventEngine = eventEngine_
             self._eventEngine.register(EVENT_AXEAGLE, self.onRecvMsg)
-            self._eventEngine.register(EVENT_TRADE, self.onQuantOrder)
+            #self._eventEngine.register(EVENT_TRADE, self.onQuantOrder)
 
             self._ip = cf.get("ma", "ip")
             self._port = cf.getint("ma","port")
@@ -134,6 +135,14 @@ class Ma(object):
         except BaseException,e:
             logger.exception(e)
             raise e
+
+    def initAsTrader(self):
+        codelist = self._cf.get("ma", "codelist").strip().split(',')
+        for code in codelist:
+            self._eventEngine.register(EVENT_TRADE_CONTRACT + code, self.onQuantOrder)
+        self._to_addr_list = self._cf.get("ma", "reveiver")
+        logger.info("ma deal with codelist:%s, toaddrlist:%s", codelist, self._to_addr_list)
+
 
     def getAccState(self):
         return self._ea.AxE_GetAccountState(self._acc)
@@ -436,13 +445,23 @@ class Ma(object):
         except BaseException,e:
             logger.exception(e)
 
-    def onQuantOrder(self, event):
-        code =  event.dict_['code']
-        qty = int(event.dict_['number'])
+    def onQuantOrder(self, event_):
+        direction = event_.dict_['direction']
+        #交易前先发个邮件提醒
+        event = Event(type_=EVENT_SENDMAIL)
+        event.dict_['remarks'] = 'AutoTrade'
+        event.dict_['content'] = 'code:%s, name:%s, 5min %s' % (event_.dict_['code'],
+                                                                event_.dict_['number'],
+                                                                direction)
+        event.dict_['to_addr'] = self._to_addr_list
+        self._eventEngine.put(event)
+
+        code =  event_.dict_['code']
+        qty = int(event_.dict_['number'])
         stkbiz = 0
-        if event.dict_['direction'] == 'buy':
+        if direction == 'buy':
             stkbiz = 100
-        elif event.dict_['direction'] == 'sell':
+        elif direction == 'sell':
             stkbiz = 101
 
         try:

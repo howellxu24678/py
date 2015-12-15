@@ -11,19 +11,12 @@ import json
 from winautotrade import *
 logger = logging.getLogger("run")
 
-class MainEngine(object):
+class BaseEngine(object):
     def __init__(self, cf):
         self._eventEngine = EventEngine(cf.getint("main", "timer"))
-        self._trade = None
-        trader = cf.get("trade", "trader")
-        if trader == "ma":
-            self._trade = Ma(cf, self._eventEngine)
-            self._trade.logonEa()
-        elif trader == "tdx":
-            self._trade = TdxWinTrade(cf, self._eventEngine)
+
 
         self._mail = SendMail(cf, self._eventEngine)
-        time.sleep(5)
 
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
         self._eventEngine.start()
@@ -33,10 +26,14 @@ class MainEngine(object):
         pass
 
 
-class Monitor(MainEngine):
+class Monitor(BaseEngine):
     def __init__(self, cf):
         try:
             super(Monitor, self).__init__(cf)
+            self._trade = Ma(cf, self._eventEngine)
+            self._trade.logonEa()
+            time.sleep(5)
+
             self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
             self._ip = cf.get("ma", "ip")
             self._port = cf.get("ma", "port")
@@ -177,10 +174,10 @@ class Monitor(MainEngine):
 
 from quote import *
 from strategy import *
-class Trade(MainEngine):
+class Business(BaseEngine):
     def __init__(self, cf):
         try:
-            super(Trade, self).__init__(cf)
+            super(Business, self).__init__(cf)
 
             self._stglist = []
             self._codeset = set()
@@ -191,10 +188,28 @@ class Trade(MainEngine):
                     self._stglist.append(Stg_Signal(cf, code, self._eventEngine))
 
             if(cf.getboolean("autotrader", "enable")):
-                codelist_autotrade = cf.get("autotrader", "codelist").split(',')
-                self._codeset = self._codeset.union(set(codelist_autotrade))
-                for code in codelist_autotrade:
-                    self._stglist.append(Stg_Autotrader(cf, code, self._eventEngine))
+                self._traders_handle = []
+                self._codeset_autotrade = set()
+
+                if cf.getboolean("ma", "enable"):
+                    ma = Ma(cf, self._eventEngine)
+                    ma.initAsTrader()
+                    self._traders_handle.append(ma)
+                    codelist_ma = cf.get("ma", "codelist").strip().split(',')
+                    for code in codelist_ma:
+                        self._stglist.append(Stg_Autotrader(cf, code, cf.get("ma", code), self._eventEngine))
+                    self._codeset_autotrade = self._codeset_autotrade.union(set(codelist_ma))
+
+                if cf.getboolean("tdx", "enable"):
+                    tdx = TdxWinTrade(cf, self._eventEngine)
+                    tdx.initAsTrader()
+                    self._traders_handle.append(tdx)
+                    codelist_tdx = cf.get("tdx", "codelist").strip().split(',')
+                    for code in codelist_tdx:
+                        self._stglist.append(Stg_Autotrader(cf, code, cf.get("tdx", code), self._eventEngine))
+                    self._codeset_autotrade = self._codeset_autotrade.union(set(codelist_tdx))
+
+                self._codeset = self._codeset.union(self._codeset_autotrade)
 
             #一次批量获取代码的最新行情
             self._realtimequote = RealTimeQuote(cf, list(self._codeset), self._eventEngine)
