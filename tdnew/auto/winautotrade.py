@@ -18,11 +18,7 @@ class TdxWinTrade(object):
             raise e
 
     def initAsTrader(self):
-        codelist = self._cf.get("tdx", "codelist").strip().split(',')
-        for code in codelist:
-            self._eventEngine.register(EVENT_TRADE_CONTRACT + code, self.onOrder)
-        self._to_addr_list = self._cf.get("tdx", "reveiver")
-        logger.info("ma deal with codelist:%s, toaddrlist:%s", codelist, self._to_addr_list)
+        self._eventEngine.register(EVENT_TRADE_REMARKS + "tdx", self.onOrder)
 
     def initTradeHandle(self):
         self.__app = pywinauto.application.Application()

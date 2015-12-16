@@ -104,10 +104,14 @@ class Stg_Signal(Strategy):
     def DealSell(self):
         self.SendMail('sell')
         
-    
+#remark用于区分通过那个交易接口下单
 class Stg_Autotrader(Strategy):
-    def __init__(self, cf, code, number, eventEngine_):
+    def __init__(self, cf, code, remarks, eventEngine_):
         super(Stg_Autotrader, self).__init__(cf, code, eventEngine_)
+        self._remarks = remarks
+        self._stock_number = cf.get(self._remarks, self._code)
+        self._to_addr_list = cf.get(self._remarks, "reveiver").strip().split(',')
+        #self.GenToAddrList(cf)
 
         #订阅合约的成交
         self._eventEngine.register(EVENT_MATCH_CONTRACT + self._code, self.onMatch)
@@ -115,8 +119,7 @@ class Stg_Autotrader(Strategy):
         self._todayHaveBuy = False
         self._bNeedToSellAtOpen = False
         self._sellTime = datetime.datetime.strptime(cf.get("autotrader", "selltime"), "%H:%M").time()
-        self._stock_number = number
-        self.GenToAddrList(cf)
+
         self._iBuyIndex, self._iSellIndex = self.LookBackRealBuySellPoint()
         
         self._lastBuyPoint = self._quote._df5mKline.index[self._iBuyIndex-1]
@@ -158,11 +161,11 @@ class Stg_Autotrader(Strategy):
              
         
         
-    def GenToAddrList(self, cf):
-        self._to_addr_list = []
-        #需要将交易摘要发送给的接收者邮箱
-        for toaddr in cf.get("autotrader", "reveiver").split(','):
-            self._to_addr_list.append(toaddr)
+    # def GenToAddrList(self, cf):
+    #     self._to_addr_list = []
+    #     #需要将交易摘要发送给的接收者邮箱
+    #     for toaddr in cf.get("autotrader", "reveiver").split(','):
+    #         self._to_addr_list.append(toaddr)
             
     #往前回溯获取上一个有效信号
     def LookBackToGetSignal(self):
@@ -236,17 +239,17 @@ class Stg_Autotrader(Strategy):
                 #self._sendmail.send(msg, self._to_addr_list)
 
     def sendOrder(self, direction):
-        event = Event(type_= EVENT_TRADE_CONTRACT + self._code)
+        event = Event(type_= EVENT_TRADE_REMARKS + self._remarks)
         event.dict_['direction'] = direction
         event.dict_['code'] = self._code
         event.dict_['number'] = self._stock_number
         self._eventEngine.put(event)
 
-        # event = Event(type_=EVENT_SENDMAIL)
-        # event.dict_['remarks'] = 'AutoTrade'
-        # event.dict_['content'] = 'code:%s, name:%s, 5min %s' % (self._code, self._name, direction)
-        # event.dict_['to_addr'] = self._to_addr_list
-        # self._eventEngine.put(event)
+        event = Event(type_=EVENT_SENDMAIL)
+        event.dict_['remarks'] = 'AutoTrade'
+        event.dict_['content'] = 'code:%s, name:%s, 5min %s' % (self._code, self._name, direction)
+        event.dict_['to_addr'] = self._to_addr_list
+        self._eventEngine.put(event)
         
     def DealBuy(self):
         if not self._todayHaveBuy:

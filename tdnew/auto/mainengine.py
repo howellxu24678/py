@@ -194,10 +194,11 @@ class Business(BaseEngine):
                 if cf.getboolean("ma", "enable"):
                     ma = Ma(cf, self._eventEngine)
                     ma.initAsTrader()
+                    ma.logonEa()
                     self._traders_handle.append(ma)
                     codelist_ma = cf.get("ma", "codelist").strip().split(',')
                     for code in codelist_ma:
-                        self._stglist.append(Stg_Autotrader(cf, code, cf.get("ma", code), self._eventEngine))
+                        self._stglist.append(Stg_Autotrader(cf, code, "ma", self._eventEngine))
                     self._codeset_autotrade = self._codeset_autotrade.union(set(codelist_ma))
 
                 if cf.getboolean("tdx", "enable"):
@@ -206,19 +207,26 @@ class Business(BaseEngine):
                     self._traders_handle.append(tdx)
                     codelist_tdx = cf.get("tdx", "codelist").strip().split(',')
                     for code in codelist_tdx:
-                        self._stglist.append(Stg_Autotrader(cf, code, cf.get("tdx", code), self._eventEngine))
+                        self._stglist.append(Stg_Autotrader(cf, code, "tdx", self._eventEngine))
                     self._codeset_autotrade = self._codeset_autotrade.union(set(codelist_tdx))
 
                 self._codeset = self._codeset.union(self._codeset_autotrade)
 
             #一次批量获取代码的最新行情
             self._realtimequote = RealTimeQuote(cf, list(self._codeset), self._eventEngine)
-            self._realtimequote.start()
+            #self._realtimequote.start()
         except BaseException,e:
             logger.exception(e)
             raise e
 
-    # def onTimer(self, event):
+
+    def onTimer(self, event):
+        event = Event(type_= EVENT_TRADE_REMARKS + "ma")
+        event.dict_['direction'] = "buy"
+        event.dict_['code'] = "002515"
+        event.dict_['number'] = "100"
+        self._eventEngine.put(event)
+
     #     event = Event(type_= EVENT_TRADE)
     #     event.dict_['direction'] = "buy"
     #     event.dict_['code'] = "000001"

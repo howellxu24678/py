@@ -137,12 +137,7 @@ class Ma(object):
             raise e
 
     def initAsTrader(self):
-        codelist = self._cf.get("ma", "codelist").strip().split(',')
-        for code in codelist:
-            self._eventEngine.register(EVENT_TRADE_CONTRACT + code, self.onQuantOrder)
-        self._to_addr_list = self._cf.get("ma", "reveiver")
-        logger.info("ma deal with codelist:%s, toaddrlist:%s", codelist, self._to_addr_list)
-
+        self._eventEngine.register(EVENT_TRADE_REMARKS + "ma", self.onQuantOrder)
 
     def getAccState(self):
         return self._ea.AxE_GetAccountState(self._acc)
@@ -446,18 +441,9 @@ class Ma(object):
             logger.exception(e)
 
     def onQuantOrder(self, event_):
-        direction = event_.dict_['direction']
-        #交易前先发个邮件提醒
-        event = Event(type_=EVENT_SENDMAIL)
-        event.dict_['remarks'] = 'AutoTrade'
-        event.dict_['content'] = 'code:%s, name:%s, 5min %s' % (event_.dict_['code'],
-                                                                event_.dict_['number'],
-                                                                direction)
-        event.dict_['to_addr'] = self._to_addr_list
-        self._eventEngine.put(event)
-
         code =  event_.dict_['code']
         qty = int(event_.dict_['number'])
+        direction = event_.dict_['direction']
         stkbiz = 0
         if direction == 'buy':
             stkbiz = 100
