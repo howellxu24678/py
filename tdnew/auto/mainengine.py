@@ -220,12 +220,18 @@ class Business(BaseEngine):
             raise e
 
 
-    def onTimer(self, event):
-        event = Event(type_= EVENT_TRADE_REMARKS + "ma")
-        event.dict_['direction'] = "buy"
-        event.dict_['code'] = "002515"
-        event.dict_['number'] = "100"
-        self._eventEngine.put(event)
+    # def onTimer(self, event):
+    #     event = Event(type_= EVENT_TRADE_REMARKS + "ma")
+    #     event.dict_['direction'] = "buy"
+    #     event.dict_['code'] = "002515"
+    #     event.dict_['number'] = "100"
+    #     self._eventEngine.put(event)
+    #
+    #     event = Event(type_= EVENT_TRADE_REMARKS + "tdx")
+    #     event.dict_['direction'] = "buy"
+    #     event.dict_['code'] = "000001"
+    #     event.dict_['number'] = "100"
+    #     self._eventEngine.put(event)
 
     #     event = Event(type_= EVENT_TRADE)
     #     event.dict_['direction'] = "buy"
