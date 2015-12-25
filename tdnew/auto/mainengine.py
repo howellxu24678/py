@@ -192,6 +192,7 @@ class Business(BaseEngine):
                 self._codeset_autotrade = set()
 
                 if cf.getboolean("ma", "enable"):
+                    logger.info("create trader:ma")
                     ma = Ma(cf, self._eventEngine)
                     ma.initAsTrader()
                     ma.logonEa()
@@ -202,6 +203,7 @@ class Business(BaseEngine):
                     self._codeset_autotrade = self._codeset_autotrade.union(set(codelist_ma))
 
                 if cf.getboolean("tdx", "enable"):
+                    logger.info("create trader:tdx")
                     tdx = TdxWinTrade(cf, self._eventEngine)
                     tdx.initAsTrader()
                     self._traders_handle.append(tdx)
