@@ -66,7 +66,8 @@ def td(kline):
 
 class Twine(object):
     def __init__(self):
-        self._df = pd.DataFrame(columns={'high', 'low'},index={'time'})
+        self._df = pd.DataFrame(columns={'high', 'low'})
+        self._df.loc[pd.to_datetime(datetime.datetime.now())] = {'high':60.2, 'low':32.3}
         pass
 
     #是否存在包含关系
@@ -101,11 +102,13 @@ class Twine(object):
 
         if self.isContain(self._df.ix[-1], curkline):
             if self.upOrDown(self._df.ix[-2], self._df.ix[-1]):
-                self._df.loc[self._df.index.values[-1]] = {'high': max(self._df.ix[-1]['high'], curkline['high']),
-                                                           'low': max(self._df.ix[-1]['low'], curkline['low'])}
+                self._df.loc[curkline['time']] = {'high': max(self._df.ix[-1]['high'], curkline['high']),\
+                                                  'low': max(self._df.ix[-1]['low'], curkline['low'])}
             else:
-                self._df.loc[self._df.index.values[-1]] = {'high': min(self._df.ix[-1]['high'], curkline['high']),
-                                                           'low': min(self._df.ix[-1]['low'], curkline['low'])}
+                self._df.loc[curkline['time']] = {'high': min(self._df.ix[-1]['high'], curkline['high']),\
+                                                  'low': min(self._df.ix[-1]['low'], curkline['low'])}
+            #处理完包含关系后，将前一个删除，只保留最终处理完的结果
+            self._df = self._df.drop(pd.Timestamp(self._df.index.values[-2]))
 
 
 
