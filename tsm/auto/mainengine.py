@@ -31,6 +31,7 @@ class Monitor(MainEngine):
         try:
             super(Monitor, self).__init__(cf)
             self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
+            self._name = cf.get("ma", "name")
             self._ip = cf.get("ma", "ip")
             self._port = cf.get("ma", "port")
 
@@ -99,7 +100,7 @@ class Monitor(MainEngine):
 
     def sendMail(self, state):
         event = Event(type_=EVENT_SENDMAIL)
-        event.dict_['remarks'] = 'Monitor'
+        event.dict_['remarks'] = 'Monitor ' + self._name
         content = ""
         if state == 0:
             content = u"交易网关连接断开！可能原因：1.交易网关没有正常运行;2.到交易网关的网络不稳定或者不连通"
@@ -128,6 +129,8 @@ class Monitor(MainEngine):
         return False
 
     def onTimer(self, event):
+        self.sendMail(0)
+
         if not self.checkisworkingtime():
             logger.debug("now is not working time")
             return
@@ -152,7 +155,7 @@ class Monitor(MainEngine):
 
     def onFirstTableError(self, event_):
         event = Event(type_=EVENT_SENDMAIL)
-        event.dict_['remarks'] = 'Monitor'
+        event.dict_['remarks'] = 'Monitor ' + self._name
         content = u"功能编号:%s 名称:%s,返回错误结果:[错误码:%s, 错误级别:%s, 错误信息:%s],可能原因:" % (event_.dict_['funid'],
                                                        event_.dict_['name'],
                                                        event_.dict_['msgcode'],

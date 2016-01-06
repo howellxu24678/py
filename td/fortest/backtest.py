@@ -31,30 +31,30 @@ def td(kline):
     isNeedSell = False
     
     curRow = kline.ix[iCount]
-    #第n根，close > ma60 且为阳线，然后开始从后往前看是否满足要求
-    if curRow['close'] > curRow['ma60'] and curRow['close'] >= curRow['open']:
+    #第n根，close >= ma60 且为阳线或者十字星，然后开始从后往前看是否满足要求
+    if curRow['close'] >= curRow['ma60'] and curRow['close'] >= curRow['open']:
         iCount = iCount - 1
         curRow = kline.ix[iCount]
-        #从第n-1一直到倒数第2根，close > ma60
-        while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
+        #从第n-1一直到倒数第2根，close >= ma60
+        while (max(curRow['close'], kline.ix[iCount + 1]['open']) >= curRow['ma60'] and abs(iCount) < 10):
             dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
-            #第1根K线 open< ma60 < close (即第一根为被ma60穿过实体的阳线)
-            if abs(iCount) >= 3 and dMin < curRow['ma60'] and curRow['ma60'] < curRow['close']:
+            #第1根K线 open <= ma60 <= close (即第一根为被ma60穿过实体的阳线或者十字星)
+            if abs(iCount) >= 3 and dMin <= curRow['ma60'] and curRow['ma60'] <= curRow['close']:
                 isNeedBuy = True
                 break
             else:
                 iCount = iCount - 1
                 curRow = kline.ix[iCount]
-                
-    #第n根，close < ma60 且为阴线，然后开始从后往前看是否满足要求
-    elif curRow['close'] < curRow['ma60'] and curRow['close'] < curRow['open']:
+
+    #第n根，close <= ma60 且为阴线或者十字星，然后开始从后往前看是否满足要求
+    elif curRow['close'] <= curRow['ma60'] and curRow['close'] <= curRow['open']:
         iCount = iCount - 1
         curRow = kline.ix[iCount]
-        #从第n-1一直到倒数第2根，close < ma60
+        #从第n-1一直到倒数第2根，close <= ma60
         while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
             dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
-            #第1根K线 open > ma60 > close (即第一根为被ma60穿过实体的阴线)
-            if abs(iCount) >= 3 and dMax > curRow['ma60'] and curRow['ma60'] > curRow['close']:
+            #第1根K线 open >= ma60 >= close (即第一根为被ma60穿过实体的阴线或者十字星)
+            if abs(iCount) >= 3 and dMax >= curRow['ma60'] and curRow['ma60'] >= curRow['close']:
                 isNeedSell = True
                 break
             else:
@@ -63,10 +63,58 @@ def td(kline):
                 
     return isNeedBuy,isNeedSell
 
+
+class Twine(object):
+    def __init__(self):
+        self._df = pd.DataFrame(columns={'high', 'low'},index={'time'})
+        pass
+
+    #是否存在包含关系
+    def isContain(self, pre_line, curkline):
+        #向左包含 n+1包含n
+        if curkline['high'] >= pre_line['high'] and curkline['low'] <= pre_line['low']:
+            return  True
+        #向右包含 n包含n+1
+        elif curkline['high'] <= pre_line['high'] and curkline['low'] >= pre_line['low']:
+            return  True
+        else:
+            return  False
+
+    #判断是上升趋势还是下降趋势,True为上升趋势，False为下降趋势
+    def upOrDown(self, line1, line2):
+        if line2['high'] >= line1['high'] and line2['low'] >= line1['low']:
+            return True
+        else:
+            return False
+
+
+    def contain(self, curkline):
+        if len(self._df) < 1:
+            self._df.loc[curkline['time']] = {'high':curkline['high'],
+                                              'low':curkline['low']}
+            return
+
+        if len(self._df) < 2:
+            if self.isContain(self._df.ix[-1], curkline):
+                pass
+
+
+        if self.isContain(self._df.ix[-1], curkline):
+            if self.upOrDown(self._df.ix[-2], self._df.ix[-1]):
+                self._df.loc[self._df.index.values[-1]] = {'high': max(self._df.ix[-1]['high'], curkline['high']),
+                                                           'low': max(self._df.ix[-1]['low'], curkline['low'])}
+            else:
+                self._df.loc[self._df.index.values[-1]] = {'high': min(self._df.ix[-1]['high'], curkline['high']),
+                                                           'low': min(self._df.ix[-1]['low'], curkline['low'])}
+
+
+
+
+
 hqDataDir = "D:\TdxW_HuaTai\T0002\export"
 
 
-code = '002475'
+code = '002588'
 rnames = ['d','t', 'open', 'high', 'low', 'close', 'volume', 'amt']
 df5mKline = pd.read_table(r"%s\%s.txt"%(hqDataDir, code), 
                           engine='python', sep = ',', 
@@ -133,7 +181,9 @@ def backtest(code):
                 curPosition = curPosition - 1
                 
                 
-                
+if __name__ == "__main__":
+    backtest("002588")
+
     
 
 
