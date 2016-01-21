@@ -19,6 +19,7 @@ EVENT_MARKETDATA_CONTRACT = 'eMarketData.'      # 特定合约的行情快照事
 EVENT_MATCH_CONTRACT = 'eMatch.'                # 特定合约的成交事件
 EVENT_SENDMAIL = 'eSendMail'                    # 发送邮件事件
 EVENT_TRADE = 'eTrade'                          # 交易事件
+EVENT_CON_TRADE = 'eConTrade'                   # 条件订单
 EVENT_QUERY_RET = 'eQueryRet.'                  # 特定功能号的查询结果
 EVENT_FIRST_TABLE_ERROR = 'eFirstTableError'    # 第一结果集的错误信息
 

@@ -171,3 +171,78 @@ class Monitor(MainEngine):
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
+
+class BatchOrder(MainEngine):
+    def __init__(self, cf):
+        try:
+            super(BatchOrder, self).__init__(cf)
+            time.sleep(5)
+            #self.getMktData(cf)
+            self.test()
+
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
+    def test(self):
+        #市价止损买入
+        event = Event(type_=EVENT_CON_TRADE)
+        event.dict_['code'] = '000001'
+        event.dict_['number'] = 100
+        #市价止盈止损
+        event.dict_['ATTR_CODE'] = 1112
+        #100为买入 101为卖出
+        event.dict_['STK_BIZ'] = 100
+        event.dict_['STOP_PRICE'] = 10.57
+        self._eventEngine.put(event)
+
+        event = Event(type_=EVENT_CON_TRADE)
+        event.dict_['code'] = '000001'
+        event.dict_['number'] = 100
+        #市价止盈止损
+        event.dict_['ATTR_CODE'] = 1112
+        #100为买入 101为卖出
+        event.dict_['STK_BIZ'] = 101
+        event.dict_['STOP_PRICE'] = 10.54
+        self._eventEngine.put(event)
+
+
+    def getMktData(self, cf):
+        fmkt = open(cf.get("batchorder", "hqdatapath").decode('utf8'))
+        pricecount = cf.getint("batchorder", "pricecount")
+        pricegrad = cf.getfloat("batchorder", "pricegrad")
+        for line in fmkt:
+            content = line.strip().split('\t')
+            if content[0].isdigit() and float(content[3]) > 0.01:
+
+
+                for i in range(1, pricecount+1):
+                    #市价止损买入
+                    event = Event(type_=EVENT_CON_TRADE)
+                    event.dict_['code'] = content[0]
+                    event.dict_['number'] = 100
+                    #市价止盈止损
+                    event.dict_['ATTR_CODE'] = 1112
+                    #100为买入 101为卖出
+                    event.dict_['STK_BIZ'] = 100
+                    event.dict_['STOP_PRICE'] = float(content[3]) * (1 + pricegrad * i)
+                    self._eventEngine.put(event)
+
+                    #市价止损买入
+                    event = Event(type_=EVENT_CON_TRADE)
+                    event.dict_['code'] = content[0]
+                    event.dict_['number'] = 100
+                    #市价止盈止损
+                    event.dict_['ATTR_CODE'] = 1112
+                    #100为买入 101为卖出
+                    event.dict_['STK_BIZ'] = 101
+                    event.dict_['STOP_PRICE'] = float(content[3]) * (1 - pricegrad * i)
+                    self._eventEngine.put(event)
+
+
+
+
+
+
+
+

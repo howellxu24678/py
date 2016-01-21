@@ -15,6 +15,7 @@ businessconf= "business.ini"
 def main():
     try:
         from auto.mainengine import Monitor
+        from auto.mainengine import BatchOrder
         from PyQt4.QtCore import QCoreApplication
         """主程序入口"""
         app = QCoreApplication(sys.argv)
@@ -25,7 +26,8 @@ def main():
         cf = ConfigParser.ConfigParser()
         cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
 
-        me = Monitor(cf)
+        #me = Monitor(cf)
+        bo = BatchOrder(cf)
 
         sys.exit(app.exec_())
     except BaseException,e:

@@ -101,6 +101,7 @@ class Ma(object):
             self._eventEngine = eventEngine_
             self._eventEngine.register(EVENT_AXEAGLE, self.onRecvMsg)
             self._eventEngine.register(EVENT_TRADE, self.onQuantOrder)
+            self._eventEngine.register(EVENT_CON_TRADE, self.onConOrder)
 
             self._ip = cf.get("ma", "ip")
             self._port = cf.getint("ma","port")
@@ -454,6 +455,7 @@ class Ma(object):
             self.setPkgHead(hHandle, "B", "R", "T", funid, msgid)
             self.setRegular(hHandle)
 
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
             stdbd, trdacct = self.getStkBdTrdAcc(code)
             self._ma.maCli_SetValueS(hHandle, stdbd, fixDict['STKBD'])
@@ -463,6 +465,46 @@ class Ma(object):
             self._ma.maCli_SetValueN(hHandle, stkbiz, fixDict['STK_BIZ'])
             self._ma.maCli_SetValueN(hHandle, 121, fixDict['STK_BIZ_ACTION'])
             self._ma.maCli_SetValueN(hHandle, 0, fixDict['ATTR_CODE'])
+            self._ma.maCli_EndWrite(hHandle)
+
+            b64bizdata = self.genBizData(hHandle)
+            self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+        except BaseException,e:
+            logger.exception(e)
+
+    def onConOrder(self, event):
+        code =  event.dict_['code']
+        #qty = int(event.dict_['number'])
+        # stkbiz = 0
+        # if event.dict_['direction'] == 'buy':
+        #     stkbiz = 100
+        # elif event.dict_['direction'] == 'sell':
+        #     stkbiz = 101
+
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_BeginWrite(hHandle)
+            reqid = self.genReqId()
+            funid = "10388101"
+            msgid = create_string_buffer(32+1)
+            self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+            self.setPkgHead(hHandle, "B", "R", "T", funid, msgid)
+            self.setRegular(hHandle)
+            # self._ma.maCli_SetValueS(hHandle, str(self.genReqId()), fixDict['CLI_ORDER_NO'])
+            # self._ma.maCli_SetValueS(hHandle, "STPTRG=STT;", fixDict['ORDER_ATTR'])
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            stdbd, trdacct = self.getStkBdTrdAcc(code)
+            self._ma.maCli_SetValueS(hHandle, stdbd, fixDict['STKBD'])
+            self._ma.maCli_SetValueS(hHandle, trdacct, fixDict['TRDACCT'])
+            self._ma.maCli_SetValueS(hHandle, code, fixDict['TRD_CODE'])
+            self._ma.maCli_SetValueN(hHandle, event.dict_['number'], fixDict['ORDER_QTY'])
+            self._ma.maCli_SetValueN(hHandle, event.dict_['STK_BIZ'], fixDict['STK_BIZ'])
+            self._ma.maCli_SetValueN(hHandle, 121, fixDict['STK_BIZ_ACTION'])
+            self._ma.maCli_SetValueN(hHandle, event.dict_['ATTR_CODE'], fixDict['ATTR_CODE'])
+            self._ma.maCli_SetValueD(hHandle, c_double(event.dict_['STOP_PRICE']), fixDict['STOP_PRICE'])
             self._ma.maCli_EndWrite(hHandle)
 
             b64bizdata = self.genBizData(hHandle)
