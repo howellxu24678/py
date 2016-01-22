@@ -184,6 +184,13 @@ class BatchOrder(MainEngine):
             logger.exception(e)
             raise e
 
+    def test1(self):
+        event = Event(type_= EVENT_TRADE)
+        event.dict_['direction'] = 'buy'
+        event.dict_['code'] = '000001'
+        event.dict_['number'] = '100'
+        self._eventEngine.put(event)
+
     def test(self):
         #市价止损买入
         event = Event(type_=EVENT_CON_TRADE)
@@ -193,7 +200,7 @@ class BatchOrder(MainEngine):
         event.dict_['ATTR_CODE'] = 1112
         #100为买入 101为卖出
         event.dict_['STK_BIZ'] = 100
-        event.dict_['STOP_PRICE'] = 10.57
+        event.dict_['STOP_PRICE'] = 10.43
         self._eventEngine.put(event)
 
         event = Event(type_=EVENT_CON_TRADE)
@@ -203,7 +210,7 @@ class BatchOrder(MainEngine):
         event.dict_['ATTR_CODE'] = 1112
         #100为买入 101为卖出
         event.dict_['STK_BIZ'] = 101
-        event.dict_['STOP_PRICE'] = 10.54
+        event.dict_['STOP_PRICE'] = 10.41
         self._eventEngine.put(event)
 
 
