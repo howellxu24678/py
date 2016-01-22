@@ -178,7 +178,7 @@ class BatchOrder(MainEngine):
             super(BatchOrder, self).__init__(cf)
             time.sleep(5)
             #self.getMktData(cf)
-            self.test()
+            self.test2()
 
         except BaseException,e:
             logger.exception(e)
@@ -189,6 +189,19 @@ class BatchOrder(MainEngine):
         event.dict_['direction'] = 'buy'
         event.dict_['code'] = '000001'
         event.dict_['number'] = '100'
+        self._eventEngine.put(event)
+
+
+#000007060457 MAP01BR0 201601221547140005dcf4d304c0e4b2baef5848e46da4c6e00000000000000000000000000000000103881010000000000001000100000541AQAAAAAAAAAAAAAA0005T    3706{"207":"0","38":"500","40":"121","44":"0.00000000","448":"0000035079","48":"000001","625":"00","66":"61","8810":"110000035079","8811":"1","8812":"0005056c00001","8813":"F","8814":"1391000000009c8355071601221601222359590000000001TbCo1359MbQ=BBsXK/b7JY2+U2TQ1BOdZyBMmb9NMba7Xi4opzbI3oQ=","8815":"10388101","8816":"20160122154714000","8821":"1100","8834":"20160122","8842":"100","8902":"110000035079","8920":"110000035079","8970":"0","8975":"0.00000000","9080":"1","9100":"TIM=07:58:07;","9101":"1010","9102":"Oxujhaoxx5914a109","916":"155807"}
+    #时间触发
+    def test2(self):
+        event = Event(type_= EVENT_CON_TRADE)
+        event.dict_['code'] = '000001'
+        event.dict_['number'] = 100
+        event.dict_['ATTR_CODE'] = 1010
+        event.dict_['STK_BIZ'] = 100
+        event.dict_['BGN_EXE_TIME'] = 161030
+        event.dict_['STOP_PRICE'] = 10.43
         self._eventEngine.put(event)
 
     def test(self):

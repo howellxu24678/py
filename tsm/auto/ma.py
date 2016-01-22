@@ -507,7 +507,10 @@ class Ma(object):
             self._ma.maCli_SetValueN(hHandle, event.dict_['STK_BIZ'], fixDict['STK_BIZ'])
             self._ma.maCli_SetValueN(hHandle, 121, fixDict['STK_BIZ_ACTION'])
             self._ma.maCli_SetValueN(hHandle, event.dict_['ATTR_CODE'], fixDict['ATTR_CODE'])
-            #self._ma.maCli_SetValueD(hHandle, c_double(event.dict_['STOP_PRICE']), fixDict['STOP_PRICE'])
+            if 'BGN_EXE_TIME' in event.dict_:
+                self._ma.maCli_SetValueN(hHandle, event.dict_['BGN_EXE_TIME'], fixDict['BGN_EXE_TIME'])
+            self._ma.maCli_SetValueD(hHandle, c_double(event.dict_['STOP_PRICE']), fixDict['STOP_PRICE'])
+
             self._ma.maCli_EndWrite(hHandle)
 
             b64bizdata = self.genBizData(hHandle)
