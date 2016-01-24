@@ -497,6 +497,17 @@ class Ma(object):
             self.setRegular(hHandle, funid)
             # self._ma.maCli_SetValueS(hHandle, str(self.genReqId()), fixDict['CLI_ORDER_NO'])
             # self._ma.maCli_SetValueS(hHandle, "STPTRG=STT;", fixDict['ORDER_ATTR'])
+            #测试添加
+            #self._ma.maCli_SetValueS(hHandle, self._acc, c_char_p("8825"))
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), c_char_p("207"))
+            #self._ma.maCli_SetValueD(hHandle, c_double(0.0), c_char_p("44"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("1"), c_char_p("9080"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("0"), c_char_p("8826"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("77"), c_char_p("66"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("TIM=09:30:00;"), c_char_p("9100"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("0"), c_char_p("8970"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("20160124"), c_char_p("8834"))
+            #测试添加
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
             stdbd, trdacct = self.getStkBdTrdAcc(code)

@@ -200,8 +200,8 @@ class BatchOrder(MainEngine):
         event.dict_['number'] = 100
         event.dict_['ATTR_CODE'] = 1010
         event.dict_['STK_BIZ'] = 100
-        event.dict_['BGN_EXE_TIME'] = 153430
-        event.dict_['STOP_PRICE'] = 10.43
+        event.dict_['BGN_EXE_TIME'] = 175300
+        event.dict_['STOP_PRICE'] = 0.0
         self._eventEngine.put(event)
 
     def test(self):
