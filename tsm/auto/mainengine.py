@@ -129,8 +129,6 @@ class Monitor(MainEngine):
         return False
 
     def onTimer(self, event):
-        self.sendMail(0)
-
         if not self.checkisworkingtime():
             logger.debug("now is not working time")
             return
@@ -177,8 +175,8 @@ class BatchOrder(MainEngine):
         try:
             super(BatchOrder, self).__init__(cf)
             time.sleep(5)
-            #self.getMktData(cf)
-            self.test2()
+            self.orderByPriceGrad(cf)
+            #self.test()
 
         except BaseException,e:
             logger.exception(e)
@@ -200,7 +198,7 @@ class BatchOrder(MainEngine):
         event.dict_['number'] = 100
         event.dict_['ATTR_CODE'] = 1010
         event.dict_['STK_BIZ'] = 100
-        event.dict_['BGN_EXE_TIME'] = 175300
+        event.dict_['BGN_EXE_TIME'] = 93500
         event.dict_['STOP_PRICE'] = 0.0
         self._eventEngine.put(event)
 
@@ -213,7 +211,7 @@ class BatchOrder(MainEngine):
         event.dict_['ATTR_CODE'] = 1112
         #100为买入 101为卖出
         event.dict_['STK_BIZ'] = 100
-        event.dict_['STOP_PRICE'] = 10.43
+        event.dict_['STOP_PRICE'] = 10.44
         self._eventEngine.put(event)
 
         event = Event(type_=EVENT_CON_TRADE)
@@ -227,15 +225,13 @@ class BatchOrder(MainEngine):
         self._eventEngine.put(event)
 
 
-    def getMktData(self, cf):
+    def orderByPricePerent(self, cf):
         fmkt = open(cf.get("batchorder", "hqdatapath").decode('utf8'))
         pricecount = cf.getint("batchorder", "pricecount")
         pricegrad = cf.getfloat("batchorder", "pricegrad")
         for line in fmkt:
             content = line.strip().split('\t')
             if content[0].isdigit() and float(content[3]) > 0.01:
-
-
                 for i in range(1, pricecount+1):
                     #市价止损买入
                     event = Event(type_=EVENT_CON_TRADE)
@@ -245,7 +241,7 @@ class BatchOrder(MainEngine):
                     event.dict_['ATTR_CODE'] = 1112
                     #100为买入 101为卖出
                     event.dict_['STK_BIZ'] = 100
-                    event.dict_['STOP_PRICE'] = float(content[3]) * (1 + pricegrad * i)
+                    event.dict_['STOP_PRICE'] = round(float(content[3]) * (1 + pricegrad * i),2)
                     self._eventEngine.put(event)
 
                     #市价止损买入
@@ -256,8 +252,40 @@ class BatchOrder(MainEngine):
                     event.dict_['ATTR_CODE'] = 1112
                     #100为买入 101为卖出
                     event.dict_['STK_BIZ'] = 101
-                    event.dict_['STOP_PRICE'] = float(content[3]) * (1 - pricegrad * i)
+                    event.dict_['STOP_PRICE'] = round(float(content[3]) * (1 - pricegrad * i),2)
                     self._eventEngine.put(event)
+
+
+    def orderByPriceGrad(self, cf):
+        fmkt = open(cf.get("batchorder", "hqdatapath").decode('utf8'))
+        pricecount = cf.getint("batchorder", "pricecount")
+        pricegrad = cf.getfloat("batchorder", "pricegrad")
+        for line in fmkt:
+            content = line.strip().split('\t')
+            if content[0].isdigit() and float(content[3]) > 0.01:
+                for i in range(1, pricecount+1):
+                    #市价止损买入
+                    event = Event(type_=EVENT_CON_TRADE)
+                    event.dict_['code'] = content[0]
+                    event.dict_['number'] = 100
+                    #市价止盈止损
+                    event.dict_['ATTR_CODE'] = 1112
+                    #100为买入 101为卖出
+                    event.dict_['STK_BIZ'] = 100
+                    event.dict_['STOP_PRICE'] = round(float(content[3]) + pricegrad * i, 2)
+                    self._eventEngine.put(event)
+
+                    #市价止损买入
+                    event = Event(type_=EVENT_CON_TRADE)
+                    event.dict_['code'] = content[0]
+                    event.dict_['number'] = 100
+                    #市价止盈止损
+                    event.dict_['ATTR_CODE'] = 1112
+                    #100为买入 101为卖出
+                    event.dict_['STK_BIZ'] = 101
+                    event.dict_['STOP_PRICE'] = round(float(content[3]) - pricegrad * i, 2)
+                    self._eventEngine.put(event)
+
 
 
 

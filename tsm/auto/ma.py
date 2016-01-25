@@ -398,15 +398,15 @@ class Ma(object):
             logger.exception(e)
 
 
-    def getStkBdTrdAcc(self, code):
+    def getStkExBdTrdAcc(self, code):
         try:
-            if code[:2] == '00' or code[:2] == '300' or code[:2] == '15':
-                return c_char_p('00'),self._bd2tradacc_dict['00']
-            elif code[:2] == '60' or code[:2] == '15':
-                return c_char_p('10'),self._bd2tradacc_dict['10']
+            if code[:2] == '00' or code[:2] == '300':
+                return c_char_p('0'),c_char_p('00'),self._bd2tradacc_dict['00']
+            elif code[:2] == '60':
+                return c_char_p('1'),c_char_p('10'),self._bd2tradacc_dict['10']
         except BaseException,e:
             logger.exception(e)
-            return 'unknow','unknow'
+            return 'unknow','unknow','unknow'
 
 
     def buySellOrder(self):
@@ -460,8 +460,9 @@ class Ma(object):
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
-            stdbd, trdacct = self.getStkBdTrdAcc(code)
-            self._ma.maCli_SetValueS(hHandle, stdbd, fixDict['STKBD'])
+            stkex,stkbd, trdacct = self.getStkExBdTrdAcc(code)
+            self._ma.maCli_SetValueS(hHandle, stkex, fixDict["STKEX"])
+            self._ma.maCli_SetValueS(hHandle, stkbd, fixDict['STKBD'])
             self._ma.maCli_SetValueS(hHandle, trdacct, fixDict['TRDACCT'])
             self._ma.maCli_SetValueS(hHandle, code, fixDict['TRD_CODE'])
             self._ma.maCli_SetValueN(hHandle, qty, fixDict['ORDER_QTY'])
@@ -499,7 +500,7 @@ class Ma(object):
             # self._ma.maCli_SetValueS(hHandle, "STPTRG=STT;", fixDict['ORDER_ATTR'])
             #测试添加
             #self._ma.maCli_SetValueS(hHandle, self._acc, c_char_p("8825"))
-            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), c_char_p("207"))
+
             #self._ma.maCli_SetValueD(hHandle, c_double(0.0), c_char_p("44"))
             #self._ma.maCli_SetValueS(hHandle, c_char_p("1"), c_char_p("9080"))
             #self._ma.maCli_SetValueS(hHandle, c_char_p("0"), c_char_p("8826"))
@@ -510,8 +511,9 @@ class Ma(object):
             #测试添加
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
-            stdbd, trdacct = self.getStkBdTrdAcc(code)
-            self._ma.maCli_SetValueS(hHandle, stdbd, fixDict['STKBD'])
+            stkex,stkbd, trdacct = self.getStkExBdTrdAcc(code)
+            self._ma.maCli_SetValueS(hHandle, stkex, fixDict["STKEX"])
+            self._ma.maCli_SetValueS(hHandle, stkbd, fixDict['STKBD'])
             self._ma.maCli_SetValueS(hHandle, trdacct, fixDict['TRDACCT'])
             self._ma.maCli_SetValueS(hHandle, code, fixDict['TRD_CODE'])
             self._ma.maCli_SetValueN(hHandle, event.dict_['number'], fixDict['ORDER_QTY'])
@@ -698,7 +700,7 @@ class Ma(object):
                             funid.value,
                             funNameDict[funid.value])
                 ret = self.parseSecondTable(hHandle, funid)
-                logger.debug("ret:%s", json.dumps(ret,ensure_ascii=False, indent=2))
+                #logger.debug("ret:%s", json.dumps(ret, ensure_ascii=False, indent=2))
 
                 event = Event(type_= EVENT_QUERY_RET + funid.value)
                 event.dict_['ret'] = ret
