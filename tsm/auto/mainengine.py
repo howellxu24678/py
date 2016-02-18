@@ -174,9 +174,11 @@ class BatchOrder(MainEngine):
     def __init__(self, cf):
         try:
             super(BatchOrder, self).__init__(cf)
-            time.sleep(5)
-            self.orderByPriceGrad(cf)
+            time.sleep(10)
+            #self.orderByPricePerent(cf)
             #self.test()
+            #self.orderByTime(cf)
+            self.orderByPriceGrad(cf)
 
         except BaseException,e:
             logger.exception(e)
@@ -211,7 +213,7 @@ class BatchOrder(MainEngine):
         event.dict_['ATTR_CODE'] = 1112
         #100为买入 101为卖出
         event.dict_['STK_BIZ'] = 100
-        event.dict_['STOP_PRICE'] = 10.44
+        event.dict_['STOP_PRICE'] = 9.91
         self._eventEngine.put(event)
 
         event = Event(type_=EVENT_CON_TRADE)
@@ -221,8 +223,48 @@ class BatchOrder(MainEngine):
         event.dict_['ATTR_CODE'] = 1112
         #100为买入 101为卖出
         event.dict_['STK_BIZ'] = 101
-        event.dict_['STOP_PRICE'] = 10.41
+        event.dict_['STOP_PRICE'] = 9.89
         self._eventEngine.put(event)
+
+
+    def test3(self):
+        #市价止损买入
+        event = Event(type_=EVENT_CON_TRADE)
+        event.dict_['code'] = '603999'
+        event.dict_['number'] = 100
+        #市价止盈止损
+        event.dict_['ATTR_CODE'] = 1112
+        #100为买入 101为卖出
+        event.dict_['STK_BIZ'] = 100
+        event.dict_['STOP_PRICE'] = 41.45
+        self._eventEngine.put(event)
+
+        event = Event(type_=EVENT_CON_TRADE)
+        event.dict_['code'] = '000001'
+        event.dict_['number'] = 100
+        #市价止盈止损
+        event.dict_['ATTR_CODE'] = 1112
+        #100为买入 101为卖出
+        event.dict_['STK_BIZ'] = 101
+        event.dict_['STOP_PRICE'] = 41.39
+        self._eventEngine.put(event)
+
+    #基于时间触发的批量委托
+    def orderByTime(self,cf):
+        for i in range(cf.getint("timebase", "count")):
+            code = cf.get("timebase", "code")
+            time = cf.getint("timebase", "time")
+            number = cf.getint("timebase", "number")
+
+            event = Event(type_= EVENT_CON_TRADE)
+            event.dict_['code'] = code
+            event.dict_['number'] = number
+            event.dict_['ATTR_CODE'] = 1010
+            event.dict_['STK_BIZ'] = 100
+            event.dict_['BGN_EXE_TIME'] = time
+            event.dict_['STOP_PRICE'] = 0.0
+            self._eventEngine.put(event)
+
 
 
     def orderByPricePerent(self, cf):
@@ -254,6 +296,7 @@ class BatchOrder(MainEngine):
                     event.dict_['STK_BIZ'] = 101
                     event.dict_['STOP_PRICE'] = round(float(content[3]) * (1 - pricegrad * i),2)
                     self._eventEngine.put(event)
+                    time.sleep(0.01)
 
 
     def orderByPriceGrad(self, cf):

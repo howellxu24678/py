@@ -81,12 +81,15 @@ class NewLoginInfo(STU):
 
 
 def onMsg(pMsg, iLen, pAccount, pParam):
-    logger.debug("onAxEagle callback msgLen:%s, msg:%s", iLen, pMsg.decode('gbk'))
-    event = Event(type_=EVENT_AXEAGLE)
-    event.dict_['pMsg'] = pMsg
-    event.dict_['iLen'] = iLen
-    event.dict_['pAccount'] = pAccount
-    pParam.put(event)
+    try:
+        logger.debug("onAxEagle callback msgLen:%s, msg:%s", iLen, pMsg.decode('gbk'))
+        event = Event(type_=EVENT_AXEAGLE)
+        event.dict_['pMsg'] = pMsg
+        event.dict_['iLen'] = iLen
+        event.dict_['pAccount'] = pAccount
+        pParam.put(event)
+    except BaseException,e:
+        logger.exception(e)
 
 
 onMsgFv = CFUNCTYPE (None, c_char_p, c_int, c_char_p, py_object)
@@ -96,6 +99,7 @@ onMsgHandle = onMsgFv(onMsg)
 class Ma(object):
     def __init__(self, cf, eventEngine_):
         try:
+            self._cf = cf
             self._ma = WinDLL("maCliApi.dll")
             self._ea = WinDLL("GxTS.dll")
             self._eventEngine = eventEngine_
@@ -133,6 +137,9 @@ class Ma(object):
             logger.exception(e)
             raise e
 
+    def initAsTrader(self):
+        self._eventEngine.register(EVENT_TRADE_REMARKS + "ma", self.onQuantOrder)
+
     def getAccState(self):
         return self._ea.AxE_GetAccountState(self._acc)
 
@@ -159,11 +166,8 @@ class Ma(object):
                 self._ma.maCli_GetVersion(hHandle_, szVersion, len(szVersion))
                 self._session = szVersion
             self._ma.maCli_SetValueS(hHandle_, self._session, fixDict['F_SESSION'])
-            # self._ma.maCli_SetValueS(hHandle_,
-            #                          c_char_p(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")),
-            #                          fixDict['F_RUNTIME'])
             self._ma.maCli_SetValueS(hHandle_,
-                                     c_char_p(datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")),
+                                     c_char_p(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")),
                                      fixDict['F_RUNTIME'])
             if self._int_org is None:
                 self._int_org = c_int(0)
@@ -400,10 +404,13 @@ class Ma(object):
 
     def getStkExBdTrdAcc(self, code):
         try:
-            if code[:2] == '00' or code[:2] == '300':
+            if code[:2] == '00' or code[:3] == '300':
                 return c_char_p('0'),c_char_p('00'),self._bd2tradacc_dict['00']
             elif code[:2] == '60':
                 return c_char_p('1'),c_char_p('10'),self._bd2tradacc_dict['10']
+            else:
+                logger.warn('can not deal with code:%s', code)
+                return c_char_p('unknow'), c_char_p('unknow'), c_char_p('unknow')
         except BaseException,e:
             logger.exception(e)
             return 'unknow','unknow','unknow'

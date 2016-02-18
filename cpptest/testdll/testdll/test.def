@@ -1,7 +1,0 @@
-LIBRARY test
-
-EXPORTS
-
-AxE_Init
-AxE_NewMultiLogin
-AxE_SendMsg

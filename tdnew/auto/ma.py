@@ -5,11 +5,11 @@ from data_type import *
 from eventengine import *
 
 import datetime
+import logging
 import base64
 import socket
 import re
 import json
-import logging
 logger = logging.getLogger("run")
 
 maHeadDict = {}
@@ -104,7 +104,8 @@ class Ma(object):
             self._ea = WinDLL("GxTS.dll")
             self._eventEngine = eventEngine_
             self._eventEngine.register(EVENT_AXEAGLE, self.onRecvMsg)
-            #self._eventEngine.register(EVENT_TRADE, self.onQuantOrder)
+            self._eventEngine.register(EVENT_TRADE, self.onQuantOrder)
+            self._eventEngine.register(EVENT_CON_TRADE, self.onConOrder)
 
             self._ip = cf.get("ma", "ip")
             self._port = cf.getint("ma","port")
@@ -153,13 +154,13 @@ class Ma(object):
         except BaseException,e:
             logger.exception(e)
 
-    def setRegular(self, hHandle_):
+    def setRegular(self, hHandle_, funid_):
         try:
             self._ma.maCli_SetValueS(hHandle_, self._acc, fixDict['F_OP_USER'])
             self._ma.maCli_SetValueC(hHandle_, c_char('1'), fixDict['F_OP_ROLE'])
             self._ma.maCli_SetValueS(hHandle_, self._localIp, fixDict['F_OP_SITE'])
-            self._ma.maCli_SetValueC(hHandle_, c_char('0'), fixDict['F_CHANNEL'])
-            self._ma.maCli_SetValueS(hHandle_, c_char_p("10301105"), fixDict['F_FUNCTION'])
+            self._ma.maCli_SetValueC(hHandle_, c_char('F'), fixDict['F_CHANNEL'])
+            self._ma.maCli_SetValueS(hHandle_, c_char_p(funid_), fixDict['F_FUNCTION'])
             if self._session is None:
                 szVersion = create_string_buffer(32+1)
                 self._ma.maCli_GetVersion(hHandle_, szVersion, len(szVersion))
@@ -209,7 +210,7 @@ class Ma(object):
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
-            self.setRegular(hHandle)
+            self.setRegular(hHandle, funid)
 
             self._ma.maCli_SetValueS(hHandle, c_char_p("Z"), fixDict['ACCT_TYPE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['ACCT_ID'])
@@ -244,7 +245,7 @@ class Ma(object):
                 self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
                 self.setPkgHead(hHandle, "S", "R", "Q", funid, msgid)
-                self.setRegular(hHandle)
+                self.setRegular(hHandle, funid)
                 self._ma.maCli_SetValueS(hHandle, c_char_p("TSU_ORDER"), c_char_p("TOPIC"))
                 self._ma.maCli_SetValueS(hHandle, c_char_p(trdacc), c_char_p("FILTER"))
                 self._ma.maCli_SetValueS(hHandle, c_char_p(trdacc), c_char_p("SUB_ID"))
@@ -273,7 +274,7 @@ class Ma(object):
                 self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
                 self.setPkgHead(hHandle, "S", "R", "Q", funid, msgid)
-                self.setRegular(hHandle)
+                self.setRegular(hHandle, funid)
                 self._ma.maCli_SetValueS(hHandle, c_char_p("MATCH" + bd), c_char_p("TOPIC"))
                 self._ma.maCli_SetValueS(hHandle, c_char_p(trdacc), c_char_p("FILTER"))
                 self._ma.maCli_SetValueS(hHandle, c_char_p(trdacc), c_char_p("SUB_ID"))
@@ -296,7 +297,7 @@ class Ma(object):
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "Q", funid_, msgid)
-            self.setRegular(hHandle)
+            self.setRegular(hHandle, funid_)
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
 
@@ -323,7 +324,7 @@ class Ma(object):
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
-            self.setRegular(hHandle)
+            self.setRegular(hHandle, funid)
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
             self._ma.maCli_EndWrite(hHandle)
@@ -345,7 +346,7 @@ class Ma(object):
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
-            self.setRegular(hHandle)
+            self.setRegular(hHandle, funid)
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
             self._ma.maCli_EndWrite(hHandle)
@@ -367,7 +368,7 @@ class Ma(object):
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
-            self.setRegular(hHandle)
+            self.setRegular(hHandle, funid)
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
             self._ma.maCli_EndWrite(hHandle)
@@ -389,7 +390,7 @@ class Ma(object):
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "Q", funid, msgid)
-            self.setRegular(hHandle)
+            self.setRegular(hHandle, funid)
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
             self._ma.maCli_EndWrite(hHandle)
@@ -401,15 +402,18 @@ class Ma(object):
             logger.exception(e)
 
 
-    def getStkBdTrdAcc(self, code):
+    def getStkExBdTrdAcc(self, code):
         try:
-            if code[:2] == '00' or code[:2] == '300' or code[:2] == '15':
-                return c_char_p('00'),self._bd2tradacc_dict['00']
-            elif code[:2] == '60' or code[:2] == '15':
-                return c_char_p('10'),self._bd2tradacc_dict['10']
+            if code[:2] == '00' or code[:3] == '300':
+                return c_char_p('0'),c_char_p('00'),self._bd2tradacc_dict['00']
+            elif code[:2] == '60':
+                return c_char_p('1'),c_char_p('10'),self._bd2tradacc_dict['10']
+            else:
+                logger.warn('can not deal with code:%s', code)
+                return c_char_p('unknow'), c_char_p('unknow'), c_char_p('unknow')
         except BaseException,e:
             logger.exception(e)
-            return 'unknow','unknow'
+            return 'unknow','unknow','unknow'
 
 
     def buySellOrder(self):
@@ -423,7 +427,7 @@ class Ma(object):
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "T", funid, msgid)
-            self.setRegular(hHandle)
+            self.setRegular(hHandle, funid)
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
             self._ma.maCli_SetValueS(hHandle, '00', fixDict['STKBD'])
@@ -440,14 +444,13 @@ class Ma(object):
         except BaseException,e:
             logger.exception(e)
 
-    def onQuantOrder(self, event_):
-        code =  event_.dict_['code']
-        qty = int(event_.dict_['number'])
-        direction = event_.dict_['direction']
+    def onQuantOrder(self, event):
+        code =  event.dict_['code']
+        qty = int(event.dict_['number'])
         stkbiz = 0
-        if direction == 'buy':
+        if event.dict_['direction'] == 'buy':
             stkbiz = 100
-        elif direction == 'sell':
+        elif event.dict_['direction'] == 'sell':
             stkbiz = 101
 
         try:
@@ -460,11 +463,13 @@ class Ma(object):
             self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
 
             self.setPkgHead(hHandle, "B", "R", "T", funid, msgid)
-            self.setRegular(hHandle)
+            self.setRegular(hHandle, funid)
 
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
-            stdbd, trdacct = self.getStkBdTrdAcc(code)
-            self._ma.maCli_SetValueS(hHandle, stdbd, fixDict['STKBD'])
+            stkex,stkbd, trdacct = self.getStkExBdTrdAcc(code)
+            self._ma.maCli_SetValueS(hHandle, stkex, fixDict["STKEX"])
+            self._ma.maCli_SetValueS(hHandle, stkbd, fixDict['STKBD'])
             self._ma.maCli_SetValueS(hHandle, trdacct, fixDict['TRDACCT'])
             self._ma.maCli_SetValueS(hHandle, code, fixDict['TRD_CODE'])
             self._ma.maCli_SetValueN(hHandle, qty, fixDict['ORDER_QTY'])
@@ -478,13 +483,70 @@ class Ma(object):
         except BaseException,e:
             logger.exception(e)
 
+    def onConOrder(self, event):
+        code =  event.dict_['code']
+        #qty = int(event.dict_['number'])
+        # stkbiz = 0
+        # if event.dict_['direction'] == 'buy':
+        #     stkbiz = 100
+        # elif event.dict_['direction'] == 'sell':
+        #     stkbiz = 101
+
+        try:
+            hHandle = c_void_p(0)
+            self._ma.maCli_Init(byref(hHandle))
+            self._ma.maCli_BeginWrite(hHandle)
+            reqid = self.genReqId()
+            funid = "10388101"
+            msgid = create_string_buffer(32+1)
+            self._ma.maCli_GetUuid(hHandle, msgid, len(msgid))
+
+            self.setPkgHead(hHandle, "B", "R", "T", funid, msgid)
+            self.setRegular(hHandle, funid)
+            # self._ma.maCli_SetValueS(hHandle, str(self.genReqId()), fixDict['CLI_ORDER_NO'])
+            # self._ma.maCli_SetValueS(hHandle, "STPTRG=STT;", fixDict['ORDER_ATTR'])
+            #测试添加
+            #self._ma.maCli_SetValueS(hHandle, self._acc, c_char_p("8825"))
+
+            #self._ma.maCli_SetValueD(hHandle, c_double(0.0), c_char_p("44"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("1"), c_char_p("9080"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("0"), c_char_p("8826"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("77"), c_char_p("66"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("TIM=09:30:00;"), c_char_p("9100"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("0"), c_char_p("8970"))
+            #self._ma.maCli_SetValueS(hHandle, c_char_p("20160124"), c_char_p("8834"))
+            #测试添加
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
+            self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            stkex,stkbd, trdacct = self.getStkExBdTrdAcc(code)
+            self._ma.maCli_SetValueS(hHandle, stkex, fixDict["STKEX"])
+            self._ma.maCli_SetValueS(hHandle, stkbd, fixDict['STKBD'])
+            self._ma.maCli_SetValueS(hHandle, trdacct, fixDict['TRDACCT'])
+            self._ma.maCli_SetValueS(hHandle, code, fixDict['TRD_CODE'])
+            self._ma.maCli_SetValueN(hHandle, event.dict_['number'], fixDict['ORDER_QTY'])
+            self._ma.maCli_SetValueN(hHandle, event.dict_['STK_BIZ'], fixDict['STK_BIZ'])
+            self._ma.maCli_SetValueN(hHandle, 121, fixDict['STK_BIZ_ACTION'])
+            self._ma.maCli_SetValueN(hHandle, event.dict_['ATTR_CODE'], fixDict['ATTR_CODE'])
+            if 'BGN_EXE_TIME' in event.dict_:
+                self._ma.maCli_SetValueN(hHandle, event.dict_['BGN_EXE_TIME'], fixDict['BGN_EXE_TIME'])
+            self._ma.maCli_SetValueD(hHandle, c_double(event.dict_['STOP_PRICE']), fixDict['STOP_PRICE'])
+
+            self._ma.maCli_EndWrite(hHandle)
+
+            b64bizdata = self.genBizData(hHandle)
+            self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+        except BaseException,e:
+            logger.exception(e)
+
     def genBizData(self, hHandle_):
         ilen = c_int(0)
         pBizData = c_char_p(0)
         self._ma.maCli_Make(hHandle_, byref(pBizData), byref(ilen))
 
-        #logger.debug("before b64encode:%s", pBizData.value)
-        b64bizdata = base64.encodestring(pBizData.value)
+        bizData = pBizData.value[:ilen.value]
+        logger.debug("before b64encode:%s", bizData)
+
+        b64bizdata = base64.encodestring(bizData)
         self._ma.maCli_Close(hHandle_)
         self._ma.maCli_Exit(hHandle_)
         return  b64bizdata
@@ -645,7 +707,7 @@ class Ma(object):
                             funid.value,
                             funNameDict[funid.value])
                 ret = self.parseSecondTable(hHandle, funid)
-                logger.debug("ret:%s", json.dumps(ret,ensure_ascii=False, indent=2))
+                #logger.debug("ret:%s", json.dumps(ret, ensure_ascii=False, indent=2))
 
                 event = Event(type_= EVENT_QUERY_RET + funid.value)
                 event.dict_['ret'] = ret
