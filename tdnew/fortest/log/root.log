@@ -1,0 +1,1025 @@
+Mon, 14 Dec 2015 16:06:34 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-16 14:10:00 with price: 10.58: rop:0.9987
+Mon, 14 Dec 2015 16:06:34 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-09-18 10:35:00 with price: 11.25: income:0.67 rop:1.06194470699
+Mon, 14 Dec 2015 16:06:34 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-18 14:55:00 with price: 11.6: rop:1.06056417888
+Mon, 14 Dec 2015 16:06:35 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-09-22 11:05:00 with price: 12.02: income:0.42 rop:1.09672400646
+Mon, 14 Dec 2015 16:06:35 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-22 13:20:00 with price: 12.34: rop:1.09529826525
+Mon, 14 Dec 2015 16:06:35 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-09-23 09:50:00 with price: 12.14: income:-0.2 rop:1.07911187952
+Mon, 14 Dec 2015 16:06:35 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-23 14:30:00 with price: 12.21: rop:1.07770903407
+Mon, 14 Dec 2015 16:06:35 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-09-25 13:15:00 with price: 12.28: income:0.07 rop:1.0834345869
+Mon, 14 Dec 2015 16:06:35 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-28 11:25:00 with price: 12.34: rop:1.08202612193
+Mon, 14 Dec 2015 16:06:35 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-09-29 11:10:00 with price: 12.26: income:-0.08 rop:1.07555156764
+Mon, 14 Dec 2015 16:06:35 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-30 09:45:00 with price: 12.33: rop:1.0741533506
+Mon, 14 Dec 2015 16:06:35 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-10-13 10:40:00 with price: 14.38: income:2.05 rop:1.24019836277
+Mon, 14 Dec 2015 16:06:36 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-10-15 13:40:00 with price: 15.73: rop:1.2385861049
+Mon, 14 Dec 2015 16:06:36 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-10-16 13:30:00 with price: 15.59: income:-0.14 rop:1.22969748443
+Mon, 14 Dec 2015 16:06:36 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-10-20 09:45:00 with price: 15.35: rop:1.2280988777
+Mon, 14 Dec 2015 16:06:36 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-10-21 13:30:00 with price: 15.5: income:0.15 rop:1.23785816108
+Mon, 14 Dec 2015 16:06:36 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-10-22 14:40:00 with price: 14.78: rop:1.23624894547
+Mon, 14 Dec 2015 16:06:36 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-10-27 10:20:00 with price: 15.65: income:0.87 rop:1.29503575197
+Mon, 14 Dec 2015 16:06:36 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-10-27 14:10:00 with price: 15.95: rop:1.29335220549
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-10-28 10:45:00 with price: 15.72: income:-0.23 rop:1.27895088888
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-10-29 14:00:00 with price: 15.52: rop:1.27728825272
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-02 09:45:00 with price: 15.43: income:-0.09 rop:1.27149682231
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-02 10:35:00 with price: 15.99: rop:1.26984387644
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-03 09:35:00 with price: 15.5: income:-0.49 rop:1.23923956124
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-04 09:45:00 with price: 15.56: rop:1.23762854981
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-05 14:50:00 with price: 16.39: income:0.83 rop:1.29090110765
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-06 09:50:00 with price: 16.89: rop:1.28922293621
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-09 10:05:00 with price: 16.61: income:-0.28 rop:1.27266663071
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-09 11:00:00 with price: 16.96: rop:1.27101216409
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-10 11:20:00 with price: 16.82: income:-0.14 rop:1.26276817824
+Mon, 14 Dec 2015 16:06:37 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-11 10:40:00 with price: 16.85: rop:1.26112657961
+Mon, 14 Dec 2015 16:06:38 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-12 13:15:00 with price: 17.0: income:0.15 rop:1.27001708406
+Mon, 14 Dec 2015 16:06:38 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-12 14:05:00 with price: 17.31: rop:1.26836606185
+Mon, 14 Dec 2015 16:06:38 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-13 09:40:00 with price: 16.74: income:-0.57 rop:1.23547992667
+Mon, 14 Dec 2015 16:06:38 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-16 14:25:00 with price: 16.78: rop:1.23387380276
+Mon, 14 Dec 2015 16:06:38 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-17 14:20:00 with price: 16.69: income:-0.09 rop:1.22851724734
+Mon, 14 Dec 2015 16:06:38 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-19 13:30:00 with price: 16.4: rop:1.22692017492
+Mon, 14 Dec 2015 16:06:38 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-27 10:05:00 with price: 19.22: income:2.82 rop:1.39864785784
+Mon, 14 Dec 2015 16:06:39 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-30 15:00:00 with price: 17.61: rop:1.39682961563
+Mon, 14 Dec 2015 16:06:39 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-12-01 14:15:00 with price: 17.3: income:-0.31 rop:1.37924886606
+Mon, 14 Dec 2015 16:06:39 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-12-03 09:45:00 with price: 17.35: rop:1.37745584253
+Mon, 14 Dec 2015 16:06:39 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-12-04 13:50:00 with price: 17.2: income:-0.15 rop:1.36882154858
+Mon, 14 Dec 2015 16:06:39 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-12-07 11:25:00 with price: 17.42: rop:1.36704208057
+Mon, 14 Dec 2015 16:06:39 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-12-08 09:55:00 with price: 17.02: income:-0.4 rop:1.3441098188
+Mon, 14 Dec 2015 16:06:39 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-12-10 13:50:00 with price: 16.67: rop:1.34236247604
+Mon, 14 Dec 2015 16:06:39 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-12-11 09:35:00 with price: 16.41: income:-0.26 rop:1.32678587136
+Mon, 14 Dec 2015 16:06:39 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-12-11 09:55:00 with price: 16.59: rop:1.32506104972
+Mon, 14 Dec 2015 16:23:13 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-09-16 14:15:00 with price: 14.07: rop:0.9987
+Mon, 14 Dec 2015 16:23:14 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-09-17 14:55:00 with price: 14.21: income:0.14 rop:1.00863731343
+Mon, 14 Dec 2015 16:23:14 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-09-21 11:05:00 with price: 14.16: rop:1.00732608493
+Mon, 14 Dec 2015 16:23:14 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-09-23 10:35:00 with price: 15.66: income:1.5 rop:1.11312057645
+Mon, 14 Dec 2015 16:23:14 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-09-24 10:10:00 with price: 15.93: rop:1.1116735197
+Mon, 14 Dec 2015 16:23:14 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-09-25 09:35:00 with price: 15.56: income:-0.37 rop:1.08847709786
+Mon, 14 Dec 2015 16:23:14 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-09-28 14:30:00 with price: 15.2: rop:1.08706207763
+Mon, 14 Dec 2015 16:23:14 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-09-29 09:45:00 with price: 15.03: income:-0.17 rop:1.07589240658
+Mon, 14 Dec 2015 16:23:15 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-09-29 14:25:00 with price: 16.52: rop:1.07449374645
+Mon, 14 Dec 2015 16:23:15 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-10-09 09:40:00 with price: 16.53: income:0.01 rop:1.0750982864
+Mon, 14 Dec 2015 16:23:15 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-10-09 10:15:00 with price: 16.87: rop:1.07370065863
+Mon, 14 Dec 2015 16:23:15 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-10-13 11:00:00 with price: 17.65: income:0.78 rop:1.11987647368
+Mon, 14 Dec 2015 16:23:15 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-10-14 10:50:00 with price: 17.89: rop:1.11842063427
+Mon, 14 Dec 2015 16:23:15 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-10-15 09:35:00 with price: 17.13: income:-0.76 rop:1.07599402722
+Mon, 14 Dec 2015 16:23:15 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-10-15 13:15:00 with price: 17.54: rop:1.07459523499
+Mon, 14 Dec 2015 16:23:16 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-10-21 13:35:00 with price: 20.25: income:2.71 rop:1.22889837068
+Mon, 14 Dec 2015 16:23:16 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-10-22 14:30:00 with price: 19.9: rop:1.2273008028
+Mon, 14 Dec 2015 16:23:16 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-10-23 13:10:00 with price: 19.7: income:-0.2 rop:1.21726361687
+Mon, 14 Dec 2015 16:23:16 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-10-23 13:25:00 with price: 20.0: rop:1.21568117417
+Mon, 14 Dec 2015 16:23:16 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-10-27 09:50:00 with price: 20.41: income:0.41 rop:1.23615452417
+Mon, 14 Dec 2015 16:23:16 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-10-27 14:20:00 with price: 21.43: rop:1.23454752328
+Mon, 14 Dec 2015 16:23:16 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-10-28 13:05:00 with price: 20.18: income:-1.25 rop:1.17629390686
+Mon, 14 Dec 2015 16:23:16 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-10-29 13:25:00 with price: 20.4: rop:1.17476472478
+Mon, 14 Dec 2015 16:23:16 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-10-30 09:35:00 with price: 19.81: income:-0.59 rop:1.14588075419
+Mon, 14 Dec 2015 16:23:16 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-10-30 13:05:00 with price: 21.13: rop:1.14439110921
+Mon, 14 Dec 2015 16:23:17 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-11-02 10:15:00 with price: 20.59: income:-0.54 rop:1.11886825072
+Mon, 14 Dec 2015 16:23:17 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-11-02 10:30:00 with price: 20.87: rop:1.11741372199
+Mon, 14 Dec 2015 16:23:17 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-11-03 09:35:00 with price: 20.72: income:-0.15 rop:1.11023571528
+Mon, 14 Dec 2015 16:23:17 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-11-03 10:50:00 with price: 21.28: rop:1.10879240885
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-11-10 09:50:00 with price: 29.88: income:8.6 rop:1.51240237126
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-11-10 10:45:00 with price: 31.79: rop:1.51043624817
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-11-11 11:20:00 with price: 32.31: income:0.52 rop:1.5267723287
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-11-11 14:25:00 with price: 35.87: rop:1.52478752468
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-11-16 10:05:00 with price: 38.48: income:2.61 rop:1.59745568749
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-11-16 10:25:00 with price: 39.0: rop:1.59537899509
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-11-17 14:55:00 with price: 40.87: income:1.87 rop:1.64326537971
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-11-19 11:20:00 with price: 38.7: rop:1.64112913471
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-11-20 10:50:00 with price: 38.02: income:-0.68 rop:1.62358091766
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-11-20 13:35:00 with price: 38.77: rop:1.62147026247
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-11-23 09:35:00 with price: 38.21: income:-0.56 rop:1.60704488202
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-11-23 10:10:00 with price: 38.82: rop:1.60495572367
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-11-24 09:35:00 with price: 37.01: income:-1.81 rop:1.55839088596
+Mon, 14 Dec 2015 16:23:18 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-11-24 11:15:00 with price: 37.92: rop:1.55636497781
+Mon, 14 Dec 2015 16:23:19 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-11-25 09:45:00 with price: 37.7: income:-0.22 rop:1.55057083224
+Mon, 14 Dec 2015 16:23:19 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-11-25 13:20:00 with price: 39.04: rop:1.54855509016
+Mon, 14 Dec 2015 16:23:19 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-12-01 10:10:00 with price: 34.49: income:-4.55 rop:1.43215947028
+Mon, 14 Dec 2015 16:23:19 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-12-02 10:25:00 with price: 35.25: rop:1.43029766297
+Mon, 14 Dec 2015 16:23:19 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-12-03 14:55:00 with price: 35.52: income:0.27 rop:1.43794727999
+Mon, 14 Dec 2015 16:23:19 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-12-07 14:10:00 with price: 34.47: rop:1.43607794852
+Mon, 14 Dec 2015 16:23:19 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-12-08 14:30:00 with price: 34.5: income:0.03 rop:1.43694713913
+Mon, 14 Dec 2015 16:23:20 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-12-09 10:55:00 with price: 35.25: rop:1.43507910784
+Mon, 14 Dec 2015 16:23:20 backtest.py 11428 [line:132] INFO code:002673 sell at:2015-12-10 13:55:00 with price: 35.66: income:0.41 rop:1.44669519295
+Mon, 14 Dec 2015 16:23:20 backtest.py 11428 [line:117] INFO code:002673 buy at:2015-12-11 13:40:00 with price: 36.1: rop:1.4448144892
+Mon, 14 Dec 2015 16:25:08 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-07-27 11:05:00 with price: 35.54: rop:0.9987
+Mon, 14 Dec 2015 16:25:08 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-07-28 09:35:00 with price: 29.82: income:-5.72 rop:0.837963815419
+Mon, 14 Dec 2015 16:25:08 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-07-28 14:55:00 with price: 32.42: rop:0.836874462459
+Mon, 14 Dec 2015 16:25:08 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-07-31 09:35:00 with price: 37.58: income:5.16 rop:0.995828564865
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-04 09:50:00 with price: 33.3: rop:0.994533987731
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-06 09:45:00 with price: 34.4: income:1.1 rop:1.02752407782
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-06 10:05:00 with price: 36.4: rop:1.02618829652
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-07 09:35:00 with price: 35.36: income:-1.04 rop:0.997654010805
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-07 14:55:00 with price: 35.85: rop:0.996357060591
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-11 10:45:00 with price: 36.85: income:1.0 rop:1.02421480118
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-11 14:35:00 with price: 38.26: rop:1.02288332194
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-12 14:30:00 with price: 38.14: income:-0.12 rop:1.01975096438
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-13 14:45:00 with price: 37.63: rop:1.01842528813
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-14 13:55:00 with price: 36.85: income:-0.78 rop:0.997724092274
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-14 14:30:00 with price: 37.79: rop:0.996427050954
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-17 09:35:00 with price: 36.8: income:-0.99 rop:0.970263700861
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-17 09:50:00 with price: 37.46: rop:0.96900235805
+Mon, 14 Dec 2015 16:25:09 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-18 09:35:00 with price: 36.2: income:-1.26 rop:0.935410206422
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-19 14:40:00 with price: 34.05: rop:0.934194173154
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-20 09:45:00 with price: 32.37: income:-1.68 rop:0.884919107074
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-20 11:30:00 with price: 32.68: rop:0.883768712235
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-21 09:35:00 with price: 31.1: income:-1.58 rop:0.835483950913
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-21 14:15:00 with price: 32.56: rop:0.834397821777
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-24 09:45:00 with price: 29.33: income:-3.23 rop:0.735325309492
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-26 13:20:00 with price: 25.5: rop:0.73436938659
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-08-27 09:35:00 with price: 23.48: income:-2.02 rop:0.655256680707
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-08-27 10:05:00 with price: 24.16: rop:0.654404847022
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-09-01 09:50:00 with price: 28.18: income:4.02 rop:0.820579267552
+Mon, 14 Dec 2015 16:25:10 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-09-02 13:15:00 with price: 27.9: rop:0.819512514504
+Mon, 14 Dec 2015 16:25:11 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-09-07 09:35:00 with price: 25.9: income:-2.0 rop:0.747921116655
+Mon, 14 Dec 2015 16:25:11 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-09-08 14:50:00 with price: 21.98: rop:0.746948819203
+Mon, 14 Dec 2015 16:25:11 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-09-10 14:55:00 with price: 23.88: income:1.9 rop:0.833278664517
+Mon, 14 Dec 2015 16:25:11 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-09-14 09:50:00 with price: 23.51: rop:0.832195402253
+Mon, 14 Dec 2015 16:25:11 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-09-15 09:35:00 with price: 20.1: income:-3.41 rop:0.687339298468
+Mon, 14 Dec 2015 16:25:11 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-09-16 14:10:00 with price: 19.25: rop:0.68644575738
+Mon, 14 Dec 2015 16:25:11 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-09-17 14:55:00 with price: 20.43: income:1.18 rop:0.747664770367
+Mon, 14 Dec 2015 16:25:12 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-09-22 13:20:00 with price: 22.72: rop:0.746692806165
+Mon, 14 Dec 2015 16:25:12 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-09-23 09:50:00 with price: 21.79: income:-0.93 rop:0.705812920602
+Mon, 14 Dec 2015 16:25:12 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-09-23 10:15:00 with price: 22.57: rop:0.704895363805
+Mon, 14 Dec 2015 16:25:12 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-09-24 09:35:00 with price: 22.45: income:-0.12 rop:0.699585483433
+Mon, 14 Dec 2015 16:25:12 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-09-24 09:50:00 with price: 22.53: rop:0.698676022304
+Mon, 14 Dec 2015 16:25:12 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-09-25 09:45:00 with price: 22.57: income:0.04 rop:0.700449124834
+Mon, 14 Dec 2015 16:25:12 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-09-28 14:35:00 with price: 21.52: rop:0.699538540972
+Mon, 14 Dec 2015 16:25:12 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-09-29 09:45:00 with price: 20.97: income:-0.55 rop:0.674014145061
+Mon, 14 Dec 2015 16:25:12 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-09-30 09:45:00 with price: 21.59: rop:0.673137926673
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-10-19 14:10:00 with price: 30.06: income:8.47 rop:1.06493917725
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-10-20 13:55:00 with price: 30.75: rop:1.06355475632
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-10-22 09:45:00 with price: 30.9: income:0.15 rop:1.06842646364
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-10-22 10:20:00 with price: 32.05: rop:1.06703750924
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-10-26 09:50:00 with price: 35.15: income:3.1 rop:1.16363563716
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-10-27 09:55:00 with price: 35.53: rop:1.16212291083
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-10-28 10:00:00 with price: 34.64: income:-0.89 rop:1.13710622071
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-10-28 14:35:00 with price: 35.6: rop:1.13562798262
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-10-29 09:35:00 with price: 35.13: income:-0.47 rop:1.12244289835
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-10-29 10:10:00 with price: 36.19: rop:1.12098372259
+Mon, 14 Dec 2015 16:25:13 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-10-30 09:35:00 with price: 34.89: income:-1.3 rop:1.08510889529
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-02 13:30:00 with price: 35.0: rop:1.08369825372
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-03 09:35:00 with price: 34.19: income:-0.81 rop:1.06058548229
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-03 09:50:00 with price: 34.89: rop:1.05920672117
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-05 15:00:00 with price: 38.2: income:3.31 rop:1.15395298084
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-06 13:55:00 with price: 39.3: rop:1.15245284197
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-09 09:55:00 with price: 37.72: income:-1.58 rop:1.11230154426
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-09 11:00:00 with price: 38.88: rop:1.11085555225
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-10 13:05:00 with price: 38.5: income:-0.38 rop:1.10109459546
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-10 14:20:00 with price: 39.4: rop:1.09966317248
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-11 09:35:00 with price: 37.51: income:-1.89 rop:1.05175598974
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-12 10:20:00 with price: 37.44: rop:1.05038870696
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-13 10:35:00 with price: 36.62: income:-0.82 rop:1.02851546978
+Mon, 14 Dec 2015 16:25:14 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-16 09:55:00 with price: 37.8: rop:1.02717839967
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-18 11:25:00 with price: 39.78: income:1.98 rop:1.07949125681
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-19 14:25:00 with price: 38.7: rop:1.07808791817
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-20 14:50:00 with price: 39.17: income:0.47 rop:1.0902168329
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-23 09:50:00 with price: 40.2: rop:1.08879955102
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-24 09:35:00 with price: 37.66: income:-2.54 rop:1.02569761072
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-25 09:50:00 with price: 37.7: rop:1.02436420383
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-26 09:50:00 with price: 36.88: income:-0.82 rop:1.00264181656
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-11-26 13:45:00 with price: 37.44: rop:1.0013383822
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-11-27 10:10:00 with price: 36.69: income:-0.75 rop:0.981332372583
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-12-01 09:55:00 with price: 33.0: rop:0.980056640499
+Mon, 14 Dec 2015 16:25:15 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-12-02 09:35:00 with price: 32.67: income:-0.33 rop:0.970069640499
+Mon, 14 Dec 2015 16:25:16 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-12-02 14:55:00 with price: 32.15: rop:0.968808549966
+Mon, 14 Dec 2015 16:25:16 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-12-04 14:00:00 with price: 32.87: income:0.72 rop:0.991174459764
+Mon, 14 Dec 2015 16:25:16 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-12-07 14:40:00 with price: 33.0: rop:0.989885932966
+Mon, 14 Dec 2015 16:25:16 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-12-08 09:55:00 with price: 32.33: income:-0.67 rop:0.969609296603
+Mon, 14 Dec 2015 16:25:16 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-12-09 13:05:00 with price: 32.08: rop:0.968348804517
+Mon, 14 Dec 2015 16:25:16 backtest.py 11428 [line:132] INFO code:000738 sell at:2015-12-10 10:35:00 with price: 31.7: income:-0.38 rop:0.956518816986
+Mon, 14 Dec 2015 16:25:16 backtest.py 11428 [line:117] INFO code:000738 buy at:2015-12-11 13:10:00 with price: 31.7: rop:0.955275342524
+Mon, 14 Dec 2015 16:26:51 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-07-28 14:15:00 with price: 33.2: rop:0.9987
+Mon, 14 Dec 2015 16:26:52 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-07-30 14:35:00 with price: 33.55: income:0.35 rop:1.00922846386
+Mon, 14 Dec 2015 16:26:52 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-08-03 10:00:00 with price: 33.34: rop:1.00791646685
+Mon, 14 Dec 2015 16:26:52 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-08-05 13:05:00 with price: 34.69: income:1.35 rop:1.048355729
+Mon, 14 Dec 2015 16:26:52 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-08-07 09:50:00 with price: 34.02: rop:1.04699286655
+Mon, 14 Dec 2015 16:26:52 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-08-11 11:00:00 with price: 35.37: income:1.35 rop:1.08662381893
+Mon, 14 Dec 2015 16:26:52 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-08-11 14:15:00 with price: 35.75: rop:1.08521120797
+Mon, 14 Dec 2015 16:26:53 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-08-12 09:35:00 with price: 35.18: income:-0.57 rop:1.0692878793
+Mon, 14 Dec 2015 16:26:53 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-08-12 10:20:00 with price: 35.62: rop:1.06789780505
+Mon, 14 Dec 2015 16:26:53 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-08-13 09:35:00 with price: 34.92: income:-0.7 rop:1.04827147153
+Mon, 14 Dec 2015 16:26:53 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-08-13 14:45:00 with price: 34.92: rop:1.04690871862
+Mon, 14 Dec 2015 16:26:53 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-08-18 14:30:00 with price: 38.2: income:3.28 rop:1.14071559147
+Mon, 14 Dec 2015 16:26:53 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-08-19 10:10:00 with price: 39.6: rop:1.1392326612
+Mon, 14 Dec 2015 16:26:53 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-08-20 13:15:00 with price: 40.1: income:0.5 rop:1.15184250969
+Mon, 14 Dec 2015 16:26:53 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-08-26 13:05:00 with price: 28.64: rop:1.15034511443
+Mon, 14 Dec 2015 16:26:54 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-08-27 09:35:00 with price: 26.99: income:-1.65 rop:1.09280827783
+Mon, 14 Dec 2015 16:26:54 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-08-27 13:10:00 with price: 27.7: rop:1.09138762707
+Mon, 14 Dec 2015 16:26:54 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-08-31 09:50:00 with price: 28.31: income:0.61 rop:1.11338065956
+Mon, 14 Dec 2015 16:26:54 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-09-02 13:15:00 with price: 26.47: rop:1.11193326471
+Mon, 14 Dec 2015 16:26:54 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-09-08 11:05:00 with price: 27.1: income:0.63 rop:1.13570285292
+Mon, 14 Dec 2015 16:26:54 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-09-08 14:20:00 with price: 27.46: rop:1.13422643921
+Mon, 14 Dec 2015 16:26:54 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-09-10 09:45:00 with price: 28.61: income:1.15 rop:1.17605109325
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-09-16 10:45:00 with price: 25.68: rop:1.17452222683
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-09-18 09:40:00 with price: 26.37: income:0.69 rop:1.2013564558
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-09-18 14:40:00 with price: 27.14: rop:1.19979469241
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-09-21 09:50:00 with price: 26.38: income:-0.76 rop:1.17182814856
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-09-21 11:10:00 with price: 26.89: rop:1.17030477197
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-09-23 09:35:00 with price: 27.06: income:0.17 rop:1.17661860611
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-09-24 09:45:00 with price: 27.03: rop:1.17508900192
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-09-25 10:50:00 with price: 26.9: income:-0.13 rop:1.17028578328
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-09-28 14:35:00 with price: 26.35: rop:1.16876441176
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-09-29 09:50:00 with price: 25.88: income:-0.47 rop:1.15095078747
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-09-30 13:50:00 with price: 25.97: rop:1.14945455145
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-10-08 09:35:00 with price: 26.85: income:0.88 rop:1.18329575283
+Mon, 14 Dec 2015 16:26:55 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-10-08 09:45:00 with price: 26.69: rop:1.18175746835
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-10-09 10:30:00 with price: 26.7: income:0.01 rop:1.18213165344
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-10-09 13:40:00 with price: 27.02: rop:1.18059488229
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-10-14 13:35:00 with price: 28.48: income:1.46 rop:1.23455868688
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-10-15 10:25:00 with price: 28.75: rop:1.23295376059
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-10-16 11:20:00 with price: 28.87: income:0.12 rop:1.23712224754
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-10-16 14:50:00 with price: 29.2: rop:1.23551398862
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-10-19 09:55:00 with price: 28.88: income:-0.32 rop:1.22456933109
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-10-19 11:00:00 with price: 29.17: rop:1.22297739096
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-10-20 09:35:00 with price: 28.82: income:-0.35 rop:1.21099436045
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-10-20 11:10:00 with price: 28.95: rop:1.20942006778
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-10-21 13:35:00 with price: 29.07: income:0.12 rop:1.2135597569
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-10-22 14:15:00 with price: 28.66: rop:1.21198212921
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-10-26 14:00:00 with price: 30.05: income:1.39 rop:1.26041873075
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-10-27 14:20:00 with price: 30.2: rop:1.2587801864
+Mon, 14 Dec 2015 16:26:56 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-10-28 13:40:00 with price: 29.89: income:-0.31 rop:1.24852863011
+Mon, 14 Dec 2015 16:26:57 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-10-29 13:30:00 with price: 30.02: rop:1.24690554289
+Mon, 14 Dec 2015 16:26:57 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-10-30 09:45:00 with price: 29.51: income:-0.51 rop:1.22993895395
+Mon, 14 Dec 2015 16:26:57 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-10-30 14:00:00 with price: 29.74: rop:1.22834003331
+Mon, 14 Dec 2015 16:26:57 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-11-02 09:35:00 with price: 28.95: income:-0.79 rop:1.20181101515
+Mon, 14 Dec 2015 16:26:57 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-11-04 09:45:00 with price: 29.26: rop:1.20024866083
+Mon, 14 Dec 2015 16:26:57 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-11-09 10:40:00 with price: 30.9: income:1.64 rop:1.2562250108
+Mon, 14 Dec 2015 16:26:57 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-11-09 11:00:00 with price: 31.2: rop:1.25459191828
+Mon, 14 Dec 2015 16:26:57 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-11-10 13:25:00 with price: 31.1: income:-0.1 rop:1.25139095674
+Mon, 14 Dec 2015 16:26:57 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-11-11 09:50:00 with price: 31.5: rop:1.2497641485
+Mon, 14 Dec 2015 16:26:58 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-11-13 09:50:00 with price: 32.83: income:1.33 rop:1.29193148183
+Mon, 14 Dec 2015 16:26:58 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-11-19 14:10:00 with price: 31.13: rop:1.29025197091
+Mon, 14 Dec 2015 16:26:58 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-11-20 15:00:00 with price: 31.41: income:0.28 rop:1.29923481704
+Mon, 14 Dec 2015 16:26:58 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-11-23 09:50:00 with price: 31.9: rop:1.29754581177
+Mon, 14 Dec 2015 16:26:58 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-11-25 10:05:00 with price: 33.86: income:1.96 rop:1.35890794344
+Mon, 14 Dec 2015 16:26:58 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-11-25 10:50:00 with price: 34.14: rop:1.35714136311
+Mon, 14 Dec 2015 16:26:58 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-11-26 11:10:00 with price: 35.01: income:0.87 rop:1.38259153886
+Mon, 14 Dec 2015 16:26:59 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-11-27 11:15:00 with price: 34.94: rop:1.38079416986
+Mon, 14 Dec 2015 16:26:59 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-11-30 09:35:00 with price: 33.75: income:-1.19 rop:1.34678005995
+Mon, 14 Dec 2015 16:26:59 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-11-30 14:25:00 with price: 34.09: rop:1.34502924588
+Mon, 14 Dec 2015 16:26:59 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-12-01 14:20:00 with price: 33.7: income:-0.39 rop:1.3336038132
+Mon, 14 Dec 2015 16:26:59 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-12-02 09:40:00 with price: 34.2: rop:1.33187012824
+Mon, 14 Dec 2015 16:26:59 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-12-04 14:45:00 with price: 35.89: income:1.69 rop:1.38122109315
+Mon, 14 Dec 2015 16:26:59 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-12-07 11:05:00 with price: 36.3: rop:1.37942550573
+Mon, 14 Dec 2015 16:26:59 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-12-08 09:35:00 with price: 35.7: income:-0.6 rop:1.36291806771
+Mon, 14 Dec 2015 16:26:59 backtest.py 11428 [line:117] INFO code:002038 buy at:2015-12-10 10:05:00 with price: 34.31: rop:1.36114627423
+Mon, 14 Dec 2015 16:27:00 backtest.py 11428 [line:132] INFO code:002038 sell at:2015-12-11 10:00:00 with price: 34.01: income:-0.3 rop:1.3524138347
+Mon, 14 Dec 2015 16:29:19 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-07-28 14:15:00 with price: 34.09: rop:0.9987
+Mon, 14 Dec 2015 16:29:19 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-07-29 11:00:00 with price: 32.75: income:-1.34 rop:0.959443385157
+Mon, 14 Dec 2015 16:29:19 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-07-29 14:15:00 with price: 33.34: rop:0.958196108756
+Mon, 14 Dec 2015 16:29:19 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-07-30 14:35:00 with price: 33.95: income:0.61 rop:0.976468664245
+Mon, 14 Dec 2015 16:29:19 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-07-31 14:00:00 with price: 34.05: rop:0.975199254982
+Mon, 14 Dec 2015 16:29:20 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-05 13:50:00 with price: 36.38: income:2.33 rop:1.04353907877
+Mon, 14 Dec 2015 16:29:20 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-07 10:05:00 with price: 35.81: rop:1.04218247797
+Mon, 14 Dec 2015 16:29:20 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-10 09:35:00 with price: 35.51: income:-0.3 rop:1.03381582061
+Mon, 14 Dec 2015 16:29:20 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-10 10:00:00 with price: 36.2: rop:1.03247186004
+Mon, 14 Dec 2015 16:29:20 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-11 13:05:00 with price: 37.2: income:1.0 rop:1.06006025783
+Mon, 14 Dec 2015 16:29:20 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-11 13:30:00 with price: 37.62: rop:1.0586821795
+Mon, 14 Dec 2015 16:29:20 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-13 10:20:00 with price: 36.35: income:-1.27 rop:1.02496742671
+Mon, 14 Dec 2015 16:29:20 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-13 14:35:00 with price: 36.4: rop:1.02363496905
+Mon, 14 Dec 2015 16:29:20 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-14 10:10:00 with price: 35.61: income:-0.79 rop:1.00195988663
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-19 13:55:00 with price: 31.68: rop:1.00065733878
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-20 14:30:00 with price: 32.08: income:0.4 rop:1.01326718727
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-26 11:30:00 with price: 26.08: rop:1.01194993992
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-27 14:20:00 with price: 25.8: income:-0.28 rop:1.00122770066
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-27 14:45:00 with price: 26.6: rop:0.999926104648
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-01 09:45:00 with price: 27.71: income:1.11 rop:1.04160117984
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-01 14:55:00 with price: 28.25: rop:1.0402470983
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-02 09:55:00 with price: 27.14: income:-1.11 rop:1.00100614255
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-02 11:20:00 with price: 28.27: rop:0.999704834565
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-07 11:00:00 with price: 28.15: income:-0.12 rop:0.995465570327
+Mon, 14 Dec 2015 16:29:21 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-08 14:45:00 with price: 27.09: rop:0.994171465086
+Mon, 14 Dec 2015 16:29:22 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-10 09:45:00 with price: 27.78: income:0.69 rop:1.01960900661
+Mon, 14 Dec 2015 16:29:22 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-16 11:00:00 with price: 24.26: rop:1.01828351491
+Mon, 14 Dec 2015 16:29:22 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-17 15:00:00 with price: 25.26: income:1.0 rop:1.05945004417
+Mon, 14 Dec 2015 16:29:22 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-18 14:55:00 with price: 25.87: rop:1.05807275911
+Mon, 14 Dec 2015 16:29:22 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-23 10:00:00 with price: 28.91: income:3.04 rop:1.17543062537
+Mon, 14 Dec 2015 16:29:22 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-23 11:15:00 with price: 29.52: rop:1.17390256556
+Mon, 14 Dec 2015 16:29:22 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-24 09:35:00 with price: 29.27: income:-0.25 rop:1.16544474035
+Mon, 14 Dec 2015 16:29:22 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-25 09:45:00 with price: 29.95: rop:1.16392966219
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-28 09:35:00 with price: 29.21: income:-0.74 rop:1.13925393598
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-28 11:20:00 with price: 30.1: rop:1.13777290586
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-29 10:55:00 with price: 29.51: income:-0.59 rop:1.11819705869
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-29 14:40:00 with price: 29.88: rop:1.11674340251
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-30 09:35:00 with price: 29.9: income:0.02 rop:1.11741187641
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-30 09:50:00 with price: 30.17: rop:1.11595924097
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-08 09:35:00 with price: 30.29: income:0.12 rop:1.11993153132
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-08 09:45:00 with price: 30.41: rop:1.11847562033
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-09 10:50:00 with price: 30.66: income:0.25 rop:1.126685913
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-09 13:05:00 with price: 30.88: rop:1.12522122131
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-12 09:35:00 with price: 31.11: income:0.23 rop:1.1326597252
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-12 09:40:00 with price: 31.3: rop:1.13118726755
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-13 09:45:00 with price: 31.34: income:0.04 rop:1.13246356148
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-13 10:35:00 with price: 31.8: rop:1.13099135885
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-14 09:35:00 with price: 30.99: income:-0.81 rop:1.10555277395
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-15 10:25:00 with price: 30.59: rop:1.10411555534
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-19 09:45:00 with price: 31.76: income:1.17 rop:1.14231362661
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-20 15:00:00 with price: 32.0: rop:1.14082861889
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-21 10:05:00 with price: 31.7: income:-0.3 rop:1.13146580639
+Mon, 14 Dec 2015 16:29:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-22 10:10:00 with price: 31.31: rop:1.12999490084
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-26 10:05:00 with price: 31.74: income:0.43 rop:1.14371067855
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-26 13:15:00 with price: 32.46: rop:1.14222385467
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-27 09:50:00 with price: 31.52: income:-0.94 rop:1.11330278258
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-27 14:10:00 with price: 32.06: rop:1.11185548896
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-28 14:55:00 with price: 32.43: income:0.37 rop:1.12338134673
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-30 10:50:00 with price: 32.5: rop:1.12192095098
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-11-02 09:35:00 with price: 31.5: income:-1.0 rop:1.09119172021
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-11-02 11:25:00 with price: 32.54: rop:1.08977317097
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-11-03 09:35:00 with price: 32.28: income:-0.26 rop:1.08179339224
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-11-04 10:05:00 with price: 31.56: rop:1.08038706083
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-11-05 10:40:00 with price: 31.49: income:-0.07 rop:1.07817194676
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-11-06 10:15:00 with price: 31.81: rop:1.07677032323
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-11-09 09:50:00 with price: 31.34: income:-0.47 rop:1.06201430311
+Mon, 14 Dec 2015 16:29:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-11-09 13:15:00 with price: 31.77: rop:1.06063368452
+Mon, 14 Dec 2015 16:29:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-11-12 09:50:00 with price: 32.6: income:0.83 rop:1.08672499708
+Mon, 14 Dec 2015 16:29:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-11-12 14:15:00 with price: 33.23: rop:1.08531225458
+Mon, 14 Dec 2015 16:29:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-12-08 14:30:00 with price: 34.9: income:1.67 rop:1.13550271501
+Mon, 14 Dec 2015 16:29:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-12-10 10:30:00 with price: 34.88: rop:1.13402656148
+Mon, 14 Dec 2015 16:29:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-12-11 10:10:00 with price: 34.2: income:-0.68 rop:1.11455649267
+Mon, 14 Dec 2015 16:29:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-12-11 10:45:00 with price: 34.84: rop:1.11310756923
+Mon, 14 Dec 2015 16:30:18 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-08-17 11:00:00 with price: 19.51: rop:0.9987
+Mon, 14 Dec 2015 16:30:18 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-08-18 10:00:00 with price: 19.48: income:-0.03 rop:0.997164325987
+Mon, 14 Dec 2015 16:30:18 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-08-19 14:35:00 with price: 18.3: rop:0.995868012363
+Mon, 14 Dec 2015 16:30:18 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-08-20 09:45:00 with price: 17.16: income:-1.14 rop:0.933653914002
+Mon, 14 Dec 2015 16:30:19 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-08-26 11:15:00 with price: 12.16: rop:0.932440163914
+Mon, 14 Dec 2015 16:30:19 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-08-27 09:35:00 with price: 11.93: income:-0.23 rop:0.913550279046
+Mon, 14 Dec 2015 16:30:19 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-08-27 10:10:00 with price: 12.1: rop:0.912362663683
+Mon, 14 Dec 2015 16:30:19 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-08-31 09:50:00 with price: 12.79: income:0.69 rop:0.96931332484
+Mon, 14 Dec 2015 16:30:19 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-09-02 13:15:00 with price: 11.2: rop:0.968053217518
+Mon, 14 Dec 2015 16:30:19 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-09-07 09:35:00 with price: 10.16: income:-1.04 rop:0.875316788946
+Mon, 14 Dec 2015 16:30:19 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-09-08 14:40:00 with price: 10.43: rop:0.874178877121
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-09-10 10:25:00 with price: 11.18: income:0.75 rop:0.945993354589
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-09-10 13:45:00 with price: 11.21: rop:0.944763563228
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-09-11 09:35:00 with price: 10.85: income:-0.36 rop:0.912691127903
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-09-11 14:40:00 with price: 11.25: rop:0.911504629437
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-09-14 11:20:00 with price: 10.83: income:-0.42 rop:0.874219829437
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-09-16 10:15:00 with price: 9.5: rop:0.873083343658
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-09-18 09:50:00 with price: 9.85: income:0.35 rop:0.909877554185
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-09-21 11:00:00 with price: 9.92: rop:0.908694713364
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-09-23 09:50:00 with price: 10.31: income:0.39 rop:0.947958120622
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-09-23 14:35:00 with price: 10.4: rop:0.946725775065
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-09-24 09:35:00 with price: 10.33: income:-0.07 rop:0.940003755835
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-09-24 09:50:00 with price: 10.54: rop:0.938781750952
+Mon, 14 Dec 2015 16:30:20 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-09-25 10:50:00 with price: 10.39: income:-0.15 rop:0.92456875285
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-09-28 14:20:00 with price: 10.12: rop:0.923366813471
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-09-29 09:45:00 with price: 9.86: income:-0.26 rop:0.897708513076
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-09-30 09:50:00 with price: 9.93: rop:0.896541492009
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-10-08 09:35:00 with price: 10.2: income:0.27 rop:0.923696476903
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-10-08 09:45:00 with price: 10.15: rop:0.922495671483
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-10-14 10:05:00 with price: 11.63: income:1.48 rop:1.06811892271
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-10-15 09:50:00 with price: 11.96: rop:1.06673036811
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-10-16 11:20:00 with price: 12.21: income:0.25 rop:1.08760620424
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-10-16 14:15:00 with price: 12.37: rop:1.08619231617
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-10-19 13:25:00 with price: 12.38: income:0.01 rop:1.08699967268
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-10-20 10:35:00 with price: 12.69: rop:1.0855865731
+Mon, 14 Dec 2015 16:30:21 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-10-21 10:50:00 with price: 12.46: income:-0.23 rop:1.06748562748
+Mon, 14 Dec 2015 16:30:22 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-10-22 14:30:00 with price: 11.65: rop:1.06609789616
+Mon, 14 Dec 2015 16:30:22 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-10-26 14:40:00 with price: 12.82: income:1.17 rop:1.16639652277
+Mon, 14 Dec 2015 16:30:22 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-10-27 14:20:00 with price: 13.09: rop:1.16488020729
+Mon, 14 Dec 2015 16:30:22 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-10-29 09:50:00 with price: 13.2: income:0.11 rop:1.17327264427
+Mon, 14 Dec 2015 16:30:22 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-10-29 14:15:00 with price: 13.7: rop:1.17174738983
+Mon, 14 Dec 2015 16:30:22 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-10-30 09:35:00 with price: 13.61: income:-0.09 rop:1.16518658691
+Mon, 14 Dec 2015 16:30:22 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-10-30 11:25:00 with price: 13.56: rop:1.16367184435
+Mon, 14 Dec 2015 16:30:22 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-11-02 09:35:00 with price: 12.72: income:-0.84 rop:1.10180547266
+Mon, 14 Dec 2015 16:30:22 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-11-04 09:45:00 with price: 12.55: rop:1.10037312555
+Mon, 14 Dec 2015 16:30:23 backtest.py 11428 [line:132] INFO code:600807 sell at:2015-11-09 10:05:00 with price: 13.38: income:0.83 rop:1.16642260762
+Mon, 14 Dec 2015 16:30:23 backtest.py 11428 [line:117] INFO code:600807 buy at:2015-11-09 10:35:00 with price: 13.58: rop:1.16490625823
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-09-16 10:35:00 with price: 8.36: rop:0.9987
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-09-17 14:55:00 with price: 8.61: income:0.25 rop:1.02856543062
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-09-21 10:05:00 with price: 8.67: rop:1.02722829556
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-09-22 11:25:00 with price: 9.09: income:0.42 rop:1.07560822636
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-09-22 13:15:00 with price: 9.51: rop:1.07420993566
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-09-23 10:00:00 with price: 9.26: income:-0.25 rop:1.04795599245
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-09-23 10:15:00 with price: 9.35: rop:1.04659364966
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-09-24 09:35:00 with price: 9.32: income:-0.03 rop:1.04338926463
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-09-24 09:50:00 with price: 9.43: rop:1.04203285859
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-09-25 10:45:00 with price: 9.32: income:-0.11 rop:1.0303831237
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-09-28 11:20:00 with price: 9.19: rop:1.02904362564
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-09-29 09:50:00 with price: 9.05: income:-0.14 rop:1.01382947983
+Mon, 14 Dec 2015 16:31:01 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-09-29 10:30:00 with price: 9.19: rop:1.0125115015
+Mon, 14 Dec 2015 16:31:02 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-10-12 14:25:00 with price: 9.86: income:0.67 rop:1.08532205645
+Mon, 14 Dec 2015 16:31:02 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-10-13 13:55:00 with price: 10.05: rop:1.08391113778
+Mon, 14 Dec 2015 16:31:02 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-10-14 13:50:00 with price: 9.98: income:-0.07 rop:1.07695501838
+Mon, 14 Dec 2015 16:31:02 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-10-14 14:10:00 with price: 10.18: rop:1.07555497685
+Mon, 14 Dec 2015 16:31:02 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-10-19 13:35:00 with price: 10.67: income:0.49 rop:1.12362599846
+Mon, 14 Dec 2015 16:31:02 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-10-20 13:35:00 with price: 10.87: rop:1.12216528467
+Mon, 14 Dec 2015 16:31:02 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-10-21 11:05:00 with price: 10.8: income:-0.07 rop:1.11573391392
+Mon, 14 Dec 2015 16:31:02 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-10-22 11:05:00 with price: 10.5: rop:1.11428345983
+Mon, 14 Dec 2015 16:31:02 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-10-26 10:00:00 with price: 11.28: income:0.78 rop:1.18847260269
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-10-26 14:15:00 with price: 11.52: rop:1.18692758831
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-10-28 14:05:00 with price: 12.16: income:0.64 rop:1.24241092164
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-10-29 14:05:00 with price: 12.17: rop:1.24079578744
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-10-30 09:35:00 with price: 12.18: income:0.01 rop:1.24161641193
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-10-30 11:00:00 with price: 12.18: rop:1.24000231059
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-02 09:35:00 with price: 11.89: income:-0.29 rop:1.21622373916
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-04 09:45:00 with price: 11.81: rop:1.2146426483
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-05 11:05:00 with price: 12.27: income:0.46 rop:1.25354205558
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-05 11:25:00 with price: 12.32: rop:1.25191245091
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-06 09:35:00 with price: 12.43: income:0.11 rop:1.2608294152
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-06 09:45:00 with price: 12.45: rop:1.25919033696
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-10 13:15:00 with price: 12.84: income:0.39 rop:1.29047491527
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-10 14:35:00 with price: 13.08: rop:1.28879729788
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-11 09:40:00 with price: 12.88: income:-0.2 rop:1.27352665568
+Mon, 14 Dec 2015 16:31:03 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-11 10:30:00 with price: 12.95: rop:1.27187107103
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-12 10:00:00 with price: 12.9: income:-0.05 rop:1.26801508647
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-13 09:50:00 with price: 12.86: rop:1.26636666686
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-16 09:40:00 with price: 12.64: income:-0.22 rop:1.24928159687
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-16 10:15:00 with price: 12.98: rop:1.2476575308
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-17 13:30:00 with price: 13.24: income:0.26 rop:1.26766230738
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-17 13:45:00 with price: 13.34: rop:1.26601434638
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-18 13:20:00 with price: 13.2: income:-0.14 rop:1.25553323693
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-19 14:45:00 with price: 13.11: rop:1.25390104372
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-20 14:50:00 with price: 13.09: income:-0.02 rop:1.25237747393
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-23 09:35:00 with price: 13.19: rop:1.25074938321
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-11-26 14:25:00 with price: 14.71: income:1.52 rop:1.36583839004
+Mon, 14 Dec 2015 16:31:04 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-11-30 14:00:00 with price: 13.66: rop:1.36406280013
+Mon, 14 Dec 2015 16:31:05 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-12-01 14:40:00 with price: 14.02: income:0.36 rop:1.3903828587
+Mon, 14 Dec 2015 16:31:05 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-12-03 09:55:00 with price: 14.0: rop:1.38857536098
+Mon, 14 Dec 2015 16:31:05 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-12-04 15:00:00 with price: 14.11: income:0.11 rop:1.39642228955
+Mon, 14 Dec 2015 16:31:05 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-12-10 10:45:00 with price: 13.35: rop:1.39460694057
+Mon, 14 Dec 2015 16:31:05 backtest.py 11428 [line:132] INFO code:600851 sell at:2015-12-11 09:35:00 with price: 13.08: income:-0.27 rop:1.37440851361
+Mon, 14 Dec 2015 16:31:05 backtest.py 11428 [line:117] INFO code:600851 buy at:2015-12-11 14:05:00 with price: 13.24: rop:1.37262178254
+Mon, 14 Dec 2015 16:33:25 backtest.py 11428 [line:117] INFO code:002137 buy at:2015-11-16 09:45:00 with price: 12.65: rop:0.9987
+Mon, 14 Dec 2015 16:33:26 backtest.py 11428 [line:132] INFO code:002137 sell at:2015-11-23 09:50:00 with price: 17.55: income:4.9 rop:1.38554822134
+Mon, 14 Dec 2015 16:33:26 backtest.py 11428 [line:117] INFO code:002137 buy at:2015-11-24 10:15:00 with price: 17.79: rop:1.38374700866
+Mon, 14 Dec 2015 16:33:26 backtest.py 11428 [line:132] INFO code:002137 sell at:2015-11-25 09:45:00 with price: 17.1: income:-0.69 rop:1.3450115955
+Mon, 14 Dec 2015 16:33:26 backtest.py 11428 [line:117] INFO code:002137 buy at:2015-11-25 13:10:00 with price: 17.64: rop:1.34326308043
+Mon, 14 Dec 2015 16:33:26 backtest.py 11428 [line:132] INFO code:002137 sell at:2015-11-27 09:50:00 with price: 18.0: income:0.36 rop:1.36364471308
+Mon, 14 Dec 2015 16:33:26 backtest.py 11428 [line:117] INFO code:002137 buy at:2015-11-30 10:00:00 with price: 18.75: rop:1.36187197495
+Mon, 14 Dec 2015 16:33:27 backtest.py 11428 [line:132] INFO code:002137 sell at:2015-12-01 14:30:00 with price: 18.54: income:-0.21 rop:1.35068653495
+Mon, 14 Dec 2015 16:33:27 backtest.py 11428 [line:117] INFO code:002137 buy at:2015-12-03 10:05:00 with price: 17.83: rop:1.34893064246
+Mon, 14 Dec 2015 16:33:27 backtest.py 11428 [line:132] INFO code:002137 sell at:2015-12-08 09:55:00 with price: 20.7: income:2.87 rop:1.50968605469
+Mon, 14 Dec 2015 16:33:27 backtest.py 11428 [line:117] INFO code:002137 buy at:2015-12-08 11:30:00 with price: 21.35: rop:1.50772346281
+Mon, 14 Dec 2015 16:33:27 backtest.py 11428 [line:132] INFO code:002137 sell at:2015-12-09 09:35:00 with price: 21.1: income:-0.25 rop:1.49602908342
+Mon, 14 Dec 2015 16:33:27 backtest.py 11428 [line:117] INFO code:002137 buy at:2015-12-09 09:45:00 with price: 21.5: rop:1.49408424562
+Mon, 14 Dec 2015 16:33:27 backtest.py 11428 [line:132] INFO code:002137 sell at:2015-12-10 09:35:00 with price: 20.03: income:-1.47 rop:1.42580103631
+Mon, 14 Dec 2015 16:33:27 backtest.py 11428 [line:117] INFO code:002137 buy at:2015-12-10 13:50:00 with price: 21.03: rop:1.42394749497
+Mon, 14 Dec 2015 16:33:28 backtest.py 11428 [line:132] INFO code:002137 sell at:2015-12-14 10:50:00 with price: 21.48: income:0.45 rop:1.44531768041
+Mon, 14 Dec 2015 16:33:28 backtest.py 11428 [line:117] INFO code:002137 buy at:2015-12-14 14:30:00 with price: 22.21: rop:1.44343876743
+Mon, 14 Dec 2015 16:34:23 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-11 13:20:00 with price: 27.05: rop:0.9987
+Mon, 14 Dec 2015 16:34:23 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-14 09:35:00 with price: 27.06: income:0.01 rop:0.999069205176
+Mon, 14 Dec 2015 16:34:23 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-16 14:10:00 with price: 23.17: rop:0.997770415209
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-18 09:40:00 with price: 23.87: income:0.7 rop:1.02794262065
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-18 14:55:00 with price: 24.7: rop:1.02660629524
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-23 09:50:00 with price: 27.02: income:2.32 rop:1.12041131548
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-23 10:20:00 with price: 27.8: rop:1.11895478077
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-24 13:05:00 with price: 27.92: income:0.12 rop:1.12326571602
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-24 13:50:00 with price: 28.3: rop:1.12180547059
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-25 09:35:00 with price: 27.99: income:-0.31 rop:1.11086564727
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-28 11:00:00 with price: 26.91: rop:1.10942152193
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-29 11:00:00 with price: 26.69: income:-0.22 rop:1.10125675047
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-29 13:35:00 with price: 27.25: rop:1.09982511669
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-30 09:35:00 with price: 27.63: income:0.38 rop:1.11375194238
+Mon, 14 Dec 2015 16:34:24 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-30 09:45:00 with price: 27.6: rop:1.11230406486
+Mon, 14 Dec 2015 16:34:25 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-09 10:55:00 with price: 28.7: income:1.1 rop:1.15210732573
+Mon, 14 Dec 2015 16:34:25 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-09 13:30:00 with price: 29.32: rop:1.1506095862
+Mon, 14 Dec 2015 16:34:25 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-16 11:20:00 with price: 39.89: income:10.57 rop:1.51064570489
+Mon, 14 Dec 2015 16:34:25 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-16 14:20:00 with price: 40.29: rop:1.50868186548
+Mon, 14 Dec 2015 16:34:25 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-21 14:10:00 with price: 45.02: income:4.73 rop:1.62592810524
+Mon, 14 Dec 2015 16:34:25 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-22 10:40:00 with price: 46.96: rop:1.6238143987
+Mon, 14 Dec 2015 16:34:26 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-23 11:00:00 with price: 47.25: income:0.29 rop:1.62998183908
+Mon, 14 Dec 2015 16:34:26 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-23 14:00:00 with price: 48.5: rop:1.62786286269
+Mon, 14 Dec 2015 16:34:26 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-26 09:35:00 with price: 45.48: income:-3.02 rop:1.5656757699
+Mon, 14 Dec 2015 16:34:26 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-27 10:15:00 with price: 45.05: rop:1.5636403914
+Mon, 14 Dec 2015 16:34:26 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-28 11:15:00 with price: 44.87: income:-0.18 rop:1.55965002514
+Mon, 14 Dec 2015 16:34:26 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-29 13:55:00 with price: 44.95: rop:1.55762248011
+Mon, 14 Dec 2015 16:34:26 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-30 09:35:00 with price: 43.96: income:-0.99 rop:1.53562664029
+Mon, 14 Dec 2015 16:34:26 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-30 10:45:00 with price: 45.51: rop:1.53363032566
+Mon, 14 Dec 2015 16:34:26 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-02 09:45:00 with price: 44.65: income:-0.86 rop:1.51475794596
+Mon, 14 Dec 2015 16:34:26 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-02 10:00:00 with price: 46.87: rop:1.51278876063
+Mon, 14 Dec 2015 16:34:27 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-09 09:45:00 with price: 55.2: income:8.33 rop:1.69028334138
+Mon, 14 Dec 2015 16:34:27 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-09 14:35:00 with price: 55.88: rop:1.68808597304
+Mon, 14 Dec 2015 16:34:27 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-10 09:45:00 with price: 53.31: income:-2.57 rop:1.64215435171
+Mon, 14 Dec 2015 16:34:27 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-10 15:00:00 with price: 53.45: rop:1.64001955105
+Mon, 14 Dec 2015 16:36:44 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-11 13:20:00 with price: 27.05: rop:0.9987
+Mon, 14 Dec 2015 16:36:44 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-14 09:35:00 with price: 27.06: income:0.01 rop:0.999069205176
+Mon, 14 Dec 2015 16:36:45 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-16 14:10:00 with price: 23.17: rop:0.997770415209
+Mon, 14 Dec 2015 16:36:45 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-18 09:40:00 with price: 23.87: income:0.7 rop:1.02794262065
+Mon, 14 Dec 2015 16:36:45 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-18 14:55:00 with price: 24.7: rop:1.02660629524
+Mon, 14 Dec 2015 16:36:45 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-23 09:50:00 with price: 27.02: income:2.32 rop:1.12041131548
+Mon, 14 Dec 2015 16:36:45 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-23 10:20:00 with price: 27.8: rop:1.11895478077
+Mon, 14 Dec 2015 16:36:45 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-24 13:05:00 with price: 27.92: income:0.12 rop:1.12326571602
+Mon, 14 Dec 2015 16:36:45 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-24 13:50:00 with price: 28.3: rop:1.12180547059
+Mon, 14 Dec 2015 16:36:45 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-25 09:35:00 with price: 27.99: income:-0.31 rop:1.11086564727
+Mon, 14 Dec 2015 16:36:45 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-28 11:00:00 with price: 26.91: rop:1.10942152193
+Mon, 14 Dec 2015 16:36:46 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-29 11:00:00 with price: 26.67: income:-0.24 rop:1.10051449852
+Mon, 14 Dec 2015 16:36:46 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-29 13:35:00 with price: 27.25: rop:1.09908382967
+Mon, 14 Dec 2015 16:36:46 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-09-30 09:35:00 with price: 27.63: income:0.38 rop:1.11301065536
+Mon, 14 Dec 2015 16:36:46 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-09-30 09:45:00 with price: 27.6: rop:1.11156374151
+Mon, 14 Dec 2015 16:36:46 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-09 10:55:00 with price: 28.7: income:1.1 rop:1.15136700238
+Mon, 14 Dec 2015 16:36:46 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-09 13:30:00 with price: 29.32: rop:1.14987022527
+Mon, 14 Dec 2015 16:36:46 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-16 11:20:00 with price: 39.89: income:10.57 rop:1.50990634396
+Mon, 14 Dec 2015 16:36:46 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-16 14:20:00 with price: 40.29: rop:1.50794346572
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-21 14:10:00 with price: 45.02: income:4.73 rop:1.62518970548
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-22 10:40:00 with price: 46.96: rop:1.62307695886
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-23 11:00:00 with price: 47.25: income:0.29 rop:1.62924439924
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-23 14:00:00 with price: 48.5: rop:1.62712638152
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-27 10:35:00 with price: 43.35: income:-5.15 rop:1.52107885574
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-27 11:15:00 with price: 44.66: rop:1.51910145323
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-28 11:15:00 with price: 44.87: income:0.21 rop:1.52379753474
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-29 13:55:00 with price: 44.95: rop:1.52181659794
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-10-30 09:35:00 with price: 43.96: income:-0.99 rop:1.49982075812
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-10-30 10:45:00 with price: 45.51: rop:1.49787099113
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-02 09:45:00 with price: 44.65: income:-0.86 rop:1.47899861144
+Mon, 14 Dec 2015 16:36:47 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-02 10:00:00 with price: 46.87: rop:1.47707591324
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-09 09:45:00 with price: 55.2: income:8.33 rop:1.654570494
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-09 14:35:00 with price: 55.88: rop:1.65241955236
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-10 09:45:00 with price: 53.31: income:-2.57 rop:1.60648793102
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-10 15:00:00 with price: 53.45: rop:1.60439949671
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-11 09:45:00 with price: 51.8: income:-1.65 rop:1.57356965574
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-11 11:20:00 with price: 52.93: rop:1.57152401519
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-12 09:45:00 with price: 51.86: income:-1.07 rop:1.55133491638
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-16 14:45:00 with price: 49.3: rop:1.54931818099
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-17 14:05:00 with price: 48.68: income:-0.62 rop:1.53675846496
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-19 14:15:00 with price: 49.52: rop:1.53476067896
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-20 13:10:00 with price: 48.77: income:-0.75 rop:1.51963497217
+Mon, 14 Dec 2015 16:36:48 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-20 13:25:00 with price: 49.46: rop:1.51765944671
+Mon, 14 Dec 2015 16:36:49 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-23 09:35:00 with price: 48.4: income:-1.06 rop:1.49625584784
+Mon, 14 Dec 2015 16:36:49 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-24 10:10:00 with price: 49.1: rop:1.49431071524
+Mon, 14 Dec 2015 16:36:49 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-11-26 10:30:00 with price: 50.92: income:1.82 rop:1.53132973764
+Mon, 14 Dec 2015 16:36:49 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-11-30 14:45:00 with price: 43.77: rop:1.52933900898
+Mon, 14 Dec 2015 16:36:49 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-12-01 11:30:00 with price: 42.11: income:-1.66 rop:1.4914627924
+Mon, 14 Dec 2015 16:36:49 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-12-01 13:35:00 with price: 42.82: rop:1.48952389077
+Mon, 14 Dec 2015 16:36:49 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-12-02 09:35:00 with price: 42.48: income:-0.34 rop:1.48159399819
+Mon, 14 Dec 2015 16:36:49 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-12-02 13:10:00 with price: 42.8: rop:1.479667926
+Mon, 14 Dec 2015 16:36:50 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-12-04 10:20:00 with price: 43.2: income:0.4 rop:1.48900157086
+Mon, 14 Dec 2015 16:36:50 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-12-07 10:20:00 with price: 43.12: rop:1.48706586881
+Mon, 14 Dec 2015 16:36:50 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-12-08 09:50:00 with price: 42.1: income:-1.02 rop:1.46344170369
+Mon, 14 Dec 2015 16:36:50 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-12-09 11:25:00 with price: 42.03: rop:1.46153922948
+Mon, 14 Dec 2015 16:36:50 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-12-10 09:35:00 with price: 41.2: income:-0.83 rop:1.44181710243
+Mon, 14 Dec 2015 16:36:50 backtest.py 11428 [line:117] INFO code:300413 buy at:2015-12-10 09:50:00 with price: 41.75: rop:1.43994274019
+Mon, 14 Dec 2015 16:36:50 backtest.py 11428 [line:132] INFO code:300413 sell at:2015-12-11 09:45:00 with price: 41.51: income:-0.24 rop:1.43420171025
+Mon, 14 Dec 2015 16:39:20 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-07-28 14:15:00 with price: 34.09: rop:0.9987
+Mon, 14 Dec 2015 16:39:20 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-07-29 11:00:00 with price: 32.75: income:-1.34 rop:0.959443385157
+Mon, 14 Dec 2015 16:39:20 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-07-29 14:15:00 with price: 33.34: rop:0.958196108756
+Mon, 14 Dec 2015 16:39:21 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-07-30 14:35:00 with price: 33.95: income:0.61 rop:0.976468664245
+Mon, 14 Dec 2015 16:39:21 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-07-31 14:00:00 with price: 34.05: rop:0.975199254982
+Mon, 14 Dec 2015 16:39:21 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-05 13:50:00 with price: 36.38: income:2.33 rop:1.04353907877
+Mon, 14 Dec 2015 16:39:21 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-07 10:05:00 with price: 35.81: rop:1.04218247797
+Mon, 14 Dec 2015 16:39:21 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-10 09:35:00 with price: 35.51: income:-0.3 rop:1.03381582061
+Mon, 14 Dec 2015 16:39:21 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-10 10:00:00 with price: 36.2: rop:1.03247186004
+Mon, 14 Dec 2015 16:39:21 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-11 13:05:00 with price: 37.2: income:1.0 rop:1.06006025783
+Mon, 14 Dec 2015 16:39:21 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-11 13:30:00 with price: 37.62: rop:1.0586821795
+Mon, 14 Dec 2015 16:39:22 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-13 10:20:00 with price: 36.35: income:-1.27 rop:1.02496742671
+Mon, 14 Dec 2015 16:39:22 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-13 14:35:00 with price: 36.4: rop:1.02363496905
+Mon, 14 Dec 2015 16:39:22 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-14 10:10:00 with price: 35.61: income:-0.79 rop:1.00195988663
+Mon, 14 Dec 2015 16:39:22 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-19 13:55:00 with price: 31.68: rop:1.00065733878
+Mon, 14 Dec 2015 16:39:22 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-20 14:30:00 with price: 32.08: income:0.4 rop:1.01326718727
+Mon, 14 Dec 2015 16:39:22 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-26 11:30:00 with price: 26.08: rop:1.01194993992
+Mon, 14 Dec 2015 16:39:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-08-27 14:20:00 with price: 25.8: income:-0.28 rop:1.00122770066
+Mon, 14 Dec 2015 16:39:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-08-27 14:45:00 with price: 26.6: rop:0.999926104648
+Mon, 14 Dec 2015 16:39:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-01 09:45:00 with price: 27.71: income:1.11 rop:1.04160117984
+Mon, 14 Dec 2015 16:39:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-01 14:55:00 with price: 28.25: rop:1.0402470983
+Mon, 14 Dec 2015 16:39:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-02 09:55:00 with price: 27.14: income:-1.11 rop:1.00100614255
+Mon, 14 Dec 2015 16:39:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-02 11:20:00 with price: 28.27: rop:0.999704834565
+Mon, 14 Dec 2015 16:39:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-07 11:00:00 with price: 28.15: income:-0.12 rop:0.995465570327
+Mon, 14 Dec 2015 16:39:23 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-08 14:45:00 with price: 27.09: rop:0.994171465086
+Mon, 14 Dec 2015 16:39:23 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-10 09:45:00 with price: 27.78: income:0.69 rop:1.01960900661
+Mon, 14 Dec 2015 16:39:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-16 11:00:00 with price: 24.26: rop:1.01828351491
+Mon, 14 Dec 2015 16:39:24 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-17 15:00:00 with price: 25.26: income:1.0 rop:1.05945004417
+Mon, 14 Dec 2015 16:39:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-18 14:55:00 with price: 25.87: rop:1.05807275911
+Mon, 14 Dec 2015 16:39:24 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-23 10:00:00 with price: 28.91: income:3.04 rop:1.17543062537
+Mon, 14 Dec 2015 16:39:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-23 11:15:00 with price: 29.52: rop:1.17390256556
+Mon, 14 Dec 2015 16:39:24 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-24 09:35:00 with price: 29.27: income:-0.25 rop:1.16544474035
+Mon, 14 Dec 2015 16:39:24 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-25 09:45:00 with price: 29.95: rop:1.16392966219
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-28 09:35:00 with price: 29.21: income:-0.74 rop:1.13925393598
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-28 11:20:00 with price: 30.1: rop:1.13777290586
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-29 10:55:00 with price: 29.51: income:-0.59 rop:1.11819705869
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-29 14:40:00 with price: 29.88: rop:1.11674340251
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-09-30 09:35:00 with price: 29.9: income:0.02 rop:1.11741187641
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-09-30 09:50:00 with price: 30.17: rop:1.11595924097
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-08 09:35:00 with price: 30.29: income:0.12 rop:1.11993153132
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-08 09:45:00 with price: 30.41: rop:1.11847562033
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-09 10:50:00 with price: 30.66: income:0.25 rop:1.126685913
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-09 13:05:00 with price: 30.88: rop:1.12522122131
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-12 09:35:00 with price: 31.11: income:0.23 rop:1.1326597252
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-12 09:40:00 with price: 31.3: rop:1.13118726755
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-13 09:45:00 with price: 31.34: income:0.04 rop:1.13246356148
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-13 10:35:00 with price: 31.8: rop:1.13099135885
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-14 09:35:00 with price: 30.99: income:-0.81 rop:1.10555277395
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-15 10:25:00 with price: 30.59: rop:1.10411555534
+Mon, 14 Dec 2015 16:39:25 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-19 09:45:00 with price: 31.76: income:1.17 rop:1.14231362661
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-20 15:00:00 with price: 32.0: rop:1.14082861889
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-21 10:05:00 with price: 31.7: income:-0.3 rop:1.13146580639
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-22 10:10:00 with price: 31.31: rop:1.12999490084
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-26 10:05:00 with price: 31.74: income:0.43 rop:1.14371067855
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-26 13:15:00 with price: 32.46: rop:1.14222385467
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-27 09:50:00 with price: 31.52: income:-0.94 rop:1.11330278258
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-27 14:10:00 with price: 32.06: rop:1.11185548896
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-10-28 14:55:00 with price: 32.43: income:0.37 rop:1.12338134673
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-10-30 10:50:00 with price: 32.5: rop:1.12192095098
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-11-02 09:35:00 with price: 31.5: income:-1.0 rop:1.09119172021
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-11-02 11:25:00 with price: 32.54: rop:1.08977317097
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-11-03 09:35:00 with price: 32.28: income:-0.26 rop:1.08179339224
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-11-04 10:05:00 with price: 31.56: rop:1.08038706083
+Mon, 14 Dec 2015 16:39:26 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-11-05 10:40:00 with price: 31.49: income:-0.07 rop:1.07817194676
+Mon, 14 Dec 2015 16:39:27 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-11-06 10:15:00 with price: 31.81: rop:1.07677032323
+Mon, 14 Dec 2015 16:39:27 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-11-09 09:50:00 with price: 31.34: income:-0.47 rop:1.06201430311
+Mon, 14 Dec 2015 16:39:27 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-11-09 13:15:00 with price: 31.77: rop:1.06063368452
+Mon, 14 Dec 2015 16:39:27 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-11-12 09:50:00 with price: 32.6: income:0.83 rop:1.08672499708
+Mon, 14 Dec 2015 16:39:27 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-11-12 14:15:00 with price: 33.23: rop:1.08531225458
+Mon, 14 Dec 2015 16:39:27 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-12-08 14:30:00 with price: 34.9: income:1.67 rop:1.13550271501
+Mon, 14 Dec 2015 16:39:27 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-12-10 10:30:00 with price: 34.88: rop:1.13402656148
+Mon, 14 Dec 2015 16:39:27 backtest.py 11428 [line:132] INFO code:002475 sell at:2015-12-11 10:10:00 with price: 34.2: income:-0.68 rop:1.11455649267
+Mon, 14 Dec 2015 16:39:27 backtest.py 11428 [line:117] INFO code:002475 buy at:2015-12-11 10:45:00 with price: 34.84: rop:1.11310756923
+Mon, 14 Dec 2015 16:40:29 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-16 14:10:00 with price: 10.58: rop:0.9987
+Mon, 14 Dec 2015 16:40:29 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-09-18 10:35:00 with price: 11.25: income:0.67 rop:1.06194470699
+Mon, 14 Dec 2015 16:40:29 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-18 14:55:00 with price: 11.6: rop:1.06056417888
+Mon, 14 Dec 2015 16:40:30 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-09-22 11:05:00 with price: 12.02: income:0.42 rop:1.09672400646
+Mon, 14 Dec 2015 16:40:30 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-22 13:20:00 with price: 12.34: rop:1.09529826525
+Mon, 14 Dec 2015 16:40:30 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-09-23 09:50:00 with price: 12.14: income:-0.2 rop:1.07911187952
+Mon, 14 Dec 2015 16:40:30 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-23 14:30:00 with price: 12.21: rop:1.07770903407
+Mon, 14 Dec 2015 16:40:30 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-09-25 13:15:00 with price: 12.28: income:0.07 rop:1.0834345869
+Mon, 14 Dec 2015 16:40:30 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-28 11:25:00 with price: 12.34: rop:1.08202612193
+Mon, 14 Dec 2015 16:40:30 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-09-29 11:10:00 with price: 12.26: income:-0.08 rop:1.07555156764
+Mon, 14 Dec 2015 16:40:30 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-09-30 09:45:00 with price: 12.33: rop:1.0741533506
+Mon, 14 Dec 2015 16:40:31 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-10-13 10:40:00 with price: 14.38: income:2.05 rop:1.24019836277
+Mon, 14 Dec 2015 16:40:31 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-10-15 13:40:00 with price: 15.73: rop:1.2385861049
+Mon, 14 Dec 2015 16:40:31 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-10-16 13:30:00 with price: 15.59: income:-0.14 rop:1.22969748443
+Mon, 14 Dec 2015 16:40:31 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-10-20 09:45:00 with price: 15.35: rop:1.2280988777
+Mon, 14 Dec 2015 16:40:31 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-10-21 13:30:00 with price: 15.5: income:0.15 rop:1.23785816108
+Mon, 14 Dec 2015 16:40:31 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-10-22 14:40:00 with price: 14.78: rop:1.23624894547
+Mon, 14 Dec 2015 16:40:31 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-10-27 10:20:00 with price: 15.65: income:0.87 rop:1.29503575197
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-10-27 14:10:00 with price: 15.95: rop:1.29335220549
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-10-28 10:45:00 with price: 15.72: income:-0.23 rop:1.27895088888
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-10-29 14:00:00 with price: 15.52: rop:1.27728825272
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-02 09:45:00 with price: 15.43: income:-0.09 rop:1.27149682231
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-02 10:35:00 with price: 15.99: rop:1.26984387644
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-03 09:35:00 with price: 15.5: income:-0.49 rop:1.23923956124
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-04 09:45:00 with price: 15.56: rop:1.23762854981
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-05 14:50:00 with price: 16.39: income:0.83 rop:1.29090110765
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-06 09:50:00 with price: 16.89: rop:1.28922293621
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-09 10:05:00 with price: 16.61: income:-0.28 rop:1.27266663071
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-09 11:00:00 with price: 16.96: rop:1.27101216409
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-10 11:20:00 with price: 16.82: income:-0.14 rop:1.26276817824
+Mon, 14 Dec 2015 16:40:32 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-11 10:40:00 with price: 16.85: rop:1.26112657961
+Mon, 14 Dec 2015 16:40:33 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-12 13:15:00 with price: 17.0: income:0.15 rop:1.27001708406
+Mon, 14 Dec 2015 16:40:33 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-12 14:05:00 with price: 17.31: rop:1.26836606185
+Mon, 14 Dec 2015 16:40:33 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-13 09:40:00 with price: 16.74: income:-0.57 rop:1.23547992667
+Mon, 14 Dec 2015 16:40:33 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-16 14:25:00 with price: 16.78: rop:1.23387380276
+Mon, 14 Dec 2015 16:40:33 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-17 14:20:00 with price: 16.69: income:-0.09 rop:1.22851724734
+Mon, 14 Dec 2015 16:40:33 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-19 13:30:00 with price: 16.4: rop:1.22692017492
+Mon, 14 Dec 2015 16:40:33 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-11-27 10:05:00 with price: 19.22: income:2.82 rop:1.39864785784
+Mon, 14 Dec 2015 16:40:34 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-11-30 15:00:00 with price: 17.61: rop:1.39682961563
+Mon, 14 Dec 2015 16:40:34 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-12-01 14:15:00 with price: 17.3: income:-0.31 rop:1.37924886606
+Mon, 14 Dec 2015 16:40:34 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-12-03 09:45:00 with price: 17.35: rop:1.37745584253
+Mon, 14 Dec 2015 16:40:34 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-12-04 13:50:00 with price: 17.2: income:-0.15 rop:1.36882154858
+Mon, 14 Dec 2015 16:40:34 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-12-07 11:25:00 with price: 17.42: rop:1.36704208057
+Mon, 14 Dec 2015 16:40:34 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-12-08 09:55:00 with price: 17.02: income:-0.4 rop:1.3441098188
+Mon, 14 Dec 2015 16:40:34 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-12-10 13:50:00 with price: 16.67: rop:1.34236247604
+Mon, 14 Dec 2015 16:40:34 backtest.py 11428 [line:132] INFO code:002089 sell at:2015-12-11 09:35:00 with price: 16.41: income:-0.26 rop:1.32678587136
+Mon, 14 Dec 2015 16:40:34 backtest.py 11428 [line:117] INFO code:002089 buy at:2015-12-11 09:55:00 with price: 16.59: rop:1.32506104972
+Tue, 05 Jan 2016 14:11:07 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-06-02 14:05:00 with price: 33.98: rop:0.9987
+Tue, 05 Jan 2016 14:11:07 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-06-03 11:05:00 with price: 33.1: income:-0.88 rop:0.972836080047
+Tue, 05 Jan 2016 14:11:07 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-06-05 09:50:00 with price: 32.8: rop:0.971571393143
+Tue, 05 Jan 2016 14:11:07 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-06-08 09:50:00 with price: 32.53: income:-0.27 rop:0.963350387045
+Tue, 05 Jan 2016 14:11:07 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-06-08 15:00:00 with price: 32.59: rop:0.962098031542
+Tue, 05 Jan 2016 14:11:07 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-06-15 09:55:00 with price: 36.56: income:3.97 rop:1.08375617821
+Tue, 05 Jan 2016 14:11:08 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-06-16 13:40:00 with price: 35.72: rop:1.08234729518
+Tue, 05 Jan 2016 14:11:08 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-06-17 10:50:00 with price: 33.91: income:-1.81 rop:1.03174127614
+Tue, 05 Jan 2016 14:11:08 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-06-17 13:30:00 with price: 35.0: rop:1.03040001249
+Tue, 05 Jan 2016 14:11:08 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-06-18 13:45:00 with price: 35.24: income:0.24 rop:1.03724824106
+Tue, 05 Jan 2016 14:11:08 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-06-30 13:25:00 with price: 26.89: rop:1.03589981834
+Tue, 05 Jan 2016 14:11:08 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-07-01 13:55:00 with price: 27.4: income:0.51 rop:1.05484132076
+Tue, 05 Jan 2016 14:11:08 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-07-06 09:45:00 with price: 22.21: rop:1.05347002704
+Tue, 05 Jan 2016 14:11:08 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-07-07 10:40:00 with price: 20.78: income:-1.43 rop:0.989168316103
+Tue, 05 Jan 2016 14:11:08 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-07-08 14:35:00 with price: 19.13: rop:0.987882397292
+Tue, 05 Jan 2016 14:11:09 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-07-14 14:10:00 with price: 26.45: income:7.32 rop:1.37003001883
+Tue, 05 Jan 2016 14:11:09 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-07-14 14:40:00 with price: 26.76: rop:1.3682489798
+Tue, 05 Jan 2016 14:11:09 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-07-15 09:35:00 with price: 25.8: income:-0.96 rop:1.33242117711
+Tue, 05 Jan 2016 14:11:09 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-07-16 10:50:00 with price: 24.5: rop:1.33068902958
+Tue, 05 Jan 2016 14:11:09 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-07-21 09:50:00 with price: 26.87: income:2.37 rop:1.42729796836
+Tue, 05 Jan 2016 14:11:09 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-07-22 09:50:00 with price: 27.65: rop:1.425442481
+Tue, 05 Jan 2016 14:11:09 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-07-24 14:35:00 with price: 28.07: income:0.42 rop:1.44061260758
+Tue, 05 Jan 2016 14:11:09 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-07-28 14:20:00 with price: 25.49: rop:1.43873981119
+Tue, 05 Jan 2016 14:11:09 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-07-29 13:15:00 with price: 25.11: income:-0.38 rop:1.42385138436
+Tue, 05 Jan 2016 14:11:09 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-07-30 09:35:00 with price: 26.65: rop:1.42200037756
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-07-31 09:35:00 with price: 25.44: income:-1.21 rop:1.37665602484
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-08-03 10:20:00 with price: 25.89: rop:1.37486637201
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-08-04 09:35:00 with price: 25.15: income:-0.74 rop:1.34632106494
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-08-04 09:50:00 with price: 25.43: rop:1.34457084755
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-08-05 13:55:00 with price: 26.02: income:0.59 rop:1.36774163009
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-08-05 14:30:00 with price: 26.5: rop:1.36596356597
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-08-06 09:35:00 with price: 25.16: income:-1.34 rop:1.31546326409
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-08-07 09:50:00 with price: 25.9: rop:1.31375316184
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-08-11 11:00:00 with price: 27.03: income:1.13 rop:1.35732578733
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-08-12 10:10:00 with price: 27.53: rop:1.3555612638
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-08-13 09:35:00 with price: 26.74: income:-0.79 rop:1.32690260053
+Tue, 05 Jan 2016 14:11:10 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-08-13 14:35:00 with price: 26.61: rop:1.32517762715
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-08-18 13:10:00 with price: 26.53: income:-0.08 rop:1.32217514688
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-08-19 14:40:00 with price: 25.67: rop:1.32045631918
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-08-20 13:55:00 with price: 24.95: income:-0.72 rop:1.29244447657
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-08-25 13:15:00 with price: 20.28: rop:1.29076429875
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-08-26 09:35:00 with price: 20.0: income:-0.28 rop:1.27697554135
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-08-26 13:05:00 with price: 20.08: rop:1.27531547315
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-08-27 14:10:00 with price: 19.87: income:-0.21 rop:1.26487090143
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-08-28 09:45:00 with price: 22.0: rop:1.26322656926
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-08-31 14:00:00 with price: 22.33: income:0.33 rop:1.27820706926
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-09-02 13:05:00 with price: 21.66: rop:1.27654540007
+Tue, 05 Jan 2016 14:11:11 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-09-07 13:20:00 with price: 21.93: income:0.27 rop:1.28899456905
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-09-08 14:20:00 with price: 20.9: rop:1.28731887611
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-09-09 13:35:00 with price: 21.38: income:0.48 rop:1.31025552683
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-09-09 14:40:00 with price: 22.07: rop:1.30855219464
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-09-10 09:35:00 with price: 21.16: income:-0.91 rop:1.26737335459
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-09-10 14:00:00 with price: 21.56: rop:1.26572576922
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-09-11 09:35:00 with price: 21.15: income:-0.41 rop:1.24673379334
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-09-14 09:35:00 with price: 21.29: rop:1.24511303941
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-09-15 09:35:00 with price: 20.01: income:-1.28 rop:1.18506907511
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-09-16 14:10:00 with price: 19.65: rop:1.18352848531
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-10-09 10:25:00 with price: 22.89: income:3.24 rop:1.34819963035
+Tue, 05 Jan 2016 14:11:12 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-10-09 13:50:00 with price: 23.25: rop:1.34644697083
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-10-14 13:35:00 with price: 25.16: income:1.91 rop:1.42849071277
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-10-15 13:25:00 with price: 25.45: rop:1.42663367484
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-10-16 11:05:00 with price: 24.88: income:-0.57 rop:1.40426593417
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-10-16 14:20:00 with price: 25.16: rop:1.40244038846
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-10-19 09:50:00 with price: 24.84: income:-0.32 rop:1.38973832168
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-10-20 10:10:00 with price: 24.95: rop:1.38793166187
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-10-21 10:30:00 with price: 25.11: income:0.16 rop:1.39433615084
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-10-22 14:40:00 with price: 24.0: rop:1.39252351385
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-10-23 11:05:00 with price: 23.95: income:-0.05 rop:1.39044288885
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-10-23 13:35:00 with price: 24.03: rop:1.38863531309
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-10-27 10:20:00 with price: 25.41: income:1.38 rop:1.44598887115
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-10-27 13:10:00 with price: 25.75: rop:1.44410908561
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-10-28 13:35:00 with price: 26.05: income:0.3 rop:1.45574442542
+Tue, 05 Jan 2016 14:11:13 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-10-29 13:35:00 with price: 26.01: rop:1.45385195767
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-10-30 09:35:00 with price: 25.84: income:-0.17 rop:1.44732450669
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-10-30 11:25:00 with price: 26.16: rop:1.44544298483
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-11-02 09:35:00 with price: 25.37: income:-0.79 rop:1.41528346648
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-11-02 10:40:00 with price: 26.23: rop:1.41344359797
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-11-04 09:50:00 with price: 27.33: income:1.1 rop:1.45532579393
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-11-04 10:30:00 with price: 27.84: rop:1.4534338704
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-11-06 10:50:00 with price: 27.99: income:0.15 rop:1.45881479712
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-11-06 13:15:00 with price: 28.1: rop:1.45691833789
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-11-09 09:50:00 with price: 27.91: income:-0.19 rop:1.45016556209
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-11-09 13:50:00 with price: 27.93: rop:1.44828034685
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-11-11 09:50:00 with price: 28.04: income:0.11 rop:1.45221364438
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-11-11 10:30:00 with price: 28.49: rop:1.45032576665
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-11-12 10:00:00 with price: 28.1: income:-0.39 rop:1.43665454868
+Tue, 05 Jan 2016 14:11:14 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-11-16 11:00:00 with price: 27.3: rop:1.43478689776
+Tue, 05 Jan 2016 14:11:15 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-11-19 14:25:00 with price: 30.0: income:2.7 rop:1.53355942523
+Tue, 05 Jan 2016 14:11:15 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-11-20 14:15:00 with price: 30.08: rop:1.53156579798
+Tue, 05 Jan 2016 14:11:15 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-11-25 11:20:00 with price: 32.09: income:2.01 rop:1.59830073814
+Tue, 05 Jan 2016 14:11:15 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-11-30 10:05:00 with price: 31.51: rop:1.59622294718
+Tue, 05 Jan 2016 14:11:15 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-02 10:35:00 with price: 31.75: income:0.24 rop:1.6038296752
+Tue, 05 Jan 2016 14:11:15 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-12-02 14:40:00 with price: 32.14: rop:1.60174469663
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-07 13:30:00 with price: 33.81: income:1.67 rop:1.65363732264
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-12-09 10:25:00 with price: 32.88: rop:1.65148759412
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-10 14:55:00 with price: 34.11: income:1.23 rop:1.68884772186
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-12-11 13:05:00 with price: 34.58: rop:1.68665221982
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-14 10:40:00 with price: 34.34: income:-0.24 rop:1.67972081438
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-12-14 11:15:00 with price: 34.69: rop:1.67753717732
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-15 09:35:00 with price: 34.7: income:0.01 rop:1.67782507009
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-12-15 09:55:00 with price: 34.91: rop:1.6756438975
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-16 09:35:00 with price: 34.75: income:-0.16 rop:1.67106664169
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-12-17 10:05:00 with price: 34.33: rop:1.66889425506
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-18 10:15:00 with price: 33.94: income:-0.39 rop:1.65754869724
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-12-18 13:25:00 with price: 35.92: rop:1.65539388393
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-21 14:05:00 with price: 35.48: income:-0.44 rop:1.643160365
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-12-22 09:55:00 with price: 35.6: rop:1.64102425653
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-23 09:35:00 with price: 35.2: income:-0.4 rop:1.62980290821
+Tue, 05 Jan 2016 14:11:16 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-12-24 14:30:00 with price: 34.67: rop:1.62768416443
+Tue, 05 Jan 2016 14:11:17 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-25 13:15:00 with price: 34.79: income:0.12 rop:1.63114087052
+Tue, 05 Jan 2016 14:11:17 backtest.py 5340 [line:117] INFO code:002588 buy at:2015-12-29 14:35:00 with price: 32.46: rop:1.62902038739
+Tue, 05 Jan 2016 14:11:17 backtest.py 5340 [line:132] INFO code:002588 sell at:2015-12-31 10:35:00 with price: 32.33: income:-0.13 rop:1.62502066465
+Tue, 05 Jan 2016 14:11:17 backtest.py 5340 [line:117] INFO code:002588 buy at:2016-01-05 11:20:00 with price: 30.9: rop:1.62290813779
+Tue, 05 Jan 2016 14:19:37 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-06-02 14:05:00 with price: 33.98: rop:0.9987
+Tue, 05 Jan 2016 14:19:37 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-06-03 11:05:00 with price: 33.1: income:-0.88 rop:0.972836080047
+Tue, 05 Jan 2016 14:19:37 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-06-05 09:50:00 with price: 32.8: rop:0.971571393143
+Tue, 05 Jan 2016 14:19:37 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-06-08 09:50:00 with price: 32.53: income:-0.27 rop:0.963350387045
+Tue, 05 Jan 2016 14:19:37 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-06-08 15:00:00 with price: 32.59: rop:0.962098031542
+Tue, 05 Jan 2016 14:19:38 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-06-15 09:55:00 with price: 36.56: income:3.97 rop:1.08375617821
+Tue, 05 Jan 2016 14:19:38 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-06-16 13:40:00 with price: 35.72: rop:1.08234729518
+Tue, 05 Jan 2016 14:19:38 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-06-17 10:50:00 with price: 33.91: income:-1.81 rop:1.03174127614
+Tue, 05 Jan 2016 14:19:38 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-06-17 13:30:00 with price: 35.0: rop:1.03040001249
+Tue, 05 Jan 2016 14:19:38 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-06-18 13:45:00 with price: 35.24: income:0.24 rop:1.03724824106
+Tue, 05 Jan 2016 14:19:38 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-06-30 13:25:00 with price: 26.89: rop:1.03589981834
+Tue, 05 Jan 2016 14:19:39 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-07-01 13:55:00 with price: 27.4: income:0.51 rop:1.05484132076
+Tue, 05 Jan 2016 14:19:39 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-07-06 09:45:00 with price: 22.21: rop:1.05347002704
+Tue, 05 Jan 2016 14:19:39 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-07-07 10:40:00 with price: 20.78: income:-1.43 rop:0.989168316103
+Tue, 05 Jan 2016 14:19:39 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-07-08 14:35:00 with price: 19.13: rop:0.987882397292
+Tue, 05 Jan 2016 14:19:40 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-07-14 14:10:00 with price: 26.45: income:7.32 rop:1.37003001883
+Tue, 05 Jan 2016 14:19:40 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-07-14 14:40:00 with price: 26.76: rop:1.3682489798
+Tue, 05 Jan 2016 14:19:40 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-07-15 09:35:00 with price: 25.8: income:-0.96 rop:1.33242117711
+Tue, 05 Jan 2016 14:19:40 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-07-16 10:50:00 with price: 24.5: rop:1.33068902958
+Tue, 05 Jan 2016 14:19:40 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-07-21 09:50:00 with price: 26.87: income:2.37 rop:1.42729796836
+Tue, 05 Jan 2016 14:19:40 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-07-22 09:50:00 with price: 27.65: rop:1.425442481
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-07-24 14:35:00 with price: 28.07: income:0.42 rop:1.44061260758
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-07-28 14:20:00 with price: 25.49: rop:1.43873981119
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-07-29 13:15:00 with price: 25.11: income:-0.38 rop:1.42385138436
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-07-30 09:35:00 with price: 26.65: rop:1.42200037756
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-07-31 09:35:00 with price: 25.44: income:-1.21 rop:1.37665602484
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-03 10:20:00 with price: 25.89: rop:1.37486637201
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-04 09:35:00 with price: 25.15: income:-0.74 rop:1.34632106494
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-04 09:50:00 with price: 25.43: rop:1.34457084755
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-05 13:55:00 with price: 26.02: income:0.59 rop:1.36774163009
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-05 14:30:00 with price: 26.5: rop:1.36596356597
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-06 09:35:00 with price: 25.16: income:-1.34 rop:1.31546326409
+Tue, 05 Jan 2016 14:19:41 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-07 09:50:00 with price: 25.9: rop:1.31375316184
+Tue, 05 Jan 2016 14:19:42 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-11 11:00:00 with price: 27.03: income:1.13 rop:1.35732578733
+Tue, 05 Jan 2016 14:19:42 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-12 10:10:00 with price: 27.53: rop:1.3555612638
+Tue, 05 Jan 2016 14:19:42 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-13 09:35:00 with price: 26.74: income:-0.79 rop:1.32690260053
+Tue, 05 Jan 2016 14:19:42 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-13 14:35:00 with price: 26.61: rop:1.32517762715
+Tue, 05 Jan 2016 14:19:42 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-18 13:10:00 with price: 26.53: income:-0.08 rop:1.32217514688
+Tue, 05 Jan 2016 14:19:42 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-19 14:40:00 with price: 25.67: rop:1.32045631918
+Tue, 05 Jan 2016 14:19:42 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-20 13:50:00 with price: 25.0: income:-0.67 rop:1.29438974342
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-25 13:15:00 with price: 20.28: rop:1.29270703675
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-26 09:35:00 with price: 20.0: income:-0.28 rop:1.27891827935
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-26 13:05:00 with price: 20.08: rop:1.27725568559
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-27 09:35:00 with price: 20.29: income:0.21 rop:1.2877002573
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-27 09:55:00 with price: 20.13: rop:1.28602624697
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-28 09:35:00 with price: 21.49: income:1.36 rop:1.3534992723
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-28 09:45:00 with price: 22.0: rop:1.35173972325
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-08-31 11:00:00 with price: 22.4: income:0.4 rop:1.36989790507
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-08-31 11:25:00 with price: 22.5: rop:1.36811703779
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-09-01 09:35:00 with price: 21.71: income:-0.79 rop:1.33305157112
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-09-02 13:05:00 with price: 21.66: rop:1.33131860408
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-09-07 13:20:00 with price: 21.93: income:0.27 rop:1.34376777306
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-09-08 14:20:00 with price: 20.9: rop:1.34202087495
+Tue, 05 Jan 2016 14:19:43 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-09-09 13:15:00 with price: 21.37: income:0.47 rop:1.36447967878
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-09-09 14:40:00 with price: 22.07: rop:1.3627058552
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-09-10 09:35:00 with price: 21.16: income:-0.91 rop:1.32152701514
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-09-10 14:00:00 with price: 21.56: rop:1.31980903002
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-09-11 09:35:00 with price: 21.15: income:-0.41 rop:1.30081705414
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-09-14 09:35:00 with price: 21.29: rop:1.29912599197
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-09-15 09:35:00 with price: 20.01: income:-1.28 rop:1.23908202767
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-09-16 14:10:00 with price: 19.65: rop:1.23747122103
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-09-30 10:55:00 with price: 21.56: income:1.91 rop:1.33454587752
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-09-30 13:05:00 with price: 21.7: rop:1.33281096788
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-10-09 10:25:00 with price: 22.89: income:1.19 rop:1.38757838724
+Tue, 05 Jan 2016 14:19:44 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-10-09 13:50:00 with price: 23.25: rop:1.38577453533
+Tue, 05 Jan 2016 14:19:45 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-10-14 13:35:00 with price: 25.16: income:1.91 rop:1.46781827727
+Tue, 05 Jan 2016 14:19:45 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-10-15 13:25:00 with price: 25.45: rop:1.46591011351
+Tue, 05 Jan 2016 14:19:45 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-10-16 11:05:00 with price: 24.88: income:-0.57 rop:1.44354237284
+Tue, 05 Jan 2016 14:19:45 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-10-16 14:20:00 with price: 25.16: rop:1.44166576775
+Tue, 05 Jan 2016 14:19:45 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-10-19 09:50:00 with price: 24.84: income:-0.32 rop:1.42896370098
+Tue, 05 Jan 2016 14:19:45 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-10-20 10:10:00 with price: 24.95: rop:1.42710604817
+Tue, 05 Jan 2016 14:19:45 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-10-21 10:30:00 with price: 25.11: income:0.16 rop:1.43351053715
+Tue, 05 Jan 2016 14:19:45 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-10-22 14:40:00 with price: 24.0: rop:1.43164697345
+Tue, 05 Jan 2016 14:19:45 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-10-23 11:05:00 with price: 23.95: income:-0.05 rop:1.42956634845
+Tue, 05 Jan 2016 14:19:45 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-10-23 13:35:00 with price: 24.03: rop:1.4277079122
+Tue, 05 Jan 2016 14:19:46 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-10-27 10:20:00 with price: 25.41: income:1.38 rop:1.48506147025
+Tue, 05 Jan 2016 14:19:46 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-10-27 13:10:00 with price: 25.75: rop:1.48313089034
+Tue, 05 Jan 2016 14:19:46 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-10-28 13:35:00 with price: 26.05: income:0.3 rop:1.49476623014
+Tue, 05 Jan 2016 14:19:46 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-10-29 13:35:00 with price: 26.01: rop:1.49282303405
+Tue, 05 Jan 2016 14:19:46 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-10-30 09:35:00 with price: 25.84: income:-0.17 rop:1.48629558306
+Tue, 05 Jan 2016 14:19:46 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-10-30 11:25:00 with price: 26.16: rop:1.48436339881
+Tue, 05 Jan 2016 14:19:46 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-11-02 09:35:00 with price: 25.37: income:-0.79 rop:1.45420388046
+Tue, 05 Jan 2016 14:19:46 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-11-02 10:40:00 with price: 26.23: rop:1.45231341541
+Tue, 05 Jan 2016 14:19:46 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-11-04 09:50:00 with price: 27.33: income:1.1 rop:1.49419561137
+Tue, 05 Jan 2016 14:19:46 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-11-04 10:30:00 with price: 27.84: rop:1.49225315708
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-11-06 10:50:00 with price: 27.99: income:0.15 rop:1.4976340838
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-11-06 13:15:00 with price: 28.1: rop:1.49568715949
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-11-09 09:50:00 with price: 27.91: income:-0.19 rop:1.48893438369
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-11-09 13:50:00 with price: 27.93: rop:1.48699876899
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-11-10 13:10:00 with price: 28.05: income:0.12 rop:1.49128963903
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-11-10 14:00:00 with price: 28.2: rop:1.48935096249
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-11-11 09:50:00 with price: 28.04: income:-0.16 rop:1.48368457952
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-11-11 10:30:00 with price: 28.49: rop:1.48175578956
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-11-12 10:00:00 with price: 28.1: income:-0.39 rop:1.46808457159
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-11-16 11:00:00 with price: 27.3: rop:1.46617606165
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-11-19 14:25:00 with price: 30.0: income:2.7 rop:1.56494858912
+Tue, 05 Jan 2016 14:19:47 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-11-20 14:15:00 with price: 30.08: rop:1.56291415596
+Tue, 05 Jan 2016 14:19:48 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-11-25 11:20:00 with price: 32.09: income:2.01 rop:1.62964909611
+Tue, 05 Jan 2016 14:19:48 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-11-30 10:05:00 with price: 31.51: rop:1.62753055229
+Tue, 05 Jan 2016 14:19:48 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-02 10:35:00 with price: 31.75: income:0.24 rop:1.63513728031
+Tue, 05 Jan 2016 14:19:48 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-12-02 14:40:00 with price: 32.14: rop:1.63301160185
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-07 13:30:00 with price: 33.81: income:1.67 rop:1.68490422786
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-12-09 10:25:00 with price: 32.88: rop:1.68271385236
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-10 14:55:00 with price: 34.11: income:1.23 rop:1.7200739801
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-12-11 13:05:00 with price: 34.58: rop:1.71783788393
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-14 10:40:00 with price: 34.34: income:-0.24 rop:1.71090647849
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-12-14 11:15:00 with price: 34.69: rop:1.70868230007
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-15 09:35:00 with price: 34.7: income:0.01 rop:1.70897019283
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-12-15 09:55:00 with price: 34.91: rop:1.70674853158
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-16 09:35:00 with price: 34.75: income:-0.16 rop:1.70217127578
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-12-17 10:05:00 with price: 34.33: rop:1.69995845312
+Tue, 05 Jan 2016 14:19:49 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-18 10:15:00 with price: 33.94: income:-0.39 rop:1.6886128953
+Tue, 05 Jan 2016 14:19:50 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-12-18 13:25:00 with price: 35.92: rop:1.68641769854
+Tue, 05 Jan 2016 14:19:50 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-21 14:05:00 with price: 35.48: income:-0.44 rop:1.67418417961
+Tue, 05 Jan 2016 14:19:50 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-12-22 09:55:00 with price: 35.6: rop:1.67200774017
+Tue, 05 Jan 2016 14:19:50 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-23 09:35:00 with price: 35.2: income:-0.4 rop:1.66078639186
+Tue, 05 Jan 2016 14:19:50 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-12-24 14:30:00 with price: 34.67: rop:1.65862736955
+Tue, 05 Jan 2016 14:19:50 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-25 13:15:00 with price: 34.79: income:0.12 rop:1.66208407563
+Tue, 05 Jan 2016 14:19:50 backtest.py 10336 [line:117] INFO code:002588 buy at:2015-12-29 14:35:00 with price: 32.46: rop:1.65992336634
+Tue, 05 Jan 2016 14:19:50 backtest.py 10336 [line:132] INFO code:002588 sell at:2015-12-31 10:35:00 with price: 32.33: income:-0.13 rop:1.6559236436
+Tue, 05 Jan 2016 14:19:51 backtest.py 10336 [line:117] INFO code:002588 buy at:2016-01-05 11:20:00 with price: 30.9: rop:1.65377094286
+Tue, 05 Jan 2016 17:42:37 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-06-02 14:05:00 with price: 33.98: rop:0.9987
+Tue, 05 Jan 2016 17:42:37 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-06-03 11:05:00 with price: 33.1: income:-0.88 rop:0.972836080047
+Tue, 05 Jan 2016 17:42:37 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-06-05 09:50:00 with price: 32.8: rop:0.971571393143
+Tue, 05 Jan 2016 17:42:37 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-06-08 09:50:00 with price: 32.53: income:-0.27 rop:0.963350387045
+Tue, 05 Jan 2016 17:42:37 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-06-08 15:00:00 with price: 32.59: rop:0.962098031542
+Tue, 05 Jan 2016 17:42:38 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-06-15 09:55:00 with price: 36.56: income:3.97 rop:1.08375617821
+Tue, 05 Jan 2016 17:42:38 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-06-16 13:40:00 with price: 35.72: rop:1.08234729518
+Tue, 05 Jan 2016 17:42:38 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-06-17 10:50:00 with price: 33.91: income:-1.81 rop:1.03174127614
+Tue, 05 Jan 2016 17:42:38 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-06-17 13:30:00 with price: 35.0: rop:1.03040001249
+Tue, 05 Jan 2016 17:42:38 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-06-18 13:45:00 with price: 35.24: income:0.24 rop:1.03724824106
+Tue, 05 Jan 2016 17:42:39 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-06-30 13:25:00 with price: 26.89: rop:1.03589981834
+Tue, 05 Jan 2016 17:42:39 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-07-01 13:55:00 with price: 27.4: income:0.51 rop:1.05484132076
+Tue, 05 Jan 2016 17:42:39 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-07-06 09:45:00 with price: 22.21: rop:1.05347002704
+Tue, 05 Jan 2016 17:42:39 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-07-07 10:40:00 with price: 20.78: income:-1.43 rop:0.989168316103
+Tue, 05 Jan 2016 17:42:39 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-07-08 14:35:00 with price: 19.13: rop:0.987882397292
+Tue, 05 Jan 2016 17:42:40 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-07-14 14:10:00 with price: 26.45: income:7.32 rop:1.37003001883
+Tue, 05 Jan 2016 17:42:40 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-07-14 14:40:00 with price: 26.76: rop:1.3682489798
+Tue, 05 Jan 2016 17:42:40 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-07-15 09:35:00 with price: 25.8: income:-0.96 rop:1.33242117711
+Tue, 05 Jan 2016 17:42:40 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-07-16 10:50:00 with price: 24.5: rop:1.33068902958
+Tue, 05 Jan 2016 17:42:40 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-07-21 09:50:00 with price: 26.87: income:2.37 rop:1.42729796836
+Tue, 05 Jan 2016 17:42:40 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-07-22 09:50:00 with price: 27.65: rop:1.425442481
+Tue, 05 Jan 2016 17:42:41 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-07-24 14:35:00 with price: 28.07: income:0.42 rop:1.44061260758
+Tue, 05 Jan 2016 17:42:41 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-07-28 14:20:00 with price: 25.49: rop:1.43873981119
+Tue, 05 Jan 2016 17:42:41 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-07-29 13:15:00 with price: 25.11: income:-0.38 rop:1.42385138436
+Tue, 05 Jan 2016 17:42:41 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-07-29 14:15:00 with price: 25.49: rop:1.42200037756
+Tue, 05 Jan 2016 17:42:41 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-07-30 14:55:00 with price: 25.5: income:0.01 rop:1.42239217826
+Tue, 05 Jan 2016 17:42:41 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-03 10:20:00 with price: 25.89: rop:1.42054306843
+Tue, 05 Jan 2016 17:42:41 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-04 09:35:00 with price: 25.15: income:-0.74 rop:1.39199776136
+Tue, 05 Jan 2016 17:42:41 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-04 09:50:00 with price: 25.43: rop:1.39018816427
+Tue, 05 Jan 2016 17:42:42 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-05 13:55:00 with price: 26.02: income:0.59 rop:1.41335894682
+Tue, 05 Jan 2016 17:42:42 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-05 14:30:00 with price: 26.5: rop:1.41152158018
+Tue, 05 Jan 2016 17:42:42 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-06 09:35:00 with price: 25.16: income:-1.34 rop:1.3610212783
+Tue, 05 Jan 2016 17:42:42 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-06 14:25:00 with price: 25.89: rop:1.35925195064
+Tue, 05 Jan 2016 17:42:42 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-07 09:35:00 with price: 26.19: income:0.3 rop:1.37082437242
+Tue, 05 Jan 2016 17:42:42 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-07 09:50:00 with price: 25.9: rop:1.36904230074
+Tue, 05 Jan 2016 17:42:42 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-11 11:00:00 with price: 27.03: income:1.13 rop:1.41261492622
+Tue, 05 Jan 2016 17:42:42 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-12 10:10:00 with price: 27.53: rop:1.41077852681
+Tue, 05 Jan 2016 17:42:42 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-13 09:35:00 with price: 26.74: income:-0.79 rop:1.38211986354
+Tue, 05 Jan 2016 17:42:42 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-13 14:35:00 with price: 26.61: rop:1.38032310772
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-18 13:10:00 with price: 26.53: income:-0.08 rop:1.37732062745
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-19 14:40:00 with price: 25.67: rop:1.37553011063
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-20 13:50:00 with price: 25.0: income:-0.67 rop:1.34946353486
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-25 13:15:00 with price: 20.28: rop:1.34770923226
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-26 09:35:00 with price: 20.0: income:-0.28 rop:1.33392047487
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-26 13:05:00 with price: 20.08: rop:1.33218637825
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-27 09:35:00 with price: 20.29: income:0.21 rop:1.34263094996
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-27 09:55:00 with price: 20.13: rop:1.34088552973
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-28 09:35:00 with price: 21.49: income:1.36 rop:1.40835855506
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-28 09:45:00 with price: 22.0: rop:1.40652768894
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-08-31 11:00:00 with price: 22.4: income:0.4 rop:1.42468587076
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-08-31 11:25:00 with price: 22.5: rop:1.42283377913
+Tue, 05 Jan 2016 17:42:43 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-09-01 09:35:00 with price: 21.71: income:-0.79 rop:1.38776831246
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-09-02 13:05:00 with price: 21.66: rop:1.38596421366
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-09-07 13:20:00 with price: 21.93: income:0.27 rop:1.39841338263
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-09-08 14:20:00 with price: 20.9: rop:1.39659544523
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-09-09 13:15:00 with price: 21.37: income:0.47 rop:1.41905424906
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-09-09 14:40:00 with price: 22.07: rop:1.41720947854
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-09-10 09:35:00 with price: 21.16: income:-0.91 rop:1.37603063848
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-09-10 14:00:00 with price: 21.56: rop:1.37424179865
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-09-11 09:35:00 with price: 21.15: income:-0.41 rop:1.35524982277
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-09-14 09:35:00 with price: 21.29: rop:1.353487998
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-09-15 09:35:00 with price: 20.01: income:-1.28 rop:1.2934440337
+Tue, 05 Jan 2016 17:42:44 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-09-16 14:10:00 with price: 19.65: rop:1.29176255646
+Tue, 05 Jan 2016 17:42:45 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-09-30 10:55:00 with price: 21.56: income:1.91 rop:1.38883721294
+Tue, 05 Jan 2016 17:42:45 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-09-30 13:05:00 with price: 21.7: rop:1.38703172457
+Tue, 05 Jan 2016 17:42:45 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-10-09 10:25:00 with price: 22.89: income:1.19 rop:1.44179914392
+Tue, 05 Jan 2016 17:42:45 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-10-09 13:50:00 with price: 23.25: rop:1.43992480504
+Tue, 05 Jan 2016 17:42:45 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-10-14 13:35:00 with price: 25.16: income:1.91 rop:1.52196854697
+Tue, 05 Jan 2016 17:42:45 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-10-15 13:25:00 with price: 25.45: rop:1.51998998786
+Tue, 05 Jan 2016 17:42:45 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-10-16 11:05:00 with price: 24.88: income:-0.57 rop:1.49762224719
+Tue, 05 Jan 2016 17:42:45 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-10-16 14:10:00 with price: 25.23: rop:1.49567533827
+Tue, 05 Jan 2016 17:42:45 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-10-19 09:50:00 with price: 24.84: income:-0.39 rop:1.48023764505
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-10-20 10:10:00 with price: 24.95: rop:1.47831333611
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-10-21 10:30:00 with price: 25.11: income:0.16 rop:1.48471782509
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-10-22 14:40:00 with price: 24.0: rop:1.48278769192
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-10-23 11:05:00 with price: 23.95: income:-0.05 rop:1.48070706692
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-10-23 13:30:00 with price: 24.11: rop:1.47878214773
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-10-27 10:20:00 with price: 25.41: income:1.3 rop:1.53263158779
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-10-27 13:10:00 with price: 25.75: rop:1.53063916673
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-10-28 13:35:00 with price: 26.05: income:0.3 rop:1.54227450654
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-10-29 13:35:00 with price: 26.01: rop:1.54026954968
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-10-30 09:35:00 with price: 25.84: income:-0.17 rop:1.5337420987
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-10-30 11:25:00 with price: 26.16: rop:1.53174823397
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-11-02 09:35:00 with price: 25.37: income:-0.79 rop:1.50158871562
+Tue, 05 Jan 2016 17:42:46 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-11-02 10:40:00 with price: 26.23: rop:1.49963665029
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-11-04 09:50:00 with price: 27.33: income:1.1 rop:1.54151884625
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-11-04 10:30:00 with price: 27.84: rop:1.53951487175
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-11-06 10:50:00 with price: 27.99: income:0.15 rop:1.54489579847
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-11-06 13:15:00 with price: 28.1: rop:1.54288743394
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-11-09 09:50:00 with price: 27.91: income:-0.19 rop:1.53613465813
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-11-09 13:50:00 with price: 27.93: rop:1.53413768308
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-11-10 13:10:00 with price: 28.05: income:0.12 rop:1.53842855311
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-11-10 14:00:00 with price: 28.2: rop:1.53642859599
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-11-11 09:50:00 with price: 28.04: income:-0.16 rop:1.53076221301
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-11-11 10:30:00 with price: 28.49: rop:1.52877222214
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-11-12 10:00:00 with price: 28.1: income:-0.39 rop:1.51510100417
+Tue, 05 Jan 2016 17:42:47 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-11-16 11:00:00 with price: 27.3: rop:1.51313137286
+Tue, 05 Jan 2016 17:42:48 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-11-19 14:25:00 with price: 30.0: income:2.7 rop:1.61190390033
+Tue, 05 Jan 2016 17:42:48 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-11-20 14:15:00 with price: 30.08: rop:1.60980842526
+Tue, 05 Jan 2016 17:42:48 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-11-25 11:20:00 with price: 32.09: income:2.01 rop:1.67654336542
+Tue, 05 Jan 2016 17:42:48 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-11-30 10:05:00 with price: 31.51: rop:1.67436385905
+Tue, 05 Jan 2016 17:42:48 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-02 10:35:00 with price: 31.75: income:0.24 rop:1.68197058707
+Tue, 05 Jan 2016 17:42:49 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-12-02 14:40:00 with price: 32.14: rop:1.67978402531
+Tue, 05 Jan 2016 17:42:49 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-07 13:30:00 with price: 33.81: income:1.67 rop:1.73167665132
+Tue, 05 Jan 2016 17:42:49 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-12-09 10:25:00 with price: 32.88: rop:1.72942547167
+Tue, 05 Jan 2016 17:42:49 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-10 14:55:00 with price: 34.11: income:1.23 rop:1.76678559941
+Tue, 05 Jan 2016 17:42:49 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-12-11 13:05:00 with price: 34.58: rop:1.76448877813
+Tue, 05 Jan 2016 17:42:49 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-14 10:40:00 with price: 34.34: income:-0.24 rop:1.75755737269
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-12-14 11:15:00 with price: 34.69: rop:1.75527254811
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-15 09:35:00 with price: 34.7: income:0.01 rop:1.75556044087
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-12-15 09:55:00 with price: 34.91: rop:1.7532782123
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-16 09:35:00 with price: 34.75: income:-0.16 rop:1.7487009565
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-12-17 10:05:00 with price: 34.33: rop:1.74642764525
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-18 10:15:00 with price: 33.94: income:-0.39 rop:1.73508208743
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-12-18 13:25:00 with price: 35.92: rop:1.73282648072
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-21 14:05:00 with price: 35.48: income:-0.44 rop:1.72059296179
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-12-22 09:55:00 with price: 35.6: rop:1.71835619094
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-23 09:35:00 with price: 35.2: income:-0.4 rop:1.70713484262
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-12-24 14:30:00 with price: 34.67: rop:1.70491556733
+Tue, 05 Jan 2016 17:42:50 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-25 13:15:00 with price: 34.79: income:0.12 rop:1.70837227341
+Tue, 05 Jan 2016 17:42:51 backtest.py 9512 [line:117] INFO code:002588 buy at:2015-12-29 14:35:00 with price: 32.46: rop:1.70615138946
+Tue, 05 Jan 2016 17:42:51 backtest.py 9512 [line:132] INFO code:002588 sell at:2015-12-31 10:35:00 with price: 32.33: income:-0.13 rop:1.70215166672
+Tue, 05 Jan 2016 17:42:51 backtest.py 9512 [line:117] INFO code:002588 buy at:2016-01-05 11:20:00 with price: 30.9: rop:1.69993886956
