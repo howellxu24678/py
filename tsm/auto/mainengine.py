@@ -174,7 +174,7 @@ class BatchOrder(MainEngine):
     def __init__(self, cf):
         try:
             super(BatchOrder, self).__init__(cf)
-            time.sleep(10)
+            time.sleep(30)
             #self.orderByPricePerent(cf)
             #self.test()
             #self.orderByTime(cf)

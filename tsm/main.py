@@ -26,8 +26,8 @@ def main():
         cf = ConfigParser.ConfigParser()
         cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
 
-        #me = Monitor(cf)
-        bo = BatchOrder(cf)
+        me = Monitor(cf)
+        #bo = BatchOrder(cf)
 
         sys.exit(app.exec_())
     except BaseException,e:

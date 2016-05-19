@@ -321,6 +321,7 @@
 #input#量化委托
 #input#列名	列代码	列类型	必输	FIX域	说明
 #input#资产账户	CUACCT_CODE	BIGINT	√	8920
+#input#账户类型	CUACCT_TYPE	CHAR(1)	√	8826
 #input#客户代码	CUST_CODE	BIGINT	X	8902
 #input#交易账户	TRDACCT	VARCHAR(10)	√	448
 #input#交易所	EXCHANGE	CHAR(1)	X	207
@@ -335,7 +336,7 @@
 #input#委托价格	ORDER_PRICE	CPRICE	X	44
 #input#触发价格	STOP_PRICE	CPRICE	X	8975
 #input#截止日期	VALID_DATE	INTEGER	X	8859
-#input#品种类型	TRD_CODE_CLS	INTEGER	X	8970
+#input#品种类型	TRD_CODE_CLS	CHAR(1)	X	8970
 #input#高级属性	ORDER_ATTR	VARCHAR(256)	X	9100
 #input#属性代码	ATTR_CODE	SMALLINT	√	9101	0:普通下单
 #input#执行开始时间	BGN_EXE_TIME	INTEGER	X	916
@@ -352,6 +353,7 @@
 #input#触发条件	CONTINGENT_CONDITION	VARCHAR(1)	X	8713	1:立即
 #input#强平原因	FORCE_CLOSE_REASON	VARCHAR(1)	X	8715	0
 #input#互换单标志	IS_SWAP_ORDER	SMALLINT	X	8720	0
+#input#组合开平标志	COMB_OFFSET_FLAG	VARCHAR(5)	X	8741	期货字段
 #input#外部合同序号	ORDER_ID_EX	VARCHAR(64)	X	9093	此序号为外部传入，期权系统不做任何处理
 
 10388101

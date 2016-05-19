@@ -1,4 +1,4 @@
-# encoding: UTF-8
+# -*- coding: utf-8 -*-
 # auto generate by generate_fixDict.py
 
 from ctypes import *
@@ -68,6 +68,7 @@ fixDict["MSG_LEVEL"] = c_char_p("8818")#信息级别
 fixDict["MSG_TEXT"] = c_char_p("8819")#信息正文
 fixDict["MSG_DEBUG"] = c_char_p("8820")#调试信息
 fixDict["F_OP_ORG"] = c_char_p("8821")#操作机构
+fixDict["CUACCT_TYPE"] = c_char_p("8826")#账户类型
 fixDict["ORDER_AMT"] = c_char_p("8830")#委托金额
 fixDict["ORDER_FRZ_AMT"] = c_char_p("8831")#委托冻结金额
 fixDict["ORDER_FRZ_AMT"] = c_char_p("8831")#冻结金额
@@ -572,6 +573,7 @@ requireFixColDict["10302004"] = {
 requireFixColDict["10388101"] = {
     'ATTR_CODE': None,
     'CUACCT_CODE': None,
+    'CUACCT_TYPE': None,
     'ORDER_QTY': None,
     'STKBD': None,
     'STK_BIZ': None,

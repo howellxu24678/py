@@ -10,6 +10,7 @@ import base64
 import socket
 import re
 import json
+import time
 logger = logging.getLogger("run")
 
 maHeadDict = {}
@@ -217,6 +218,7 @@ class Ma(object):
             self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict['USE_SCOPE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['ENCRYPT_KEY'])
             self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict['AUTH_TYPE'])
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict["CUACCT_TYPE"])
 
             szAuthData = create_string_buffer(256+1)
             self._ma.maCli_ComEncrypt(hHandle, szAuthData, len(szAuthData), self._pwd, self._acc)
@@ -467,6 +469,7 @@ class Ma(object):
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict["CUACCT_TYPE"])
             stkex,stkbd, trdacct = self.getStkExBdTrdAcc(code)
             self._ma.maCli_SetValueS(hHandle, stkex, fixDict["STKEX"])
             self._ma.maCli_SetValueS(hHandle, stkbd, fixDict['STKBD'])
@@ -518,6 +521,8 @@ class Ma(object):
             #测试添加
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict["CUACCT_TYPE"])
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict["TRD_CODE_CLS"])
             stkex,stkbd, trdacct = self.getStkExBdTrdAcc(code)
             self._ma.maCli_SetValueS(hHandle, stkex, fixDict["STKEX"])
             self._ma.maCli_SetValueS(hHandle, stkbd, fixDict['STKBD'])
@@ -535,6 +540,8 @@ class Ma(object):
 
             b64bizdata = self.genBizData(hHandle)
             self.sendReqMsg(b64bizdata, reqid, funid, msgid)
+            time.sleep(0.01)
+
         except BaseException,e:
             logger.exception(e)
 
@@ -804,8 +811,8 @@ class Ma(object):
                 if not retdict["STKBD"] in self._bd2tradacc_dict:
                     self._bd2tradacc_dict[retdict["STKBD"]] = retdict["STK_TRDACCT"]
 
-            self.subOrderAck()
-            self.subMatchAck()
+            #self.subOrderAck()
+            #self.subMatchAck()
 
         except BaseException,e:
             logger.exception(e)
