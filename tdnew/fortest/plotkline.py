@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 __author__ = 'xujh'
 
+#%matplotlib inline
+
 import matplotlib.pyplot as plt
 from matplotlib.finance import candlestick_ohlc
 import os
 import pandas as pd
 import talib as ta
+
 
 hqdatadir = 'D:\TdxW_HuaTai\T0002\export'
 code = '000738'
