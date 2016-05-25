@@ -2,45 +2,71 @@
 __author__ = 'xujh'
 
 import matplotlib.pyplot as plt
-from matplotlib.dates import DateFormatter, WeekdayLocator,\
-    DayLocator, MONDAY
-from matplotlib.finance import quotes_historical_yahoo_ohlc, candlestick_ohlc
-
-
-## (Year, month, day) tuples suffice as args for quotes_historical_yahoo
-#date1 = (2016, 1, 5)
-#date2 = (2016, 2, 17)
-#
-#
-#mondays = WeekdayLocator(MONDAY)        # major ticks on the mondays
-#alldays = DayLocator()              # minor ticks on the days
-#weekFormatter = DateFormatter('%b/%d')  # e.g., Jan 12
-#dayFormatter = DateFormatter('%d')      # e.g., 12
-#
-#quotes = quotes_historical_yahoo_ohlc('000001.SZ', date1, date2)
-#if len(quotes) == 0:
-#    raise SystemExit
-#
-#fig, ax = plt.subplots()
-#fig.subplots_adjust(bottom=0.2)
-#ax.xaxis.set_major_locator(mondays)
-#ax.xaxis.set_minor_locator(alldays)
-#ax.xaxis.set_major_formatter(weekFormatter)
-##ax.xaxis.set_minor_formatter(dayFormatter)
-#
-##plot_day_summary(ax, quotes, ticksize=3)
-#candlestick_ohlc(ax, quotes, width=0.6)
-#
-#ax.xaxis_date()
-#ax.autoscale_view()
-#plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
-#
-#plt.show()
-
-
 import os
 import pandas as pd
+import datetime
 
+
+class Twine(object):
+    def __init__(self):
+        # self._df = pd.DataFrame(columns={'high', 'low'})
+        # self._df.loc[pd.to_datetime(datetime.datetime.now())] = {'high':60.2, 'low':32.3}
+        pass
+
+    #是否存在包含关系
+    def isContain(self, pre_line, curkline):
+        #向左包含 n+1包含n
+        if curkline['high'] >= pre_line['high'] and curkline['low'] <= pre_line['low']:
+            return  True
+        #向右包含 n包含n+1
+        elif curkline['high'] <= pre_line['high'] and curkline['low'] >= pre_line['low']:
+            return  True
+        else:
+            return  False
+
+    #判断是上升趋势还是下降趋势,True为上升趋势，False为下降趋势
+    def upOrDown(self, line1, line2):
+        if line2['high'] >= line1['high'] and line2['low'] >= line1['low']:
+            return True
+        else:
+            return False
+
+
+    def contain(self, curkline):
+        if len(self._df) < 1:
+            self._df.loc[curkline['time']] = {'high':curkline['high'],
+                                              'low':curkline['low']}
+            return
+
+        if len(self._df) < 2:
+            if self.isContain(self._df.ix[-1], curkline):
+                pass
+
+
+        if self.isContain(self._df.ix[-1], curkline):
+            if self.upOrDown(self._df.ix[-2], self._df.ix[-1]):
+                self._df.loc[curkline['time']] = {'high': max(self._df.ix[-1]['high'], curkline['high']),\
+                                                  'low': max(self._df.ix[-1]['low'], curkline['low'])}
+            else:
+                self._df.loc[curkline['time']] = {'high': min(self._df.ix[-1]['high'], curkline['high']),\
+                                                  'low': min(self._df.ix[-1]['low'], curkline['low'])}
+            #处理完包含关系后，将前一个删除，只保留最终处理完的结果
+            self._df = self._df.drop(pd.Timestamp(self._df.index.values[-2]))
+
+    def procContain(self, df):
+        for i in xrange(df.shape[0]):
+            pass
+                                 
+
+def addLine(ax, df):
+    for i in xrange(df.shape[0]):
+        itDf = df.ix[i]
+        vline = Line2D(xdata=(i, i), ydata=(itDf['low'], itDf['high']))
+        ax.add_line(vline)
+        ax.autoscale_view()
+
+from matplotlib.lines import Line2D
+fig, ax = plt.subplots(3,1)
 
 hqdatadir = 'D:\TdxW_HuaTai\T0002\export'
 code = '000778'
@@ -58,36 +84,8 @@ df5mKline = pd.read_table(filepath,
                                  index_col='time',
                                  skiprows=2,
                                  skipfooter=1)
-                                 
-
-def addLine(ax, df):
-    for i in range(df.shape[0]):
-        itDf = df.ix[i]
-        vline = Line2D(xdata=(i, i), ydata=(itDf['low'], itDf['high']))
-        ax.add_line(vline)
-
-from matplotlib.lines import Line2D
-fig, ax = plt.subplots()
-
-addLine(ax, df5mKline)
-
-
-#vline = Line2D(xdata=(1.5, 1.5), ydata=(1.5,2.5), linewidth=10,antialiased=True)
-#ax.add_line(vline)
-#vline = Line2D(xdata=(1.7, 1.7), ydata=(2.5,3.5), linewidth=10,antialiased=True)
-#ax.add_line(vline)
-#vline = Line2D(xdata=(1.9, 1.9), ydata=(3.5,5.5), linewidth=10,antialiased=True)
-#ax.add_line(vline)
-
-
-
-# vline = Line2D(xdata=(1.0, 1.0), ydata=(0,0), linewidth=10,antialiased=True)
-# ax.add_line(vline)
-# vline = Line2D(xdata=(2.9, 2.9), ydata=(3.5,5.5), linewidth=1,antialiased=True)
-# ax.add_line(vline)
-
-#ax.autoscale()
-ax.autoscale_view()
+dft = df5mKline[['low','high']]
+addLine(ax[0], dft)
 
 #plt.axhspan(xmin=0, xmax=1.2, facecolor='0.5', alpha=0.5)
 #plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
