@@ -7,8 +7,7 @@ import pandas as pd
 import datetime
 import matplotlib.dates as dt
 from matplotlib.lines import Line2D
-from matplotlib.dates import DateFormatter, WeekdayLocator,\
-    DayLocator, MONDAY
+from matplotlib.dates import *
 
 
 class Twine(object):
@@ -115,7 +114,7 @@ def picture1():
 def addLine2(ax, df, **kwargs):
     for i in xrange(df.shape[0]):
         itDf = df.ix[i]
-        vline = Line2D(xdata=(dt.date2num(itDf.name), dt.date2num(itDf.name)), ydata=(itDf['low'], itDf['high']), linewidth = 2, **kwargs)
+        vline = Line2D(xdata=(dt.date2num(itDf.name), dt.date2num(itDf.name)), ydata=(itDf['low'], itDf['high']), linewidth = 5, **kwargs)
         ax.add_line(vline)
         ax.autoscale_view()
 
@@ -132,18 +131,19 @@ def picture2():
     addLine2(ax[1], tw.getDf(), color = 'r')
 
 
-    mondays = WeekdayLocator(MONDAY)        # major ticks on the mondays
-    alldays = DayLocator()              # minor ticks on the days
-    weekFormatter = DateFormatter('%b %d')  # e.g., Jan 12
-    dayFormatter = DateFormatter('%d')      # e.g., 12
+    #mondays = WeekdayLocator(MONDAY)        # major ticks on the mondays
+    # alldays = MinuteLocator(interval=5)              # minor ticks on the days
+    # weekFormatter = DateFormatter('%b %d')  # e.g., Jan 12
+    # dayFormatter = DateFormatter('%d')      # e.g., 12
+    # minuteFormatter = DateFormatter('%H:%M')
 
+    autodates = AutoDateLocator()
     for _ax in ax:
-        _ax.xaxis.set_major_locator(mondays)
-        _ax.xaxis.set_minor_locator(alldays)
-        _ax.xaxis.set_major_formatter(weekFormatter)
-        _ax.xaxis.set_minor_formatter(dayFormatter)
+        _ax.xaxis.set_major_locator(DayLocator())
+        _ax.xaxis.set_minor_locator(MinuteLocator(interval=30) )
+        _ax.xaxis.set_major_formatter(DateFormatter('%m/%d'))
+        _ax.xaxis.set_minor_formatter(DateFormatter('%H:%M'))
         _ax.xaxis_date()
-        #ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
         _ax.autoscale_view()
 
     plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
