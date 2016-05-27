@@ -86,12 +86,21 @@ df5mKline = pd.read_table(filepath,
 def addLine1(ax, df, **kwargs):
     for i in xrange(df.shape[0]):
         itDf = df.ix[i]
-        vline = Line2D(xdata=(i+0.5, i+0.5), ydata=(itDf['low'], itDf['high']), linewidth = 2, **kwargs)
+        vline = Line2D(xdata=(i+0.5, i+0.5), ydata=(itDf['low'], itDf['high']), linewidth = 5, **kwargs)
         ax.add_line(vline)
-        ax.autoscale_view()
+    ax.grid(True)
+    ax.autoscale_view()
+
+def addLine1_(ax, df, **kwargs):
+    id1,id2 = 3,10
+    itDf1 = df.ix[id1]
+    itDf2 = df.ix[id2]
+    vline = Line2D(xdata=(id1+0.5, id2+0.5), ydata=(itDf1['high'], itDf2['low']),color = 'g')
+    ax.add_line(vline)
+    ax.text(id2+0.5, itDf2['low'], '↓')
 
 def picture1():
-    fig, ax = plt.subplots(3,1)
+    fig, ax = plt.subplots(2,1)
     dft = df5mKline[['high','low']]
     addLine1(ax[0], dft)
 
@@ -99,14 +108,11 @@ def picture1():
     for i in xrange(dft.shape[0]):
         tw.onNewKline(dft.ix[i])
 
-
     addLine1(ax[1], tw.getDf(), color = 'r')
+    addLine1_(ax[1], tw.getDf())
 
-    addLine1(ax[2], dft, color = 'r')
-    addLine1(ax[2], tw.getDf(), color = 'b', linestyle = ':')
-
-
-
+    # addLine1(ax[2], dft, color = 'r')
+    # addLine1(ax[2], tw.getDf(), color = 'b', linestyle = ':')
     #plt.axhspan(xmin=0, xmax=1.2, facecolor='0.5', alpha=0.5)
     #plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.show()
@@ -117,6 +123,8 @@ def addLine2(ax, df, **kwargs):
         vline = Line2D(xdata=(dt.date2num(itDf.name), dt.date2num(itDf.name)), ydata=(itDf['low'], itDf['high']), linewidth = 5, **kwargs)
         ax.add_line(vline)
         ax.autoscale_view()
+
+
 
 def picture2():
     fig, ax = plt.subplots(2,1)
@@ -140,7 +148,7 @@ def picture2():
     autodates = AutoDateLocator()
     for _ax in ax:
         _ax.xaxis.set_major_locator(DayLocator())
-        _ax.xaxis.set_minor_locator(MinuteLocator(interval=30) )
+        _ax.xaxis.set_minor_locator(MinuteLocator(interval=30))
         _ax.xaxis.set_major_formatter(DateFormatter('%m/%d'))
         _ax.xaxis.set_minor_formatter(DateFormatter('%H:%M'))
         _ax.xaxis_date()
@@ -149,7 +157,7 @@ def picture2():
     plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.show()
 
-picture2()
+picture1()
 
 #import matplotlib.pyplot as plt
 #
