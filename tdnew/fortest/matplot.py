@@ -13,7 +13,8 @@ from matplotlib.dates import *
 class Twine(object):
     def __init__(self, isUp):
         self._isUp = isUp
-        self._df = pd.DataFrame(columns={'high', 'low'})
+        #shape 用于区分是顶分型还是底分型
+        self._df = pd.DataFrame(columns={'high', 'low', 'shape'})
         # self._df.loc[pd.to_datetime(datetime.datetime.now())] = {'high':60.2, 'low':32.3}
         pass
 
@@ -40,25 +41,47 @@ class Twine(object):
 
     def onNewKline(self, newkline):
         self.procContain(newkline)
+        self.procShape()
 
+    def procShape(self):
+        pass
+
+    def _procShape(self, line1, line2, line3):
+        if line2['high'] > line1['high'] \
+                and line2['high'] > line3['high'] \
+                and line2['low'] > line1['low'] \
+                and line2['low'] > line3['low']:
+            return 'u'
+        elif line2['high'] < line1['high'] \
+                and line2['high'] < line3['high'] \
+                and line2['low'] < line1['low'] \
+                and line2['low'] < line3['low']:
+            return 'd'
+        else:
+            return  'un'
+        
     def procContain(self, newkline):
         if self._df.shape[0] < 1 or not self.isContain(self._df.ix[-1], newkline):
-            self._df.loc[newkline.name] = {'high': newkline['high'],
-                                           'low': newkline['low']}
+            self._setValue(newkline.name, high= newkline['high'],low = newkline['low'])
         elif self._df.shape[0] < 2:
             self._procContain(self._isUp, newkline)
         else:
             self._procContain(self.isUp(self._df.ix[-2], self._df.ix[-1]), newkline)
 
+    def _setValue(self, loc, **kwargs):
+        if not 'shape' in kwargs:
+            kwargs['shape'] = 'n'
+        self._df.loc[loc] = kwargs
+
     def _procContain(self, isUp, newkline):
         #高点取高值，低点也取高值，简单的说就是“上升取高高”
         if isUp:
-            self._df.loc[newkline.name] = {'high': max(self._df.ix[-1]['high'], newkline['high']),
-                                           'low': max(self._df.ix[-1]['low'], newkline['low'])}
+            self._setValue(newkline.name, high= max(self._df.ix[-1]['high'], newkline['high']),
+                           low = max(self._df.ix[-1]['low'], newkline['low']))
         #高点取低值，低点也取低值，简单的说就是“下降取低低”
         else:
-            self._df.loc[newkline.name] = {'high': min(self._df.ix[-1]['high'], newkline['high']),
-                                           'low': min(self._df.ix[-1]['low'], newkline['low'])}
+            self._setValue(newkline.name, high= min(self._df.ix[-1]['high'], newkline['high']),
+                           low =  min(self._df.ix[-1]['low'], newkline['low']))
         #处理完包含关系后，将前一个删除，只保留最终处理完的结果
         self._df = self._df.drop(pd.Timestamp(self._df.index.values[-2]))
 
@@ -66,8 +89,8 @@ class Twine(object):
 
 
 
-hqdatadir = 'D:\TdxW_HuaTai\T0002\export'
-code = '000738'
+hqdatadir = 'D:\TdxW_HuaTai\T0002\export2'
+code = '399006'
 filepath = os.path.join(hqdatadir, (code + '.txt'))
 # if not os.path.exists(filepath):
 #     logger.critical("filepath %s does not exist", filepath)
@@ -97,7 +120,7 @@ def addLine1_(ax, df, **kwargs):
     itDf2 = df.ix[id2]
     vline = Line2D(xdata=(id1+0.5, id2+0.5), ydata=(itDf1['high'], itDf2['low']),color = 'g')
     ax.add_line(vline)
-    ax.text(id2+0.5, itDf2['low'], '↓')
+    ax.text(id2+0.5, itDf2['low'], '^')
 
 def picture1():
     fig, ax = plt.subplots(2,1)
