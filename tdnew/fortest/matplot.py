@@ -8,6 +8,7 @@ import datetime
 import matplotlib.dates as dt
 from matplotlib.lines import Line2D
 from matplotlib.dates import *
+import math
 
 
 class Twine(object):
@@ -15,14 +16,14 @@ class Twine(object):
         self._isUp = isUp
         #shape 用于区分是顶分型还是底分型
         self._df = pd.DataFrame(columns={'high', 'low', 'shape'})
-        # self._df.loc[pd.to_datetime(datetime.datetime.now())] = {'high':60.2, 'low':32.3}
-        pass
+        self._shapeVariableSet = ['na','u','d']
 
     def getDf(self):
         return self._df
 
     #是否存在包含关系
-    def isContain(self, prekline, curkline):
+    @staticmethod
+    def isContain(prekline, curkline):
         #向左包含 n+1包含n
         if curkline['high'] >= prekline['high']  and curkline['low'] <= prekline['low']:
             return True
@@ -33,20 +34,15 @@ class Twine(object):
             return False
 
     #判断是上升趋势还是下降趋势,True为上升趋势，False为下降趋势
-    def isUp(self, line1, line2):
+    @staticmethod
+    def isUp(line1, line2):
         if line2['high'] >= line1['high'] and line2['low'] >= line1['low']:
             return True
         else:
             return False
 
-    def onNewKline(self, newkline):
-        self.procContain(newkline)
-        self.procShape()
-
-    def procShape(self):
-        pass
-
-    def _procShape(self, line1, line2, line3):
+    @staticmethod
+    def getShape(line1, line2, line3):
         if line2['high'] > line1['high'] \
                 and line2['high'] > line3['high'] \
                 and line2['low'] > line1['low'] \
@@ -58,8 +54,25 @@ class Twine(object):
                 and line2['low'] < line3['low']:
             return 'd'
         else:
-            return  'un'
-        
+            return 'na'
+
+    def onNewKline(self, newkline):
+        self.procContain(newkline)
+        self.procShape()
+
+    def procShape(self):
+        if self._df.shape[0] < 3:
+            return
+        for i in xrange(2, self._df.shape[0]):
+            #性能优化，只做一次推断，不重复推断
+            if self._df.iloc[-i, self._df.columns.get_loc('shape')] in self._shapeVariableSet:
+                break
+
+            self._df.iloc[-i, self._df.columns.get_loc('shape')] = self.getShape(
+                self._df.iloc[-i-1],
+                self._df.iloc[-i],
+                self._df.iloc[-i+1])
+
     def procContain(self, newkline):
         if self._df.shape[0] < 1 or not self.isContain(self._df.ix[-1], newkline):
             self._setValue(newkline.name, high= newkline['high'],low = newkline['low'])
@@ -70,27 +83,27 @@ class Twine(object):
 
     def _setValue(self, loc, **kwargs):
         if not 'shape' in kwargs:
-            kwargs['shape'] = 'n'
-        self._df.loc[loc] = kwargs
+            kwargs['shape'] = 'un'
+        self._df.loc[loc] = {k:kwargs[k] for k in sorted(kwargs.keys())}
 
     def _procContain(self, isUp, newkline):
         #高点取高值，低点也取高值，简单的说就是“上升取高高”
         if isUp:
-            self._setValue(newkline.name, high= max(self._df.ix[-1]['high'], newkline['high']),
+            self._setValue(newkline.name,
+                           high = max(self._df.ix[-1]['high'], newkline['high']),
                            low = max(self._df.ix[-1]['low'], newkline['low']))
         #高点取低值，低点也取低值，简单的说就是“下降取低低”
         else:
-            self._setValue(newkline.name, high= min(self._df.ix[-1]['high'], newkline['high']),
-                           low =  min(self._df.ix[-1]['low'], newkline['low']))
+            self._setValue(newkline.name,
+                           high = min(self._df.ix[-1]['high'], newkline['high']),
+                           low = min(self._df.ix[-1]['low'], newkline['low']))
         #处理完包含关系后，将前一个删除，只保留最终处理完的结果
         self._df = self._df.drop(pd.Timestamp(self._df.index.values[-2]))
 
 
-
-
-
 hqdatadir = 'D:\TdxW_HuaTai\T0002\export2'
-code = '399006'
+code = '000001'
+#code = '399006'
 filepath = os.path.join(hqdatadir, (code + '.txt'))
 # if not os.path.exists(filepath):
 #     logger.critical("filepath %s does not exist", filepath)
@@ -106,11 +119,31 @@ df5mKline = pd.read_table(filepath,
                                  skiprows=2,
                                  skipfooter=1)
 
+
+def resample(timedelta, df):
+    times = int(math.ceil(pd.Timedelta(timedelta) / (df.iloc[1].name - df.iloc[0].name)))
+    newdf = pd.DataFrame(columns=df.columns)
+    for i in xrange(0, df.shape[0], times):
+        end = i + times
+        end = end if end <= df.shape[0] else df.shape[0]
+        newdf.loc[df.ix[end-1].name] = {'high': max(df[i:i+times]['high'].values),
+                                        'low': min(df[i:i+times]['low'].values)}
+    return newdf
+
+
+
 def addLine1(ax, df, **kwargs):
     for i in xrange(df.shape[0]):
         itDf = df.ix[i]
         vline = Line2D(xdata=(i+0.5, i+0.5), ydata=(itDf['low'], itDf['high']), linewidth = 5, **kwargs)
         ax.add_line(vline)
+
+        if 'shape' in itDf:
+            if itDf['shape'] == 'u':
+                ax.text(i+0.5, itDf['high'], 'u', color = 'r')
+            elif itDf['shape'] == 'd':
+                ax.text(i+0.5, itDf['low'], 'd', color = 'g')
+
     ax.grid(True)
     ax.autoscale_view()
 
@@ -125,14 +158,16 @@ def addLine1_(ax, df, **kwargs):
 def picture1():
     fig, ax = plt.subplots(2,1)
     dft = df5mKline[['high','low']]
+    #dft = resample('30min',dft)
     addLine1(ax[0], dft)
 
     tw = Twine(True)
     for i in xrange(dft.shape[0]):
         tw.onNewKline(dft.ix[i])
 
-    addLine1(ax[1], tw.getDf(), color = 'r')
-    addLine1_(ax[1], tw.getDf())
+    addLine1(ax[1], tw.getDf(), color = 'b')
+    #addLine1_(ax[1], tw.getDf())
+    print tw.getDf()
 
     # addLine1(ax[2], dft, color = 'r')
     # addLine1(ax[2], tw.getDf(), color = 'b', linestyle = ':')
@@ -146,8 +181,6 @@ def addLine2(ax, df, **kwargs):
         vline = Line2D(xdata=(dt.date2num(itDf.name), dt.date2num(itDf.name)), ydata=(itDf['low'], itDf['high']), linewidth = 5, **kwargs)
         ax.add_line(vline)
         ax.autoscale_view()
-
-
 
 def picture2():
     fig, ax = plt.subplots(2,1)
@@ -181,6 +214,7 @@ def picture2():
     plt.show()
 
 picture1()
+#%timeit picture1()
 
 #import matplotlib.pyplot as plt
 #
@@ -212,3 +246,6 @@ picture1()
 #plt.ylabel("Price")
 #plt.title("AAPL")
 #candlestick_ohlc(ax, tuples, width=.6, colorup='g', alpha =.4)
+
+#dd[0:5][dd[0:5]['shape'] == 'u']
+#dd[dd['high'] == max(dd['high'].values)]
