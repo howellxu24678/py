@@ -15,11 +15,17 @@ class Twine(object):
     def __init__(self, isUp):
         self._isUp = isUp
         #shape 用于区分是顶分型还是底分型
-        self._df = pd.DataFrame(columns={'high', 'low', 'shape'})
+        self._df = pd.DataFrame(columns=['high', 'low', 'shape'])
+        #loc在df所处的index，shape顶分型还是底分型，value顶点或者底点的值
+        self._pen = pd.DataFrame(columns=['loc', 'shape', 'value'])
         self._shapeVariableSet = ['na','u','d']
+        self._penBeginSearch = 0
 
     def getDf(self):
         return self._df
+
+    def getPen(self):
+        return self._pen
 
     #是否存在包含关系
     @staticmethod
@@ -59,6 +65,67 @@ class Twine(object):
     def onNewKline(self, newkline):
         self.procContain(newkline)
         self.procShape()
+        self.procPen()
+
+    #获取subDf中形态为顶分型的最高点
+    def getUpHighPoint(self, subDf):
+        return subDf[(subDf['shape'] == 'u') & (subDf['high'] == max(subDf['high'].values))]
+
+    #获取subDf中形态为底分型的最低点
+    def getDownLowPoint(self, subDf):
+        return subDf[(subDf['shape'] == 'd') & (subDf['low'] == min(subDf['low'].values))]
+
+    def procPen(self):
+        #首次开始
+        if self._pen.shape[0] < 2:
+            subDf = self._df[0: self._df.shape[0]]
+            dh = self.getUpHighPoint(subDf)
+            if dh.empty:
+                return
+            dl = self.getDownLowPoint(subDf)
+            if dl.empty:
+                return
+            dhLoc = self._df.index.get_loc(dh.index[0])
+            dlLoc = self._df.index.get_loc(dl.index[0])
+
+            if abs(dhLoc - dlLoc) >= 4:
+                if dhLoc > dlLoc:
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl['shape'][0], 'value': dl['low'][0]}
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh['shape'][0], 'value': dh['high'][0]}
+                else:
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh['shape'][0], 'value': dh['high'][0]}
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl['shape'][0], 'value': dl['low'][0]}
+        else:
+            #前一趋势是向上时
+            if self._pen.iloc[-1]['shape'] == 'u':
+                dh = self.getUpHighPoint(self._df[int(self._pen.iloc[-2]['loc']): self._df.shape[0]])
+                if dh.empty:
+                    return
+                dhLoc = self._df.index.get_loc(dh.index[0])
+                if dhLoc > self._pen.iloc[-1]['loc']:
+                    self._pen.iloc[-1, self._pen.columns.get_loc('loc')] = dhLoc
+                    self._pen.iloc[-1, self._pen.columns.get_loc('value')] = dh['high'][0]
+                dl = self.getDownLowPoint(self._df[int(dhLoc): self._df.shape[0]])
+                if dl.empty:
+                    return
+                dlLoc = self._df.index.get_loc(dl.index[0])
+                if abs(dlLoc - self._pen.iloc[-1]['loc']) >= 4:
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl['shape'][0], 'value': dl['low'][0]}
+            #前一趋势是向下时
+            else:
+                dl = self.getDownLowPoint(self._df[int(self._pen.iloc[-2]['loc']): self._df.shape[0]])
+                if dl.empty:
+                    return
+                dlLoc = self._df.index.get_loc(dl.index[0])
+                if dlLoc > self._pen.iloc[-1]['loc']:
+                    self._pen.iloc[-1, self._pen.columns.get_loc('loc')] = dlLoc
+                    self._pen.iloc[-1, self._pen.columns.get_loc('value')] = dl['low'][0]
+                dh = self.getUpHighPoint(self._df[int(dlLoc): self._df.shape[0]])
+                if dh.empty:
+                    return
+                dhLoc = self._df.index.get_loc(dh.index[0])
+                if abs(dhLoc - self._pen.iloc[-1]['loc']) >= 4:
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh['shape'][0], 'value': dh['high'][0]}
 
     def procShape(self):
         if self._df.shape[0] < 3:
@@ -102,7 +169,7 @@ class Twine(object):
 
 
 hqdatadir = 'D:\TdxW_HuaTai\T0002\export2'
-code = '000001'
+code = '999999'
 #code = '399006'
 filepath = os.path.join(hqdatadir, (code + '.txt'))
 # if not os.path.exists(filepath):
@@ -147,6 +214,16 @@ def addLine1(ax, df, **kwargs):
     ax.grid(True)
     ax.autoscale_view()
 
+def addPen(ax, df, pen, **kwargs):
+    #df.iloc[int(pen.iloc[0]['loc'])]['high']
+    for i in xrange(pen.shape[0] - 1):
+        itPen1 = pen.ix[i]
+        itPen2 = pen.ix[i+1]
+        vline = Line2D(xdata=(itPen1['loc'], itPen2['loc']), ydata=(itPen1['value'], itPen2['value']), **kwargs)
+        ax.add_line(vline)
+    ax.autoscale_view()
+
+
 def addLine1_(ax, df, **kwargs):
     id1,id2 = 3,10
     itDf1 = df.ix[id1]
@@ -159,13 +236,15 @@ def picture1():
     fig, ax = plt.subplots(2,1)
     dft = df5mKline[['high','low']]
     #dft = resample('30min',dft)
-    addLine1(ax[0], dft)
+
 
     tw = Twine(True)
     for i in xrange(dft.shape[0]):
         tw.onNewKline(dft.ix[i])
 
+    addLine1(ax[0], dft, color = 'b')
     addLine1(ax[1], tw.getDf(), color = 'b')
+    addPen(ax[1], tw.getDf(), tw.getPen(), color = 'r')
     #addLine1_(ax[1], tw.getDf())
     print tw.getDf()
 
@@ -249,3 +328,5 @@ picture1()
 
 #dd[0:5][dd[0:5]['shape'] == 'u']
 #dd[dd['high'] == max(dd['high'].values)]
+# d1 = dd[0:5]
+# dd['high'] == max(dd['high'].values)]
