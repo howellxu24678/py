@@ -216,11 +216,16 @@ def addLine1(ax, df, **kwargs):
 
 def addPen(ax, df, pen, **kwargs):
     #df.iloc[int(pen.iloc[0]['loc'])]['high']
+    if pen.shape[0] < 2:
+        return
     for i in xrange(pen.shape[0] - 1):
         itPen1 = pen.ix[i]
         itPen2 = pen.ix[i+1]
         vline = Line2D(xdata=(itPen1['loc'], itPen2['loc']), ydata=(itPen1['value'], itPen2['value']), **kwargs)
         ax.add_line(vline)
+        ax.text(itPen1['loc'], itPen1['value'], i,color = 'cyan', fontsize='14')
+    indexLast = pen.shape[0] - 1
+    ax.text(pen.ix[indexLast]['loc'], pen.ix[indexLast]['value'], indexLast, color = 'cyan', fontsize='14')
     ax.autoscale_view()
 
 
@@ -253,6 +258,17 @@ def picture1():
     #plt.axhspan(xmin=0, xmax=1.2, facecolor='0.5', alpha=0.5)
     #plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.show()
+    
+def picture3():    
+    dft = df5mKline[['high','low']]
+    #dft = resample('30min',dft)
+    tw = Twine(True)
+    for i in xrange(dft.shape[0]):
+        fig, ax = plt.subplots(1,1)
+        tw.onNewKline(dft.ix[i])
+        addLine1(ax, tw.getDf(), color = 'b')
+        addPen(ax, tw.getDf(), tw.getPen(), color = 'r')
+        plt.show()
 
 def addLine2(ax, df, **kwargs):
     for i in xrange(df.shape[0]):
@@ -292,7 +308,7 @@ def picture2():
     plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.show()
 
-picture1()
+picture3()
 #%timeit picture1()
 
 #import matplotlib.pyplot as plt
@@ -326,6 +342,7 @@ picture1()
 #plt.title("AAPL")
 #candlestick_ohlc(ax, tuples, width=.6, colorup='g', alpha =.4)
 
+#%matplotlib inline
 #dd[0:5][dd[0:5]['shape'] == 'u']
 #dd[dd['high'] == max(dd['high'].values)]
 # d1 = dd[0:5]
