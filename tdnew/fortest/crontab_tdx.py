@@ -6,32 +6,102 @@ import time
 import pywinauto
 
 
-tdxExePath = "C:\TdxW_HuaTai\TdxW.exe"
+sleepItv = 2
+tdxExePath = "D:\TdxW_HuaTai\TdxW.exe"
+exportFolder = "export2"
+
 app = pywinauto.application.Application()
 app.start(tdxExePath)
-time.sleep(3)
+time.sleep(sleepItv)
+
 
 app.window_(title=u'华泰证券(通达信版)V6.38').SetFocus()
 hwnd_top = pywinauto.findwindows.find_window(title=u'华泰证券(通达信版)V6.38')
 hwnd_AfxWnd42 = pywinauto.findwindows.find_windows(top_level_only=False, class_name='AfxWnd42', parent=hwnd_top)
 market = app.window_(handle=hwnd_AfxWnd42[-3])
 market.ClickInput()
-
-td = pywinauto.findwindows.find_window(title = u'华泰证券(通达信版)V6.38 - [行情表-td]')
-td_AfxControlBar = pywinauto.findwindows.find_windows(top_level_only=False, class_name='AfxControlBar42', parent=td)
-app.window_(title = u'华泰证券(通达信版)V6.38 - [行情表-td]').SetFocus()
-tdHandle = app.window_(title = u'华泰证券(通达信版)V6.38 - [行情表-td]').window_(handle=td_AfxControlBar[0])
-tdRect = tdHandle.Rectangle()
-tdHandle.ClickInput(coords=(tdRect.left + 348, (tdRect.top + tdRect.bottom) / 2), absolute = True)
-
-time.sleep(2)
-ph = app.window_(title = u'盘后数据下载')
-phRect = ph.Rectangle()
-phtab = ph.window_(title='Tab2', class_name='SysTabControl32')
-phtab.ClickInput(coords=(phRect.left + 110, phRect.top + 42), absolute = True)
+time.sleep(sleepItv)
 
 
+tdxHq = pywinauto.findwindows.find_window(class_name = 'TdxW_MainFrame_Class')
+td_AfxControlBar = pywinauto.findwindows.find_windows(top_level_only=False, class_name='AfxControlBar42', parent=tdxHq)
+mainFrame = app.window_(class_name = 'TdxW_MainFrame_Class')
+mainFrame.SetFocus()
+tdHandle = mainFrame.window_(handle=td_AfxControlBar[0])
+tdHandle.ClickInput(coords=(348, 40))
 
+time.sleep(sleepItv)
+phDlg = app.window_(title = u'盘后数据下载')
+#phRect = phDlg.Rectangle()
+phtab = phDlg.window_(title='Tab2', class_name='SysTabControl32')
+phtab.ClickInput(coords=(100, 15))
+time.sleep(sleepItv)
+phtab.ClickInput(coords=(18, 66))
+time.sleep(sleepItv)
+phtab.ClickInput(coords=(18, 130))
+tdxW = app.window_(class_name='#32770', title = 'TdxW')
+tdxW.SetFocus()
+tdxW[u'确定'].Click()
+time.sleep(sleepItv)
+phtab.ClickInput(coords=(323, 231))
+
+xzDlg = app.window_(title = u'选择品种', class_name='#32770')
+xzDlg.SetFocus()
+xzDlg.ClickInput(coords=(459, 15))
+time.sleep(sleepItv)
+bk = xzDlg.window_(title = 'CFQS', class_name='SysListView32')
+#选择自定义板块的td
+bk.ClickInput(coords=(12, 43))
+time.sleep(sleepItv)
+xzDlg[u'全选'].Click()
+time.sleep(sleepItv)
+xzDlg[u'确定'].Click()
+time.sleep(sleepItv)
+
+phDlg[u'开始下载'].Click()
+time.sleep(20)
+phDlg[u'关闭'].Click()
+
+mainFrame.SetFocus()
+mainFrame.TypeKeys('34{ENTER}', pause=1)
+time.sleep(sleepItv)
+
+sjdcDlg = app.window_(title = u'数据导出', class_name='#32770')
+sjdcDlg[u'高级导出'].Click()
+time.sleep(sleepItv)
+
+gjdcDlg = app.window_(title = u'高级导出', class_name='#32770')
+gjdcDlg[u'5分钟线'].Click()
+time.sleep(sleepItv)
+gjdcDlg[u'添加品种'].Click()
+time.sleep(sleepItv)
+xzDlg.ClickInput(coords=(459, 15))
+time.sleep(sleepItv)
+#选择自定义板块的td
+bk.ClickInput(coords=(12, 43))
+time.sleep(sleepItv)
+xzDlg[u'全选'].Click()
+time.sleep(sleepItv)
+xzDlg[u'确定'].Click()
+time.sleep(sleepItv)
+gjdcDlg[u'开始导出'].Click()
+time.sleep(10)
+tdxW[u'确定'].Click()
+time.sleep(sleepItv)
+gjdcDlg[u'关闭'].Click()
+time.sleep(sleepItv)
+
+mainFrame.SetFocus()
+mainFrame.CloseAltF4()
+time.sleep(sleepItv)
+
+tcqrDlg = app.window_(title = u'退出确认', class_name='#32770')
+tcqrDlg[u'退出'].Click()
+time.sleep(sleepItv)
+
+tsDlg = app.window_(title = u'提示', class_name='#32770')
+tsDlg[u'取消'].Click()
+time.sleep(sleepItv)
 #app.window_(title=u'华泰证券(通达信版)V6.38').window_()
 # app.connect(class_name='TdxW_MainFrame_Class')
 # app.connect(wantedText=u'华泰证券(通达信版)V6.38')
@@ -57,3 +127,17 @@ phtab.ClickInput(coords=(phRect.left + 110, phRect.top + 42), absolute = True)
 # time.sleep(3)
 # app.window_(title_re = u'关于“记事本”').SetFocus()
 # app.window_(title_re = u'关于“记事本”').window_(title_re = u'确定').Click()
+#
+# import re
+# phanzi=re.compile(u'华泰证券(通达信版)V6.38 - [[\w\s\u4e00-\u9fa5]]')
+# phanzi=re.compile(u'通达信版\[\w\s\u4e00-\u9fa5\]')
+# t = u'华泰证券(通达信版)V6.38 - [行情表-tdxHq]'
+# phanzi=re.compile(u'通达信版\[[\u4e00-\u9fa5]*\]')
+# phanzi=re.compile(u'华泰证券(通达信版)V6.38 - \[[\u4e00-\u9fa5]+\-[\u4e00-\u9fa5]*\w*\]')
+# t = u'通达信版[行情表-行情td]'
+#
+# # phanzi=re.compile(u'通达信版\[[\u4e00-\u9fa5]+\]')
+# # t = u'通达信版[行情表]'
+# result = phanzi.findall(t)
+# for r in result:
+#     print r.encode('utf8')
