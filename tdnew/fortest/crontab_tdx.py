@@ -7,22 +7,30 @@ import pywinauto
 
 
 sleepItv = 1
+timeOutItv = 30
+retryItv = 1
 tdxExePath = "D:\TdxW_HuaTai\TdxW.exe"
 exportFolder = "export2"
+
+
+def WaitForWindow(app_, **kwargs):
+    return app_.window_(**kwargs).Wait('exists enabled visible ready', timeout=timeOutItv, retry_interval=retryItv)
 
 app = pywinauto.application.Application()
 app.start(tdxExePath)
 #time.sleep(sleepItv)
 
-app.window_(title=u'华泰证券(通达信版)V6.38').Wait('exists', timeout=30, retry_interval=1)
+WaitForWindow(app, title=u'华泰证券(通达信版)V6.38')
+#app.window_(title=u'华泰证券(通达信版)V6.38').Wait('exists', timeout=timeOutItv, retry_interval=retryItv)
 #app.window_(title=u'华泰证券(通达信版)V6.38').SetFocus()
 hwnd_top = pywinauto.findwindows.find_window(title=u'华泰证券(通达信版)V6.38')
 hwnd_AfxWnd42 = pywinauto.findwindows.find_windows(top_level_only=False, class_name='AfxWnd42', parent=hwnd_top)
 market = app.window_(handle=hwnd_AfxWnd42[-3])
 market.ClickInput()
-time.sleep(10)
+#time.sleep(10)
 
 
+WaitForWindow(app, class_name = 'TdxW_MainFrame_Class')
 tdxHq = pywinauto.findwindows.find_window(class_name = 'TdxW_MainFrame_Class')
 td_AfxControlBar = pywinauto.findwindows.find_windows(top_level_only=False, class_name='AfxControlBar42', parent=tdxHq)
 mainFrame = app.window_(class_name = 'TdxW_MainFrame_Class')
@@ -30,7 +38,8 @@ mainFrame.SetFocus()
 tdHandle = mainFrame.window_(handle=td_AfxControlBar[0])
 tdHandle.ClickInput(coords=(348, 40))
 
-time.sleep(sleepItv)
+#time.sleep(sleepItv)
+WaitForWindow(app, title = u'盘后数据下载')
 phDlg = app.window_(title = u'盘后数据下载')
 #phRect = phDlg.Rectangle()
 phtab = phDlg.window_(title='Tab2', class_name='SysTabControl32')
@@ -39,16 +48,19 @@ time.sleep(sleepItv)
 phtab.ClickInput(coords=(18, 66))
 time.sleep(sleepItv)
 phtab.ClickInput(coords=(18, 130))
+WaitForWindow(app, class_name='#32770', title = 'TdxW')
 tdxW = app.window_(class_name='#32770', title = 'TdxW')
 tdxW.SetFocus()
 tdxW[u'确定'].Click()
 time.sleep(sleepItv)
 phtab.ClickInput(coords=(323, 231))
 
+WaitForWindow(app, title = u'选择品种', class_name='#32770')
 xzDlg = app.window_(title = u'选择品种', class_name='#32770')
 xzDlg.SetFocus()
 xzDlg.ClickInput(coords=(459, 15))
 time.sleep(sleepItv)
+#WaitForWindow(app, title = 'CFQS', class_name='SysListView32')
 bk = xzDlg.window_(title = 'CFQS', class_name='SysListView32')
 #选择自定义板块的td
 bk.ClickInput(coords=(12, 43))
@@ -66,10 +78,12 @@ mainFrame.SetFocus()
 mainFrame.TypeKeys('34{ENTER}', pause=1)
 time.sleep(sleepItv)
 
+WaitForWindow(app, title = u'数据导出', class_name='#32770')
 sjdcDlg = app.window_(title = u'数据导出', class_name='#32770')
 sjdcDlg[u'高级导出'].Click()
 time.sleep(sleepItv)
 
+WaitForWindow(app, title = u'高级导出', class_name='#32770')
 gjdcDlg = app.window_(title = u'高级导出', class_name='#32770')
 gjdcDlg[u'5分钟线'].Click()
 time.sleep(sleepItv)
