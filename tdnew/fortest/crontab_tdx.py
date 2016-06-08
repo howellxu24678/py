@@ -6,21 +6,21 @@ import time
 import pywinauto
 
 
-sleepItv = 2
+sleepItv = 1
 tdxExePath = "D:\TdxW_HuaTai\TdxW.exe"
 exportFolder = "export2"
 
 app = pywinauto.application.Application()
 app.start(tdxExePath)
-time.sleep(sleepItv)
+#time.sleep(sleepItv)
 
-
-app.window_(title=u'华泰证券(通达信版)V6.38').SetFocus()
+app.window_(title=u'华泰证券(通达信版)V6.38').Wait('exists', timeout=30, retry_interval=1)
+#app.window_(title=u'华泰证券(通达信版)V6.38').SetFocus()
 hwnd_top = pywinauto.findwindows.find_window(title=u'华泰证券(通达信版)V6.38')
 hwnd_AfxWnd42 = pywinauto.findwindows.find_windows(top_level_only=False, class_name='AfxWnd42', parent=hwnd_top)
 market = app.window_(handle=hwnd_AfxWnd42[-3])
 market.ClickInput()
-time.sleep(sleepItv)
+time.sleep(10)
 
 
 tdxHq = pywinauto.findwindows.find_window(class_name = 'TdxW_MainFrame_Class')
@@ -89,19 +89,65 @@ time.sleep(10)
 tdxW[u'确定'].Click()
 time.sleep(sleepItv)
 gjdcDlg[u'关闭'].Click()
+time.sleep(3)
+
+mainFrame.SetFocus()
+mainFrame.CloseAltF4()
 time.sleep(sleepItv)
 
 mainFrame.SetFocus()
 mainFrame.CloseAltF4()
 time.sleep(sleepItv)
 
-tcqrDlg = app.window_(title = u'退出确认', class_name='#32770')
-tcqrDlg[u'退出'].Click()
-time.sleep(sleepItv)
+while(True):
+    try:
+        popup_hwnd = mainFrame.PopupWindow()
+        if popup_hwnd:
+            popup_window = app.window_(handle=popup_hwnd)
+            popup_window.SetFocus()
+            ctrlsValues = popup_window._ctrl_identifiers()
+            for it in ctrlsValues.itervalues():
+                if it.count(u'退出') > 0:
+                    popup_window[u'退出'].Click()
+                    time.sleep(sleepItv)
+                    break
+                elif it.count(u'取消') > 0:
+                    popup_window[u'取消'].Click()
+                    time.sleep(sleepItv)
+                    break
+        else:
+            break
+        time.sleep(3)
+    except BaseException,e:
+        print(e)
+        break
 
-tsDlg = app.window_(title = u'提示', class_name='#32770')
-tsDlg[u'取消'].Click()
-time.sleep(sleepItv)
+# if popup_hwnd:
+#     popup_window = app.window_(handle=popup_hwnd)
+#     popup_window.SetFocus()
+#     if popup_window[u'退出'] is not None:
+#         popup_window[u'退出'].Click()
+#     elif popup_window
+#     popup_window.CloseAltF4()
+    #popup_window.Button.Click()
+
+
+# mainFrame.SetFocus()
+# mainFrame.CloseAltF4()
+# time.sleep(3)
+#
+# mainFrame.SetFocus()
+# mainFrame.CloseAltF4()
+# time.sleep(3)
+#
+# tcqrDlg = app.window_(title = u'退出确认', class_name='#32770')
+# tcqrDlg[u'退出'].Click()
+# time.sleep(sleepItv)
+#
+# tsDlg = app.window_(title = u'提示', class_name='#32770')
+# tsDlg[u'取消'].Click()
+# time.sleep(sleepItv)
+
 #app.window_(title=u'华泰证券(通达信版)V6.38').window_()
 # app.connect(class_name='TdxW_MainFrame_Class')
 # app.connect(wantedText=u'华泰证券(通达信版)V6.38')
