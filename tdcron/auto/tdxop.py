@@ -105,6 +105,8 @@ class TdxOp(object):
             gjdcDlg = self._app.window_(title = u'高级导出', class_name = '#32770')
             gjdcDlg[u'5分钟线'].Click()
             time.sleep(self._sleepItv)
+            gjdcDlg.Edit1.SetEditText(self._hqdatadir)
+            time.sleep(self._sleepItv)
             gjdcDlg[u'添加品种'].Click()
             time.sleep(self._sleepItv)
             xzDlg.ClickInput(coords = (459, 15))
@@ -147,8 +149,9 @@ class TdxOp(object):
 
     def Close(self):
         try:
-            self._mainFrame.SetFocus()
-            self._mainFrame.Close()
+            if self._mainFrame.Exists():
+                self._mainFrame.SetFocus()
+                self._mainFrame.Close()
         except BaseException,e:
             logger.exception(e)
             raise e

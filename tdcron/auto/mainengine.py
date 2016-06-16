@@ -184,6 +184,7 @@ class Monitor(BaseEngine):
 
 from quote import *
 from strategy import *
+from tdxop import *
 class Business(BaseEngine):
     def __init__(self, cf):
         try:
@@ -193,10 +194,11 @@ class Business(BaseEngine):
             logger.exception(e)
             raise e
 
-
     def start(self):
         try:
             super(Business, self).start()
+            self._tdxOp = TdxOp(self._cf)
+            self._tdxOp.LoadHistoryData()
 
             self._stglist = []
             self._codeset = set()
@@ -223,6 +225,8 @@ class Business(BaseEngine):
 
                 if self._cf.getboolean("tdx", "enable"):
                     logger.info("create trader:tdx")
+                    self._tdxOp.EnterTraderDlg()
+
                     tdx = TdxWinTrade(self._cf, self._eventEngine)
                     tdx.initAsTrader()
                     self._traders_handle.append(tdx)
@@ -230,6 +234,8 @@ class Business(BaseEngine):
                     for code in codelist_tdx:
                         self._stglist.append(Stg_Autotrader(self._cf, code, "tdx", self._eventEngine))
                     self._codeset_autotrade = self._codeset_autotrade.union(set(codelist_tdx))
+                else:
+                    self._tdxOp.Close()
 
                 self._codeset = self._codeset.union(self._codeset_autotrade)
 
@@ -244,6 +250,8 @@ class Business(BaseEngine):
     def stop(self):
         try:
             super(Business, self).stop()
+            self._tdxOp.Close()
+
         except BaseException,e:
             logger.exception(e)
             raise e

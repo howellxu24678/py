@@ -30,6 +30,7 @@ def start():
         cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
 
         me = Business(cf)
+        me.start()
 
         sys.exit(app.exec_())
     except BaseException,e:
