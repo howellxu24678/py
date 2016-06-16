@@ -14,13 +14,14 @@ logger = logging.getLogger("run")
 class BaseEngine(object):
     def __init__(self, cf):
         self._eventEngine = EventEngine(cf.getint("main", "timer"))
-
-
         self._mail = SendMail(cf, self._eventEngine)
-
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
+
+    def start(self):
         self._eventEngine.start()
 
+    def stop(self):
+        self._eventEngine.stop()
 
     def onTimer(self, event):
         pass
@@ -31,8 +32,6 @@ class Monitor(BaseEngine):
         try:
             super(Monitor, self).__init__(cf)
             self._trade = Ma(cf, self._eventEngine)
-            self._trade.logonEa()
-            time.sleep(5)
 
             self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
             self._ip = cf.get("ma", "ip")
@@ -48,6 +47,24 @@ class Monitor(BaseEngine):
 
             self._funidCosOnlyList = cf.get("monitor", "cos_only").strip().split(",")
             self._funidCosOrCounterList = cf.get("monitor", "cos_or_counter").strip().split(",")
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
+    def start(self):
+        try:
+            super(Monitor, self).start()
+            self._trade.logonEa()
+            #需要等处理登录应答后才处理定时消息
+            time.sleep(5)
+
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
+    def stop(self):
+        try:
+            super(Monitor, self).stop()
         except BaseException,e:
             logger.exception(e)
             raise e
@@ -132,6 +149,8 @@ class Monitor(BaseEngine):
         return False
 
     def onTimer(self, event):
+        super(Monitor, self).onTimer()
+
         if not self.checkisworkingtime():
             logger.debug("now is not working time")
             return
@@ -144,15 +163,6 @@ class Monitor(BaseEngine):
         for fundid in self._todolist:
             logger.info("onTimer fundid:%s", fundid)
             self._trade.monitorQuery(fundid)
-
-        # #for test
-        # event = Event(type_=EVENT_FIRST_TABLE_ERROR)
-        # event.dict_['funid'] = '10303001'
-        # event.dict_['name'] = funNameDict['10388301']
-        # event.dict_['msgcode'] = '123'
-        # event.dict_['msglevel'] = '3'
-        # event.dict_['msgtext'] = u"查询股份异常"
-        # self._eventEngine.put(event)
 
     def onFirstTableError(self, event_):
         event = Event(type_=EVENT_SENDMAIL)
@@ -179,71 +189,61 @@ class Business(BaseEngine):
         try:
             super(Business, self).__init__(cf)
 
-            self._stglist = []
-            self._codeset = set()
-            if(cf.getboolean("signal", "enable")):
-                codelist_sig = cf.get("signal", "codelist").split(',')
-                self._codeset = self._codeset.union(set(codelist_sig))
-                for code in codelist_sig:
-                    self._stglist.append(Stg_Signal(cf, code, self._eventEngine))
-
-            if(cf.getboolean("autotrader", "enable")):
-                self._traders_handle = []
-                self._codeset_autotrade = set()
-
-                if cf.getboolean("ma", "enable"):
-                    logger.info("create trader:ma")
-                    ma = Ma(cf, self._eventEngine)
-                    ma.initAsTrader()
-                    ma.logonEa()
-                    self._traders_handle.append(ma)
-                    codelist_ma = cf.get("ma", "codelist").strip().split(',')
-                    for code in codelist_ma:
-                        self._stglist.append(Stg_Autotrader(cf, code, "ma", self._eventEngine))
-                    self._codeset_autotrade = self._codeset_autotrade.union(set(codelist_ma))
-
-                if cf.getboolean("tdx", "enable"):
-                    logger.info("create trader:tdx")
-                    tdx = TdxWinTrade(cf, self._eventEngine)
-                    tdx.initAsTrader()
-                    self._traders_handle.append(tdx)
-                    codelist_tdx = cf.get("tdx", "codelist").strip().split(',')
-                    for code in codelist_tdx:
-                        self._stglist.append(Stg_Autotrader(cf, code, "tdx", self._eventEngine))
-                    self._codeset_autotrade = self._codeset_autotrade.union(set(codelist_tdx))
-
-                self._codeset = self._codeset.union(self._codeset_autotrade)
-
-            #一次批量获取代码的最新行情
-            self._realtimequote = RealTimeQuote(cf, list(self._codeset), self._eventEngine)
-            #self._realtimequote.start()
         except BaseException,e:
             logger.exception(e)
             raise e
 
 
-    # def onTimer(self, event):
-    #     event = Event(type_= EVENT_TRADE_REMARKS + "ma")
-    #     event.dict_['direction'] = "buy"
-    #     event.dict_['code'] = "002515"
-    #     event.dict_['number'] = "100"
-    #     self._eventEngine.put(event)
-    #
-    #     event = Event(type_= EVENT_TRADE_REMARKS + "tdx")
-    #     event.dict_['direction'] = "buy"
-    #     event.dict_['code'] = "000001"
-    #     event.dict_['number'] = "100"
-    #     self._eventEngine.put(event)
+    def start(self):
+        try:
+            super(Business, self).start()
 
-    #     event = Event(type_= EVENT_TRADE)
-    #     event.dict_['direction'] = "buy"
-    #     event.dict_['code'] = "000001"
-    #     event.dict_['number'] = "100"
-    #     self._eventEngine.put(event)
-    #
-    #     event = Event(type_= EVENT_TRADE)
-    #     event.dict_['direction'] = "sell"
-    #     event.dict_['code'] = "002515"
-    #     event.dict_['number'] = "100"
-    #     self._eventEngine.put(event)
+            self._stglist = []
+            self._codeset = set()
+            if(self._cf.getboolean("signal", "enable")):
+                codelist_sig = self._cf.get("signal", "codelist").split(',')
+                self._codeset = self._codeset.union(set(codelist_sig))
+                for code in codelist_sig:
+                    self._stglist.append(Stg_Signal(self._cf, code, self._eventEngine))
 
+            if(self._cf.getboolean("autotrader", "enable")):
+                self._traders_handle = []
+                self._codeset_autotrade = set()
+
+                if self._cf.getboolean("ma", "enable"):
+                    logger.info("create trader:ma")
+                    ma = Ma(self._cf, self._eventEngine)
+                    ma.initAsTrader()
+                    ma.logonEa()
+                    self._traders_handle.append(ma)
+                    codelist_ma = self._cf.get("ma", "codelist").strip().split(',')
+                    for code in codelist_ma:
+                        self._stglist.append(Stg_Autotrader(self._cf, code, "ma", self._eventEngine))
+                    self._codeset_autotrade = self._codeset_autotrade.union(set(codelist_ma))
+
+                if self._cf.getboolean("tdx", "enable"):
+                    logger.info("create trader:tdx")
+                    tdx = TdxWinTrade(self._cf, self._eventEngine)
+                    tdx.initAsTrader()
+                    self._traders_handle.append(tdx)
+                    codelist_tdx = self._cf.get("tdx", "codelist").strip().split(',')
+                    for code in codelist_tdx:
+                        self._stglist.append(Stg_Autotrader(self._cf, code, "tdx", self._eventEngine))
+                    self._codeset_autotrade = self._codeset_autotrade.union(set(codelist_tdx))
+
+                self._codeset = self._codeset.union(self._codeset_autotrade)
+
+            #一次批量获取代码的最新行情
+            self._realtimequote = RealTimeQuote(self._cf, list(self._codeset), self._eventEngine)
+            self._realtimequote.start()
+
+        except BaseException,e:
+            logger.exception(e)
+            raise e
+
+    def stop(self):
+        try:
+            super(Business, self).stop()
+        except BaseException,e:
+            logger.exception(e)
+            raise e

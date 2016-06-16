@@ -157,15 +157,7 @@ class Stg_Autotrader(Strategy):
     def IsNeedToSellAtOpen(self):
         if IsLastTradingDay(self._lastBuyPoint.date()) and self._latestStatus == 'sell':
             return True
-        return False 
-             
-        
-        
-    # def GenToAddrList(self, cf):
-    #     self._to_addr_list = []
-    #     #需要将交易摘要发送给的接收者邮箱
-    #     for toaddr in cf.get("autotrader", "reveiver").split(','):
-    #         self._to_addr_list.append(toaddr)
+        return False
             
     #往前回溯获取上一个有效信号
     def LookBackToGetSignal(self):
@@ -232,11 +224,9 @@ class Stg_Autotrader(Strategy):
                 else:
                     msg = "failed to retry %s:%s %s with number:%s"%(self._latestStatus, self._code, self._name, self._stock_number)
                     logger.warn(msg)
-                    #self._sendmail.send(msg, self._to_addr_list)
         except BaseException,e:
                 msg = "occur exception when %s:%s %s with number:%s"%(self._latestStatus, self._code, self._name, self._stock_number)
                 logger.warn(msg)
-                #self._sendmail.send(msg, self._to_addr_list)
 
     def sendOrder(self, direction):
         event = Event(type_= EVENT_TRADE_REMARKS + self._remarks)

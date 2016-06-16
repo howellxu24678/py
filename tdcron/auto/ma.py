@@ -217,6 +217,7 @@ class Ma(object):
             self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict['USE_SCOPE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['ENCRYPT_KEY'])
             self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict['AUTH_TYPE'])
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict["CUACCT_TYPE"])
 
             szAuthData = create_string_buffer(256+1)
             self._ma.maCli_ComEncrypt(hHandle, szAuthData, len(szAuthData), self._pwd, self._acc)
@@ -467,6 +468,8 @@ class Ma(object):
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict["CUACCT_TYPE"])
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict["TRD_CODE_CLS"])
             stkex,stkbd, trdacct = self.getStkExBdTrdAcc(code)
             self._ma.maCli_SetValueS(hHandle, stkex, fixDict["STKEX"])
             self._ma.maCli_SetValueS(hHandle, stkbd, fixDict['STKBD'])
@@ -518,6 +521,8 @@ class Ma(object):
             #测试添加
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict["CUACCT_TYPE"])
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict["TRD_CODE_CLS"])
             stkex,stkbd, trdacct = self.getStkExBdTrdAcc(code)
             self._ma.maCli_SetValueS(hHandle, stkex, fixDict["STKEX"])
             self._ma.maCli_SetValueS(hHandle, stkbd, fixDict['STKBD'])

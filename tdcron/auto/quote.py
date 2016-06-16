@@ -7,7 +7,7 @@ Created on Mon Aug 17 17:11:33 2015
 
 import os
 
-from apscheduler.schedulers.background import BackgroundScheduler
+#from apscheduler.schedulers.background import BackgroundScheduler
 import talib as ta
 import pandas as pd
 
@@ -23,34 +23,43 @@ class RealTimeQuote(object):
         self._codelist = codelist
         logger.info("codelist:%s", self._codelist)
         self._eventEngine = eventEngine_
+
+        self._localEventEngine = EventEngine(cf.getint("strategy", "hqdataTimer"))
+        self._localEventEngine.register(EVENT_TIMER, self.TimerCall)
+
         #self._eventEngine.register(EVENT_TIMER, self.TimerCall)
-        self._sched  = BackgroundScheduler()
+        #self._sched  = BackgroundScheduler()
 
     def start(self):
-        self._sched.add_job(self.TimerCall, 'interval',  seconds=3)
-        self._sched.start()
+        # self._sched.add_job(self.TimerCall, 'interval',  seconds=3)
+        # self._sched.start()
+        self._localEventEngine.start()
         logger.info('RealTimeQuote start')
 
     def stop(self):
         logger.info('RealTimeQuote stop')
-        self._sched.shutdown()
+        # self._sched.shutdown()
+        self._localEventEngine.stop()
 
-    def TimerCall(self):
+    def TimerCall(self, event_):
         '''
         定时根据代码列表获取最新行情
         :return:
         '''
-        if len(self._codelist) < 1:
-            return
+        try:
+            if len(self._codelist) < 1:
+                return
 
-        rtQuote = GetRealTimeQuote(self._codelist)
-        for i in range(rtQuote.shape[0]):
-            itQuote = rtQuote.ix[i]
-            if float(itQuote['amount']) <= 0.01:
-                continue
-            event = Event(type_=EVENT_MARKETDATA_CONTRACT + itQuote['code'])
-            event.dict_['tick'] = itQuote
-            self._eventEngine.put(event)
+            rtQuote = GetRealTimeQuote(self._codelist)
+            for i in range(rtQuote.shape[0]):
+                itQuote = rtQuote.ix[i]
+                if float(itQuote['amount']) <= 0.01:
+                    continue
+                event = Event(type_=EVENT_MARKETDATA_CONTRACT + itQuote['code'])
+                event.dict_['tick'] = itQuote
+                self._eventEngine.put(event)
+        except BaseException,e:
+            logger.exception(e)
 
 class Quote5mKline(object):
     def __init__(self,cf, code):
