@@ -26,8 +26,10 @@ WaitForWindow(app, title=titleText)
 hwnd_top = pywinauto.findwindows.find_window(title=titleText)
 hwnd_AfxWnd42 = pywinauto.findwindows.find_windows(top_level_only=False, class_name='AfxWnd42', parent=hwnd_top)
 marketW = app.window_(handle =hwnd_AfxWnd42[-3])
-marketW.ClickInput()
-
+#marketW.ClickInput()
+marketW.Click(coords = (50, 14))
+# marketW.SetFocus()
+# marketW.Click()
 
 WaitForWindow(app, class_name = 'TdxW_MainFrame_Class')
 tdxHq = pywinauto.findwindows.find_window(class_name = 'TdxW_MainFrame_Class')
