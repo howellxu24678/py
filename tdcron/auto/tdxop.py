@@ -26,7 +26,7 @@ class TdxOp(object):
             self._mainTitleText = cf.get("strategy", "mainTitleText")
             self._traderTitleText = cf.get("strategy", "traderTitleText")
 
-            self._sleepItv = cf.getint("strategy", "sleepItv")
+            self._sleepItv = cf.getfloat("strategy", "sleepItv")
             self._timeOutItv = cf.getint("strategy", "timeOutItv")
             self._retryItv = cf.getint("strategy", "retryItv")
 
@@ -45,6 +45,7 @@ class TdxOp(object):
 
     def LoadHistoryData(self):
         try:
+            logger.debug("begin to LoadHistoryData..")
             self.WaitForWindow( title=self._mainTitleText)
             hwnd_top = pywinauto.findwindows.find_window(title=self._mainTitleText)
             hwnd_AfxWnd42 = pywinauto.findwindows.find_windows(top_level_only=False, class_name='AfxWnd42', parent=hwnd_top)
@@ -128,6 +129,7 @@ class TdxOp(object):
             ef = pywinauto.application.WindowSpecification({'title': self._exportFolder, 'class_name': 'CabinetWClass'})
             ef.SetFocus()
             ef.Close()
+            logger.info("finish to LoadHistoryData...")
         except BaseException,e:
             logger.exception(e)
             raise e
@@ -150,6 +152,7 @@ class TdxOp(object):
     def Close(self):
         try:
             if self._mainFrame.Exists():
+                logger.info("close mainFrame")
                 self._mainFrame.SetFocus()
                 self._mainFrame.Close()
         except BaseException,e:

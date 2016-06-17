@@ -189,12 +189,14 @@ class Business(BaseEngine):
     def __init__(self, cf):
         try:
             super(Business, self).__init__(cf)
+            self._cf = cf
 
         except BaseException,e:
             logger.exception(e)
             raise e
 
     def start(self):
+        logger.debug("start")
         try:
             super(Business, self).start()
             self._tdxOp = TdxOp(self._cf)
@@ -248,8 +250,10 @@ class Business(BaseEngine):
             raise e
 
     def stop(self):
+        logger.debug("stop")
         try:
             super(Business, self).stop()
+            self._realtimequote.stop()
             self._tdxOp.Close()
 
         except BaseException,e:
