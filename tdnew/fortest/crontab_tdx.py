@@ -8,7 +8,7 @@ import pywinauto
 sleepItv = 0.5
 timeOutItv = 30
 retryItv = 1
-tdxExePath = "D:\TdxW_HuaTai\TdxW.exe"
+tdxExePath = "C:\TdxW_HuaTai\TdxW.exe"
 exportFolder = "export2"
 titleText = u'华泰证券(通达信版)V6.38'
 traderText = u'通达信网上交易V6'
@@ -36,32 +36,36 @@ tdxHq = pywinauto.findwindows.find_window(class_name = 'TdxW_MainFrame_Class')
 td_AfxControlBar = pywinauto.findwindows.find_windows(top_level_only=False, class_name='AfxControlBar42', parent=tdxHq)
 mainFrame = app.window_(class_name = 'TdxW_MainFrame_Class')
 mainFrame.SetFocus()
-tdHandle = mainFrame.window_(handle=td_AfxControlBar[0])
-tdHandle.ClickInput(coords=(348, 40))
+time.sleep(2)
+tdHandle = mainFrame.window_(class_name='ToolbarWindow32', parent=td_AfxControlBar[0])
+tdHandle.Click(coords=(348, 24))
 
 WaitForWindow(app, title =u'盘后数据下载')
 phDlg = app.window_(title =u'盘后数据下载')
+time.sleep(2)
 phtab = phDlg.window_(title ='Tab2', class_name ='SysTabControl32')
-phtab.ClickInput(coords=(100, 15))
+phtab.Click(coords=(100, 10))
 time.sleep(sleepItv)
-phtab.ClickInput(coords=(18, 66))
-time.sleep(sleepItv)
-phtab.ClickInput(coords=(18, 130))
+phDlg[u'5分钟线数据'].Wait("exists enabled visible ready", timeout = timeOutItv, retry_interval = retryItv)
+phDlg[u'5分钟线数据'].Click()
+phDlg[u'下载所有沪深品种的分钟线数据'].Wait("exists enabled visible ready", timeout = timeOutItv, retry_interval = retryItv)
+phDlg[u'下载所有沪深品种的分钟线数据'].Click()
 WaitForWindow(app, class_name = '#32770', title = 'TdxW')
 tdxW = app.window_(class_name = '#32770', title = 'TdxW')
 tdxW.SetFocus()
 tdxW[u'确定'].Click()
-time.sleep(sleepItv)
-phtab.ClickInput(coords=(323, 231))
+phDlg[u'添加品种'].Wait("exists enabled visible ready", timeout = timeOutItv, retry_interval = retryItv)
+phDlg[u"添加品种"].Click()
 
 WaitForWindow(app, title = u'选择品种', class_name = '#32770')
 xzDlg = app.window_(title = u'选择品种', class_name = '#32770')
 xzDlg.SetFocus()
-xzDlg.ClickInput(coords=(459, 15))
+pzTab = app.window_(top_level_only=False, title = 'Tab1', class_name = 'SysTabControl32')
+pzTab.Click(coords=(459, 15))
 time.sleep(sleepItv)
 bk = xzDlg.window_(title = 'CFQS', class_name = 'SysListView32')
 #选择自定义板块的td
-bk.ClickInput(coords=(12, 43))
+bk.Click(coords=(12, 43))
 time.sleep(sleepItv)
 xzDlg[u'全选'].Click()
 time.sleep(sleepItv)
