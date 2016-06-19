@@ -253,7 +253,8 @@ class Business(BaseEngine):
         logger.debug("stop")
         try:
             super(Business, self).stop()
-            self._realtimequote.stop()
+            if self._realtimequote is not None:
+                self._realtimequote.stop()
             self._tdxOp.Close()
 
         except BaseException,e:
