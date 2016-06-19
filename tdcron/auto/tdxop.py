@@ -34,6 +34,8 @@ class TdxOp(object):
             #导出历史行情的文件夹
             self._exportFolder = self._hqdatadir.split("\\")[-1]
 
+            self._listViewSelect = u'td'
+
         except BaseException,e:
             logger.exception(e)
             raise e
@@ -66,7 +68,7 @@ class TdxOp(object):
             self.WaitForWindow(title =u'盘后数据下载')
             phDlg = self._app.window_(title =u'盘后数据下载')
             phtab = phDlg.window_(title='Tab2', class_name='SysTabControl32')
-            phtab.Click(coords=(100, 10))
+            phtab.Select(phtab.Texts().index(u'沪深分钟线') - 1)
             time.sleep(self._sleepItv)
             phDlg[u'5分钟线数据'].Wait("exists enabled visible ready", timeout=self._timeOutItv, retry_interval=self._retryItv)
             phDlg[u'5分钟线数据'].Click()
@@ -82,12 +84,12 @@ class TdxOp(object):
             self.WaitForWindow(title = u'选择品种', class_name = '#32770')
             xzDlg = self._app.window_(title = u'选择品种', class_name = '#32770')
             xzDlg.SetFocus()
-            pzTab = self._app.window_(top_level_only=False, title='Tab1', class_name='SysTabControl32')
-            pzTab.Click(coords=(459, 15))
+            pzTab = xzDlg.window_(top_level_only=False, title='Tab1', class_name='SysTabControl32')
+            pzTab.Select(pzTab.Texts().index(u'自定义板块') - 1)
             time.sleep(self._sleepItv)
             bk = xzDlg.window_(title='CFQS', class_name='SysListView32')
             # 选择自定义板块的td
-            bk.Click(coords=(12, 43))
+            bk.Select(bk.Texts().index(self._listViewSelect) - 1)
             time.sleep(self._sleepItv)
             xzDlg[u'全选'].Click()
             time.sleep(self._sleepItv)
@@ -98,9 +100,17 @@ class TdxOp(object):
             pywinauto.timings.WaitUntil(self._timeOutItv, self._retryItv, phDlg.Static2.WindowText, u'下载完毕.')
             phDlg[u'关闭'].Click()
 
-            self._mainFrame.SetFocus()
-            self._mainFrame.TypeKeys('34{ENTER}', pause=0.5)
+            hqDlgHandle = pywinauto.findwindows.find_windows(top_level_only=False, title='', class_name='#32770',parent=tdxHq)
+            xtHandle = pywinauto.findwindows.find_windows(top_level_only=False, title='', class_name='AfxWnd42',parent=hqDlgHandle[1])
+            xtMenu = self._app.window_(handle=xtHandle[7])
+            xtMenu.Click(coords=(16, 10))
             time.sleep(self._sleepItv)
+            popMenu = self._app.window_(class_name='#32768')
+            rc = popMenu.Rectangle()
+            popMenu.Click(coords=(rc.left + 55, rc.top + 53))
+            # self._mainFrame.SetFocus()
+            # self._mainFrame.TypeKeys('34{ENTER}', pause=0.5)
+            # time.sleep(self._sleepItv)
 
             self.WaitForWindow(title = u'数据导出', class_name = '#32770')
             sjdcDlg = self._app.window_(title = u'数据导出', class_name = '#32770')
@@ -115,10 +125,10 @@ class TdxOp(object):
             time.sleep(self._sleepItv)
             gjdcDlg[u'添加品种'].Click()
             time.sleep(self._sleepItv)
-            pzTab.Click(coords=(459, 15))
+            pzTab.Select(pzTab.Texts().index(u'自定义板块') - 1)
             time.sleep(self._sleepItv)
             # 选择自定义板块的td
-            bk.Click(coords=(12, 43))
+            bk.Select(bk.Texts().index(self._listViewSelect) - 1)
             time.sleep(self._sleepItv)
             xzDlg[u'全选'].Click()
             time.sleep(self._sleepItv)
