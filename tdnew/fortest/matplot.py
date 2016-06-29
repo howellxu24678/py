@@ -66,6 +66,7 @@ class Twine(object):
         self.procContain(newkline)
         self.procShape()
         self.procPen()
+        self.procLine()
 
     #获取subDf中形态为顶分型的最高点
     def getUpHighPoint(self, subDf):
@@ -74,6 +75,9 @@ class Twine(object):
     #获取subDf中形态为底分型的最低点
     def getDownLowPoint(self, subDf):
         return subDf[(subDf['shape'] == 'd') & (subDf['low'] == min(subDf['low'].values))]
+
+    def procLine(self):
+        pass
 
     def procPen(self):
         #首次开始
@@ -214,7 +218,7 @@ def addLine1(ax, df, **kwargs):
     ax.grid(True)
     ax.autoscale_view()
 
-def addPen(ax, df, pen, **kwargs):
+def addPen(ax, pen, **kwargs):
     #df.iloc[int(pen.iloc[0]['loc'])]['high']
     if pen.shape[0] < 2:
         return
@@ -238,7 +242,7 @@ def addLine1_(ax, df, **kwargs):
     ax.text(id2+0.5, itDf2['low'], '^')
 
 def picture1():
-    fig, ax = plt.subplots(2,1)
+    fig, ax = plt.subplots(3,1)
     dft = df5mKline[['high','low']]
     #dft = resample('30min',dft)
 
@@ -248,8 +252,9 @@ def picture1():
         tw.onNewKline(dft.ix[i])
 
     addLine1(ax[0], dft, color = 'b')
-    addLine1(ax[1], tw.getDf(), color = 'b')
-    addPen(ax[1], tw.getDf(), tw.getPen(), color = 'r')
+    addLine1(ax[1], tw.getDf(), color='b')
+    addPen(ax[1], tw.getPen(), color='r')
+    addPen(ax[2], tw.getPen(), color='r')
     #addLine1_(ax[1], tw.getDf())
     print tw.getDf()
 
@@ -308,7 +313,7 @@ def picture2():
     plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.show()
 
-picture3()
+picture1()
 #%timeit picture1()
 
 #import matplotlib.pyplot as plt
