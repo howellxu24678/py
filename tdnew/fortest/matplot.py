@@ -10,6 +10,8 @@ from matplotlib.lines import Line2D
 from matplotlib.dates import *
 import math
 
+from pylab import *
+mpl.rcParams['font.sans-serif'] = ['SimHei']
 
 class Twine(object):
     def __init__(self, isUp):
@@ -206,9 +208,10 @@ def resample(timedelta, df):
 def addLine1(ax, df, **kwargs):
     for i in xrange(df.shape[0]):
         itDf = df.ix[i]
-        vline = Line2D(xdata=(i+0.5, i+0.5), ydata=(itDf['low'], itDf['high']), linewidth = 5, **kwargs)
+        vline = Line2D(xdata=(i+0.5, i+0.5), ydata=(itDf['low'], itDf['high']), linewidth = 3, **kwargs)
         ax.add_line(vline)
 
+        #标识顶/底分型
         if 'shape' in itDf:
             if itDf['shape'] == 'u':
                 ax.text(i+0.5, itDf['high'], 'u', color = 'r')
@@ -251,12 +254,19 @@ def picture1():
     for i in xrange(dft.shape[0]):
         tw.onNewKline(dft.ix[i])
 
+    ax[0].set_title(u'原始数据')
+    ax[1].set_title(u'处理包含关系并生成笔')
+    ax[2].set_title(u'上一图中的笔')
     addLine1(ax[0], dft, color = 'b')
     addLine1(ax[1], tw.getDf(), color='b')
     addPen(ax[1], tw.getPen(), color='r')
     addPen(ax[2], tw.getPen(), color='r')
     #addLine1_(ax[1], tw.getDf())
-    print tw.getDf()
+    # print 'df'
+    # print tw.getDf()
+
+    print 'pen'
+    print tw.getPen()
 
     # addLine1(ax[2], dft, color = 'r')
     # addLine1(ax[2], tw.getDf(), color = 'b', linestyle = ':')
