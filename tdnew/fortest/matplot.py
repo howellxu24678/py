@@ -20,6 +20,9 @@ class Twine(object):
         self._df = pd.DataFrame(columns=['high', 'low', 'shape'])
         #loc在df所处的index，shape顶分型还是底分型，value顶点或者底点的值
         self._pen = pd.DataFrame(columns=['loc', 'shape', 'value'])
+
+        self._line = pd.DataFrame(columns=['loc', 'value'])
+
         self._shapeVariableSet = ['na','u','d']
         self._penBeginSearch = 0
 
@@ -51,35 +54,94 @@ class Twine(object):
 
     @staticmethod
     def getShape(line1, line2, line3):
+        #顶分型
         if line2['high'] > line1['high'] \
                 and line2['high'] > line3['high'] \
                 and line2['low'] > line1['low'] \
                 and line2['low'] > line3['low']:
             return 'u'
+        #底分型
         elif line2['high'] < line1['high'] \
                 and line2['high'] < line3['high'] \
                 and line2['low'] < line1['low'] \
                 and line2['low'] < line3['low']:
             return 'd'
+        #未知情况
         else:
             return 'na'
 
+    @staticmethod
+    def _setValue(df, loc, **kwargs):
+        if not 'shape' in kwargs:
+            kwargs['shape'] = 'un'
+        df.loc[loc] = {k: kwargs[k] for k in sorted(kwargs.keys())}
+
+    @staticmethod
+    def _procContain(df, isUp, newkline):
+        if df.shape[0] < 1 or not Twine.isContain(df.ix[-1], newkline):
+            Twine._setValue(df, newkline.name, high=newkline['high'], low=newkline['low'])
+
+        else:
+            # 高点取高值，低点也取高值，简单的说就是“上升取高高”
+            if isUp:
+                newkline['high'] = max(df.ix[-1]['high'], newkline['high'])
+                newkline['low'] = max(df.ix[-1]['low'], newkline['low'])
+                # Twine._setValue(df,
+                #                 newkline.name,
+                #                 high=max(df.ix[-1]['high'], newkline['high']),
+                #                 low=max(df.ix[-1]['low'], newkline['low']))
+            # 高点取低值，低点也取低值，简单的说就是“下降取低低”
+            else:
+                newkline['high'] = min(df.ix[-1]['high'], newkline['high'])
+                newkline['low'] = min(df.ix[-1]['low'], newkline['low'])
+                # Twine._setValue(df,
+                #                 newkline.name,
+                #                 high=min(df.ix[-1]['high'], newkline['high']),
+                #                 low=min(df.ix[-1]['low'], newkline['low']))
+            # 处理完包含关系后，将前一个删除，只保留最终处理完的结果
+            df.drop(df.index[-1], inplace=True)
+            #递归处理包含关系，有可能出现处理包含之后的元素和之前的元素还存在包含关系
+            return Twine._procContain(df, isUp, newkline)
+
+
+    #方向（属于向上笔还是向下笔）
+    @staticmethod
+    def getDirect(pen_start, pen_end):
+        #向上笔
+        if pen_start['value'] < pen_end['value']:
+            return 'u'
+        #向下笔
+        elif pen_start['value'] > pen_end['value']:
+            return 'd'
+        #位置情况
+        return 'na'
+
+    @staticmethod
+    def LineBreakByPen(dfPen, ):
+        pass
+
+    #获取subDf中形态为顶分型的最高点
+    @staticmethod
+    def getUpHighPoint(subDf):
+        return subDf[(subDf['shape'] == 'u') & (subDf['high'] == max(subDf['high'].values))]
+
+    #获取subDf中形态为底分型的最低点
+    @staticmethod
+    def getDownLowPoint(subDf):
+        return subDf[(subDf['shape'] == 'd') & (subDf['low'] == min(subDf['low'].values))]
+
     def onNewKline(self, newkline):
-        self.procContain(newkline)
+        self.procKlineContain(self._df, newkline)
         self.procShape()
         self.procPen()
         self.procLine()
 
-    #获取subDf中形态为顶分型的最高点
-    def getUpHighPoint(self, subDf):
-        return subDf[(subDf['shape'] == 'u') & (subDf['high'] == max(subDf['high'].values))]
-
-    #获取subDf中形态为底分型的最低点
-    def getDownLowPoint(self, subDf):
-        return subDf[(subDf['shape'] == 'd') & (subDf['low'] == min(subDf['low'].values))]
-
     def procLine(self):
-        pass
+        #首次开始
+        if self._line.shape[0] < 2:
+            pass
+        else:
+            pass
 
     def procPen(self):
         #首次开始
@@ -146,32 +208,16 @@ class Twine(object):
                 self._df.iloc[-i],
                 self._df.iloc[-i+1])
 
-    def procContain(self, newkline):
-        if self._df.shape[0] < 1 or not self.isContain(self._df.ix[-1], newkline):
-            self._setValue(newkline.name, high= newkline['high'],low = newkline['low'])
-        elif self._df.shape[0] < 2:
-            self._procContain(self._isUp, newkline)
+    def procKlineContain(self, df, newkline):
+        # if df.shape[0] < 1 or not self.isContain(df.ix[-1], newkline):
+        # if df.shape[0] < 1 :
+        #     self._setValue(df, newkline.name, high= newkline['high'],low = newkline['low'])
+        if df.shape[0] < 2:
+            self._procContain(df, self._isUp, newkline)
         else:
-            self._procContain(self.isUp(self._df.ix[-2], self._df.ix[-1]), newkline)
+            self._procContain(df, self.isUp(df.ix[-2], df.ix[-1]), newkline)
 
-    def _setValue(self, loc, **kwargs):
-        if not 'shape' in kwargs:
-            kwargs['shape'] = 'un'
-        self._df.loc[loc] = {k:kwargs[k] for k in sorted(kwargs.keys())}
 
-    def _procContain(self, isUp, newkline):
-        #高点取高值，低点也取高值，简单的说就是“上升取高高”
-        if isUp:
-            self._setValue(newkline.name,
-                           high = max(self._df.ix[-1]['high'], newkline['high']),
-                           low = max(self._df.ix[-1]['low'], newkline['low']))
-        #高点取低值，低点也取低值，简单的说就是“下降取低低”
-        else:
-            self._setValue(newkline.name,
-                           high = min(self._df.ix[-1]['high'], newkline['high']),
-                           low = min(self._df.ix[-1]['low'], newkline['low']))
-        #处理完包含关系后，将前一个删除，只保留最终处理完的结果
-        self._df = self._df.drop(pd.Timestamp(self._df.index.values[-2]))
 
 
 hqdatadir = 'D:\TdxW_HuaTai\T0002\export2'
@@ -324,6 +370,11 @@ def picture2():
     plt.show()
 
 picture1()
+
+
+# def test(df):
+#     df.loc[df.shape[0]] = {'loc': 25, 'shape': 'u', 'value': 2568}
+
 #%timeit picture1()
 
 #import matplotlib.pyplot as plt
