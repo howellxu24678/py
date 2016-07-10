@@ -20,7 +20,9 @@ class Twine(object):
         self._df = pd.DataFrame(columns=['high', 'low', 'shape'])
         #loc在df所处的index，shape顶分型还是底分型，value顶点或者底点的值(按照字母的顺序使之可以按照键值插入)
         self._pen = pd.DataFrame(columns=['loc', 'shape', 'value'])
-
+        #特征序列
+        self._sequence = pd.DataFrame(columns=['bloc', 'eloc', 'bvalue','evalue', 'high', 'low'])
+        #线段
         self._line = pd.DataFrame(columns=['loc', 'shape', 'value'])
 
         self._shapeVariableSet = ['na','u','d']
@@ -31,6 +33,9 @@ class Twine(object):
 
     def getPen(self):
         return self._pen
+
+    def getSequence(self):
+        return self._sequence
 
     #是否存在包含关系
     @staticmethod
@@ -128,8 +133,10 @@ class Twine(object):
     def onNewKline(self, newkline):
         self.procKlineContain(self._df, newkline)
         self.procShape()
-        self.procPen()
-        self.procLine()
+        #有新笔生成才需要进行线段的处理
+        #print self.procPen()
+        if self.procPen():
+            self.procLine()
 
     def procLine(self):
         #生成的最后一笔是会变的
@@ -140,20 +147,36 @@ class Twine(object):
             return
 
         if self._line.shape[0] < 2:
-            pass
+            if self._pen.shape[0] % 2 == 0:
+                self._sequence.loc[self._sequence.shape[0]] = {'bloc': self._pen.iloc[-3]['loc'],
+                                                               'bvalue': self._pen.iloc[-3]['value'],
+                                                               'eloc': self._pen.iloc[-2]['loc'],
+                                                               'evalue': self._pen.iloc[-2]['value'],
+                                                               'high': max(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value']),
+                                                               'low': min(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value'])
+                                                               }
+            # shape = self._pen.iloc[0, self._pen.columns.get_loc('shape')] == 'u'
+            # #向下笔开始，笔的起点为顶分型
+            # if shape == 'u':
+            #     self._sequence.loc[df.shape[0]] = {'loc': 25, 'shape': 'u', 'value': 2568}
+            # #向上笔开始，笔的起点为底分型
+            # elif shape == 'd':
+            #     pass
+
         else:
             pass
 
+    #返回值为True：有新笔生成，False：没有新笔生成
     def procPen(self):
         #首次开始
         if self._pen.shape[0] < 2:
             subDf = self._df[0: self._df.shape[0]]
             dh = self.getUpHighPoint(subDf)
             if dh.empty:
-                return
+                return False
             dl = self.getDownLowPoint(subDf)
             if dl.empty:
-                return
+                return False
             dhLoc = self._df.index.get_loc(dh.index[0])
             dlLoc = self._df.index.get_loc(dl.index[0])
 
@@ -164,37 +187,46 @@ class Twine(object):
                 else:
                     self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh['shape'][0], 'value': dh['high'][0]}
                     self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl['shape'][0], 'value': dl['low'][0]}
+                return True
+            else:
+                return False
         else:
             #前一趋势是向上时
             if self._pen.iloc[-1]['shape'] == 'u':
                 dh = self.getUpHighPoint(self._df[int(self._pen.iloc[-2]['loc']): self._df.shape[0]])
                 if dh.empty:
-                    return
+                    return False
                 dhLoc = self._df.index.get_loc(dh.index[0])
                 if dhLoc > self._pen.iloc[-1]['loc']:
-                    self._pen.iloc[-1, self._pen.columns.get_loc('loc')] = dhLoc
-                    self._pen.iloc[-1, self._pen.columns.get_loc('value')] = dh['high'][0]
+                    self._pen.iloc[-1,self._pen.columns.get_loc('loc')] = dhLoc
+                    self._pen.iloc[-1,self._pen.columns.get_loc('value')] = dh['high'][0]
                 dl = self.getDownLowPoint(self._df[int(dhLoc): self._df.shape[0]])
                 if dl.empty:
-                    return
+                    return False
                 dlLoc = self._df.index.get_loc(dl.index[0])
                 if abs(dlLoc - self._pen.iloc[-1]['loc']) >= 4:
                     self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl['shape'][0], 'value': dl['low'][0]}
+                    return True
+                else:
+                    return False
             #前一趋势是向下时
             else:
                 dl = self.getDownLowPoint(self._df[int(self._pen.iloc[-2]['loc']): self._df.shape[0]])
                 if dl.empty:
-                    return
+                    return False
                 dlLoc = self._df.index.get_loc(dl.index[0])
                 if dlLoc > self._pen.iloc[-1]['loc']:
                     self._pen.iloc[-1, self._pen.columns.get_loc('loc')] = dlLoc
                     self._pen.iloc[-1, self._pen.columns.get_loc('value')] = dl['low'][0]
                 dh = self.getUpHighPoint(self._df[int(dlLoc): self._df.shape[0]])
                 if dh.empty:
-                    return
+                    return False
                 dhLoc = self._df.index.get_loc(dh.index[0])
                 if abs(dhLoc - self._pen.iloc[-1]['loc']) >= 4:
                     self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh['shape'][0], 'value': dh['high'][0]}
+                    return True
+                else:
+                    return False
 
     def procShape(self):
         if self._df.shape[0] < 3:
@@ -291,6 +323,15 @@ def addLine1_(ax, df, **kwargs):
     ax.add_line(vline)
     ax.text(id2+0.5, itDf2['low'], '^')
 
+def no_picture():
+    dft = df5mKline[['high', 'low']]
+    tw = Twine(True)
+    for i in xrange(dft.shape[0]):
+        tw.onNewKline(dft.ix[i])
+
+    print tw.getPen()
+    print tw.getSequence()
+
 def picture1():
     fig, ax = plt.subplots(3,1)
     dft = df5mKline[['high','low']]
@@ -370,7 +411,7 @@ def picture2():
     plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.show()
 
-picture1()
+no_picture()
 
 
 # def test(df):
