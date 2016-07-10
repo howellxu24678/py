@@ -18,10 +18,10 @@ class Twine(object):
         self._isUp = isUp
         #shape 用于区分是顶分型还是底分型
         self._df = pd.DataFrame(columns=['high', 'low', 'shape'])
-        #loc在df所处的index，shape顶分型还是底分型，value顶点或者底点的值
+        #loc在df所处的index，shape顶分型还是底分型，value顶点或者底点的值(按照字母的顺序使之可以按照键值插入)
         self._pen = pd.DataFrame(columns=['loc', 'shape', 'value'])
 
-        self._line = pd.DataFrame(columns=['loc', 'value'])
+        self._line = pd.DataFrame(columns=['loc', 'shape', 'value'])
 
         self._shapeVariableSet = ['na','u','d']
         self._penBeginSearch = 0
@@ -72,32 +72,27 @@ class Twine(object):
 
     @staticmethod
     def _setValue(df, loc, **kwargs):
-        if not 'shape' in kwargs:
-            kwargs['shape'] = 'un'
+        #用'un'填补df中没有的字段，否则会出现插入错误
+        for column in df.columns.values:
+            if not column in  kwargs:
+                kwargs[column] = 'un'
+        # if not 'shape' in kwargs:
+        #     kwargs['shape'] = 'un'
         df.loc[loc] = {k: kwargs[k] for k in sorted(kwargs.keys())}
 
     @staticmethod
     def _procContain(df, isUp, newkline):
         if df.shape[0] < 1 or not Twine.isContain(df.ix[-1], newkline):
             Twine._setValue(df, newkline.name, high=newkline['high'], low=newkline['low'])
-
         else:
             # 高点取高值，低点也取高值，简单的说就是“上升取高高”
             if isUp:
                 newkline['high'] = max(df.ix[-1]['high'], newkline['high'])
                 newkline['low'] = max(df.ix[-1]['low'], newkline['low'])
-                # Twine._setValue(df,
-                #                 newkline.name,
-                #                 high=max(df.ix[-1]['high'], newkline['high']),
-                #                 low=max(df.ix[-1]['low'], newkline['low']))
             # 高点取低值，低点也取低值，简单的说就是“下降取低低”
             else:
                 newkline['high'] = min(df.ix[-1]['high'], newkline['high'])
                 newkline['low'] = min(df.ix[-1]['low'], newkline['low'])
-                # Twine._setValue(df,
-                #                 newkline.name,
-                #                 high=min(df.ix[-1]['high'], newkline['high']),
-                #                 low=min(df.ix[-1]['low'], newkline['low']))
             # 处理完包含关系后，将前一个删除，只保留最终处理完的结果
             df.drop(df.index[-1], inplace=True)
             #递归处理包含关系，有可能出现处理包含之后的元素和之前的元素还存在包含关系
@@ -137,7 +132,13 @@ class Twine(object):
         self.procLine()
 
     def procLine(self):
+        #生成的最后一笔是会变的
+        #笔的方向可以通过终点的类型来判断，如果是'u'则是向上笔，如果是'd'则是向下笔
         #首次开始
+        #笔的数量小于3时，不可能形成线段
+        if self._pen.shape[0] < 3:
+            return
+
         if self._line.shape[0] < 2:
             pass
         else:
