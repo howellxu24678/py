@@ -9,6 +9,7 @@ import matplotlib.dates as dt
 from matplotlib.lines import Line2D
 from matplotlib.dates import *
 import math
+import nanotime
 
 from pylab import *
 mpl.rcParams['font.sans-serif'] = ['SimHei']
@@ -41,7 +42,7 @@ class Twine(object):
     @staticmethod
     def isContain(prekline, curkline):
         #向左包含 n+1包含n
-        if curkline['high'] >= prekline['high']  and curkline['low'] <= prekline['low']:
+        if curkline['high'] >= prekline['high'] and curkline['low'] <= prekline['low']:
             return True
         #向右包含 n包含n+1
         elif curkline['high'] <= prekline['high'] and curkline['low'] >= prekline['low']:
@@ -76,28 +77,28 @@ class Twine(object):
             return 'na'
 
     @staticmethod
-    def _setValue(df, loc, **kwargs):
+    def _setValue(df, **kwargs):
         #用'un'填补df中没有的字段，否则会出现插入错误
         for column in df.columns.values:
             if not column in  kwargs:
                 kwargs[column] = 'un'
         # if not 'shape' in kwargs:
         #     kwargs['shape'] = 'un'
-        df.loc[loc] = {k: kwargs[k] for k in sorted(kwargs.keys())}
+        df.loc[df.shape[0]] = {k: kwargs[k] for k in sorted(kwargs.keys())}
 
     @staticmethod
     def _procContain(df, isUp, newkline):
-        if df.shape[0] < 1 or not Twine.isContain(df.ix[-1], newkline):
-            Twine._setValue(df, newkline.name, high=newkline['high'], low=newkline['low'])
+        if df.shape[0] < 1 or not Twine.isContain(df.iloc[-1], newkline):
+            Twine._setValue(df, high=newkline['high'], low=newkline['low'])
         else:
             # 高点取高值，低点也取高值，简单的说就是“上升取高高”
             if isUp:
-                newkline['high'] = max(df.ix[-1]['high'], newkline['high'])
-                newkline['low'] = max(df.ix[-1]['low'], newkline['low'])
+                newkline['high'] = max(df.iloc[-1]['high'], newkline['high'])
+                newkline['low'] = max(df.iloc[-1]['low'], newkline['low'])
             # 高点取低值，低点也取低值，简单的说就是“下降取低低”
             else:
-                newkline['high'] = min(df.ix[-1]['high'], newkline['high'])
-                newkline['low'] = min(df.ix[-1]['low'], newkline['low'])
+                newkline['high'] = min(df.iloc[-1]['high'], newkline['high'])
+                newkline['low'] = min(df.iloc[-1]['low'], newkline['low'])
             # 处理完包含关系后，将前一个删除，只保留最终处理完的结果
             df.drop(df.index[-1], inplace=True)
             #递归处理包含关系，有可能出现处理包含之后的元素和之前的元素还存在包含关系
@@ -123,13 +124,16 @@ class Twine(object):
     #获取subDf中形态为顶分型的最高点
     @staticmethod
     def getUpHighPoint(subDf):
-        return subDf[(subDf['shape'] == 'u') & (subDf['high'] == max(subDf['high'].values))]
+        #subDf[(subDf['shape'] == 'u') & (subDf['high'] == max(subDf['high'].values))]
+        return subDf[(subDf['high'] == max(subDf['high'].values)) & (subDf['shape'] == 'u')]
 
     #获取subDf中形态为底分型的最低点
     @staticmethod
     def getDownLowPoint(subDf):
-        return subDf[(subDf['shape'] == 'd') & (subDf['low'] == min(subDf['low'].values))]
+        #subDf[(subDf['shape'] == 'd') & (subDf['low'] == min(subDf['low'].values))]
+        return subDf[(subDf['low'] == min(subDf['low'].values)) & (subDf['shape'] == 'd')]
 
+    #@profile
     def onNewKline(self, newkline):
         self.procKlineContain(self._df, newkline)
         self.procShape()
@@ -148,13 +152,24 @@ class Twine(object):
 
         if self._line.shape[0] < 2:
             if self._pen.shape[0] % 2 == 0:
-                self._sequence.loc[self._sequence.shape[0]] = {'bloc': self._pen.iloc[-3]['loc'],
-                                                               'bvalue': self._pen.iloc[-3]['value'],
-                                                               'eloc': self._pen.iloc[-2]['loc'],
-                                                               'evalue': self._pen.iloc[-2]['value'],
-                                                               'high': max(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value']),
-                                                               'low': min(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value'])
-                                                               }
+                newpen = {'bloc': self._pen.iloc[-3]['loc'],
+                          'bvalue': self._pen.iloc[-3]['value'],
+                          'eloc': self._pen.iloc[-2]['loc'],
+                          'evalue': self._pen.iloc[-2]['value'],
+                          'high': max(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value']),
+                          'low': min(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value'])
+                          }
+                self._procContain(self._sequence,
+                                  True if self._pen.iloc[0, self._pen.columns.get_loc('shape')] == 'd' else False,
+                                  newpen)
+
+                # self._sequence.loc[self._sequence.shape[0]] = {'bloc': self._pen.iloc[-3]['loc'],
+                #                                                'bvalue': self._pen.iloc[-3]['value'],
+                #                                                'eloc': self._pen.iloc[-2]['loc'],
+                #                                                'evalue': self._pen.iloc[-2]['value'],
+                #                                                'high': max(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value']),
+                #                                                'low': min(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value'])
+                #                                                }
             # shape = self._pen.iloc[0, self._pen.columns.get_loc('shape')] == 'u'
             # #向下笔开始，笔的起点为顶分型
             # if shape == 'u':
@@ -166,27 +181,27 @@ class Twine(object):
         else:
             pass
 
+    #@profile
     #返回值为True：有新笔生成，False：没有新笔生成
     def procPen(self):
         #首次开始
         if self._pen.shape[0] < 2:
-            subDf = self._df[0: self._df.shape[0]]
-            dh = self.getUpHighPoint(subDf)
+            dh = self.getUpHighPoint(self._df)
             if dh.empty:
                 return False
-            dl = self.getDownLowPoint(subDf)
+            dl = self.getDownLowPoint(self._df)
             if dl.empty:
                 return False
-            dhLoc = self._df.index.get_loc(dh.index[0])
-            dlLoc = self._df.index.get_loc(dl.index[0])
+            dhLoc = dh.index[0]
+            dlLoc = dl.index[0]
 
             if abs(dhLoc - dlLoc) >= 4:
                 if dhLoc > dlLoc:
-                    self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl['shape'][0], 'value': dl['low'][0]}
-                    self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh['shape'][0], 'value': dh['high'][0]}
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl.iloc[0]['shape'], 'value': dl.iloc[0]['low']}
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh.iloc[0]['shape'], 'value': dh.iloc[0]['high']}
                 else:
-                    self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh['shape'][0], 'value': dh['high'][0]}
-                    self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl['shape'][0], 'value': dl['low'][0]}
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh.iloc[0]['shape'], 'value': dh.iloc[0]['high']}
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl.iloc[0]['shape'], 'value': dl.iloc[0]['low']}
                 return True
             else:
                 return False
@@ -196,16 +211,16 @@ class Twine(object):
                 dh = self.getUpHighPoint(self._df[int(self._pen.iloc[-2]['loc']): self._df.shape[0]])
                 if dh.empty:
                     return False
-                dhLoc = self._df.index.get_loc(dh.index[0])
+                dhLoc = dh.index[0]
                 if dhLoc > self._pen.iloc[-1]['loc']:
                     self._pen.iloc[-1,self._pen.columns.get_loc('loc')] = dhLoc
-                    self._pen.iloc[-1,self._pen.columns.get_loc('value')] = dh['high'][0]
+                    self._pen.iloc[-1,self._pen.columns.get_loc('value')] = dh.iloc[0]['high']
                 dl = self.getDownLowPoint(self._df[int(dhLoc): self._df.shape[0]])
                 if dl.empty:
                     return False
-                dlLoc = self._df.index.get_loc(dl.index[0])
+                dlLoc = dl.index[0]
                 if abs(dlLoc - self._pen.iloc[-1]['loc']) >= 4:
-                    self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl['shape'][0], 'value': dl['low'][0]}
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dlLoc, 'shape': dl.iloc[0]['shape'], 'value': dl.iloc[0]['low']}
                     return True
                 else:
                     return False
@@ -214,20 +229,21 @@ class Twine(object):
                 dl = self.getDownLowPoint(self._df[int(self._pen.iloc[-2]['loc']): self._df.shape[0]])
                 if dl.empty:
                     return False
-                dlLoc = self._df.index.get_loc(dl.index[0])
+                dlLoc = dl.index[0]
                 if dlLoc > self._pen.iloc[-1]['loc']:
                     self._pen.iloc[-1, self._pen.columns.get_loc('loc')] = dlLoc
-                    self._pen.iloc[-1, self._pen.columns.get_loc('value')] = dl['low'][0]
+                    self._pen.iloc[-1, self._pen.columns.get_loc('value')] = dl.iloc[0]['low']
                 dh = self.getUpHighPoint(self._df[int(dlLoc): self._df.shape[0]])
                 if dh.empty:
                     return False
-                dhLoc = self._df.index.get_loc(dh.index[0])
+                dhLoc = dh.index[0]
                 if abs(dhLoc - self._pen.iloc[-1]['loc']) >= 4:
-                    self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh['shape'][0], 'value': dh['high'][0]}
+                    self._pen.loc[self._pen.shape[0]] = {'loc': dhLoc, 'shape': dh.iloc[0]['shape'], 'value': dh.iloc[0]['high']}
                     return True
                 else:
                     return False
 
+    #@profile
     def procShape(self):
         if self._df.shape[0] < 3:
             return
@@ -241,6 +257,7 @@ class Twine(object):
                 self._df.iloc[-i],
                 self._df.iloc[-i+1])
 
+    #@profile
     def procKlineContain(self, df, newkline):
         # if df.shape[0] < 1 or not self.isContain(df.ix[-1], newkline):
         # if df.shape[0] < 1 :
@@ -248,11 +265,11 @@ class Twine(object):
         if df.shape[0] < 2:
             self._procContain(df, self._isUp, newkline)
         else:
-            self._procContain(df, self.isUp(df.ix[-2], df.ix[-1]), newkline)
+            self._procContain(df, self.isUp(df.iloc[-2], df.iloc[-1]), newkline)
 
 
 
-
+st = nanotime.now()
 hqdatadir = 'D:\TdxW_HuaTai\T0002\export2'
 code = '999999'
 #code = '399006'
@@ -270,6 +287,7 @@ df5mKline = pd.read_table(filepath,
                                  index_col='time',
                                  skiprows=2,
                                  skipfooter=1)
+print ('load txt data cost:%d' % (nanotime.now() - st).milliseconds())
 
 
 def resample(timedelta, df):
@@ -323,14 +341,19 @@ def addLine1_(ax, df, **kwargs):
     ax.add_line(vline)
     ax.text(id2+0.5, itDf2['low'], '^')
 
+
 def no_picture():
+    st = nanotime.now()
+
     dft = df5mKline[['high', 'low']]
     tw = Twine(True)
     for i in xrange(dft.shape[0]):
-        tw.onNewKline(dft.ix[i])
+        tw.onNewKline(dft.iloc[i])
 
-    print tw.getPen()
-    print tw.getSequence()
+    print ('tw cost:%d' % (nanotime.now() - st).milliseconds())
+
+    #print tw.getPen()
+    # print tw.getSequence()
 
 def picture1():
     fig, ax = plt.subplots(3,1)
@@ -412,7 +435,13 @@ def picture2():
     plt.show()
 
 no_picture()
+#picture1()
 
+# import nanotime
+# import time
+# st = nanotime.now()
+# time.sleep(1)
+# print (nanotime.now() - st).milliseconds()
 
 # def test(df):
 #     df.loc[df.shape[0]] = {'loc': 25, 'shape': 'u', 'value': 2568}
