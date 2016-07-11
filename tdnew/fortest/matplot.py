@@ -77,6 +77,7 @@ class Twine(object):
             return 'na'
 
     @staticmethod
+    @profile
     def _setValue(df, **kwargs):
         #用'un'填补df中没有的字段，否则会出现插入错误
         for column in df.columns.values:
@@ -84,9 +85,12 @@ class Twine(object):
                 kwargs[column] = 'un'
         # if not 'shape' in kwargs:
         #     kwargs['shape'] = 'un'
-        df.loc[df.shape[0]] = {k: kwargs[k] for k in sorted(kwargs.keys())}
+        #df.loc[df.shape[0]] = {k: kwargs[k] for k in sorted(kwargs.keys())}
+        df.loc[df.shape[0]] = kwargs
+
 
     @staticmethod
+    @profile
     def _procContain(df, isUp, newkline):
         if df.shape[0] < 1 or not Twine.isContain(df.iloc[-1], newkline):
             Twine._setValue(df, high=newkline['high'], low=newkline['low'])
