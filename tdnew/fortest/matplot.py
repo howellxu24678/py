@@ -20,7 +20,7 @@ class Twine(object):
         #shape 用于区分是顶分型还是底分型
         self._df = pd.DataFrame(columns=['high', 'low', 'shape'])
         #loc在df所处的index，shape顶分型还是底分型，value顶点或者底点的值(按照字母的顺序使之可以按照键值插入)
-        self._pen = pd.DataFrame(columns=['loc', 'shape', 'value'])
+        self._pen = pd.DataFrame(columns=['loc', 'value', 'shape'])
         #特征序列
         self._sequence = pd.DataFrame(columns=['bloc', 'eloc', 'bvalue','evalue', 'high', 'low'])
         #线段
@@ -78,22 +78,26 @@ class Twine(object):
 
     @staticmethod
     @profile
-    def _setValue(df, **kwargs):
+    def _setValue(df, dict_value):
         #用'un'填补df中没有的字段，否则会出现插入错误
-        for column in df.columns.values:
-            if not column in  kwargs:
-                kwargs[column] = 'un'
-        # if not 'shape' in kwargs:
-        #     kwargs['shape'] = 'un'
-        #df.loc[df.shape[0]] = {k: kwargs[k] for k in sorted(kwargs.keys())}
-        df.loc[df.shape[0]] = kwargs
+        df_columns_set = set(df.columns.values)
+        dict_value_set = set(dict_value.keys())
+
+        andSet = df_columns_set & dict_value_set
+        difSet = df_columns_set - dict_value_set
+
+        #从dict_value中取df对应有的列和值，df缺失的列默认用'un'替代
+        value_to_set = dict({k: dict_value[k] for k in andSet},
+                           **{k: 'un' for k in difSet})
+
+        df.loc[df.shape[0]] = value_to_set
 
 
     @staticmethod
-    @profile
+    #@profile
     def _procContain(df, isUp, newkline):
         if df.shape[0] < 1 or not Twine.isContain(df.iloc[-1], newkline):
-            Twine._setValue(df, high=newkline['high'], low=newkline['low'])
+            Twine._setValue(df, newkline)
         else:
             # 高点取高值，低点也取高值，简单的说就是“上升取高高”
             if isUp:
@@ -127,22 +131,23 @@ class Twine(object):
 
     #获取subDf中形态为顶分型的最高点
     @staticmethod
+    @profile
     def getUpHighPoint(subDf):
         #subDf[(subDf['shape'] == 'u') & (subDf['high'] == max(subDf['high'].values))]
         return subDf[(subDf['high'] == max(subDf['high'].values)) & (subDf['shape'] == 'u')]
 
     #获取subDf中形态为底分型的最低点
     @staticmethod
+    @profile
     def getDownLowPoint(subDf):
         #subDf[(subDf['shape'] == 'd') & (subDf['low'] == min(subDf['low'].values))]
         return subDf[(subDf['low'] == min(subDf['low'].values)) & (subDf['shape'] == 'd')]
 
-    #@profile
+    @profile
     def onNewKline(self, newkline):
         self.procKlineContain(self._df, newkline)
         self.procShape()
         #有新笔生成才需要进行线段的处理
-        #print self.procPen()
         if self.procPen():
             self.procLine()
 
@@ -263,9 +268,6 @@ class Twine(object):
 
     #@profile
     def procKlineContain(self, df, newkline):
-        # if df.shape[0] < 1 or not self.isContain(df.ix[-1], newkline):
-        # if df.shape[0] < 1 :
-        #     self._setValue(df, newkline.name, high= newkline['high'],low = newkline['low'])
         if df.shape[0] < 2:
             self._procContain(df, self._isUp, newkline)
         else:
@@ -356,8 +358,8 @@ def no_picture():
 
     print ('tw cost:%d' % (nanotime.now() - st).milliseconds())
 
-    #print tw.getPen()
-    # print tw.getSequence()
+    print tw.getPen()
+    print tw.getSequence()
 
 def picture1():
     fig, ax = plt.subplots(3,1)
@@ -439,6 +441,47 @@ def picture2():
     plt.show()
 
 no_picture()
+
+
+# import matplotlib.pyplot as plt
+# import os
+# import pandas as pd
+# import datetime
+# import matplotlib.dates as dt
+# from matplotlib.lines import Line2D
+# from matplotlib.dates import *
+# import math
+# import nanotime
+# sq = pd.DataFrame(columns=['bloc', 'eloc', 'bvalue','evalue', 'high', 'low'])
+#
+# newpen1 = {'bloc': 1,'bvalue': 2,'eloc': 3,'evalue': 4,'high': 5,'low': 6}
+# sq.loc[sq.shape[0]] = newpen1
+# newpen2 = {'bloc': 11,'bvalue': 12,'eloc': 13,'evalue': 14,'high': 15,'low': 16}
+# sq.loc[sq.shape[0]] = newpen2
+# newpen3 = {'bloc': 21,'bvalue': 22,'eloc': 23,'evalue': 24,'high': 25,'low': 26}
+# sq.loc[sq.shape[0]] = newpen3
+#
+# ndt = sq.iloc[1].to_dict()
+#
+#
+# df = pd.DataFrame(columns=['high', 'low', 'shape'])
+#
+# df_columns_set = set(df.columns.values)
+# dict_value_set = set(ndt.keys())
+#
+# dict_to_set = dict({k: ndt[k] for k in df_columns_set & dict_value_set}, **{k: 'un' for k in df_columns_set - dict_value_set})
+# dict_to_set = {k: ndt[k] for k in df_columns_set & dict_value_set}.update(
+#     {k: 'un' for k in df_columns_set - dict_value_set})
+#
+# set(df.columns.values) & set(ndt.keys())
+#
+# for column in df.columns.values:
+#     if not column in kwargs:
+#         kwargs[column] = 'un'
+#
+#
+# {k: ndt[k] for k in ndt.keys() and (k in df.columns.values)}
+
 #picture1()
 
 # import nanotime
