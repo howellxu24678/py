@@ -10,6 +10,8 @@ from matplotlib.lines import Line2D
 from matplotlib.dates import *
 import math
 import nanotime
+import numba
+
 
 from pylab import *
 mpl.rcParams['font.sans-serif'] = ['SimHei']
@@ -77,7 +79,7 @@ class Twine(object):
             return 'na'
 
     @staticmethod
-    @profile
+    #@profile
     def _setValue(df, dict_value):
         #用'un'填补df中没有的字段，否则会出现插入错误
         df_columns_set = set(df.columns.values)
@@ -131,19 +133,19 @@ class Twine(object):
 
     #获取subDf中形态为顶分型的最高点
     @staticmethod
-    @profile
+    #@profile
     def getUpHighPoint(subDf):
         #subDf[(subDf['shape'] == 'u') & (subDf['high'] == max(subDf['high'].values))]
         return subDf[(subDf['high'] == max(subDf['high'].values)) & (subDf['shape'] == 'u')]
 
     #获取subDf中形态为底分型的最低点
     @staticmethod
-    @profile
+    #@profile
     def getDownLowPoint(subDf):
         #subDf[(subDf['shape'] == 'd') & (subDf['low'] == min(subDf['low'].values))]
         return subDf[(subDf['low'] == min(subDf['low'].values)) & (subDf['shape'] == 'd')]
 
-    @profile
+    #@profile
     def onNewKline(self, newkline):
         self.procKlineContain(self._df, newkline)
         self.procShape()
@@ -358,8 +360,8 @@ def no_picture():
 
     print ('tw cost:%d' % (nanotime.now() - st).milliseconds())
 
-    print tw.getPen()
-    print tw.getSequence()
+    # print tw.getPen()
+    # print tw.getSequence()
 
 def picture1():
     fig, ax = plt.subplots(3,1)
@@ -443,23 +445,6 @@ def picture2():
 no_picture()
 
 
-# import matplotlib.pyplot as plt
-# import os
-# import pandas as pd
-# import datetime
-# import matplotlib.dates as dt
-# from matplotlib.lines import Line2D
-# from matplotlib.dates import *
-# import math
-# import nanotime
-# sq = pd.DataFrame(columns=['bloc', 'eloc', 'bvalue','evalue', 'high', 'low'])
-#
-# newpen1 = {'bloc': 1,'bvalue': 2,'eloc': 3,'evalue': 4,'high': 5,'low': 6}
-# sq.loc[sq.shape[0]] = newpen1
-# newpen2 = {'bloc': 11,'bvalue': 12,'eloc': 13,'evalue': 14,'high': 15,'low': 16}
-# sq.loc[sq.shape[0]] = newpen2
-# newpen3 = {'bloc': 21,'bvalue': 22,'eloc': 23,'evalue': 24,'high': 25,'low': 26}
-# sq.loc[sq.shape[0]] = newpen3
 #
 # ndt = sq.iloc[1].to_dict()
 #
