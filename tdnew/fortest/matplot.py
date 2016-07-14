@@ -400,7 +400,7 @@ def picture3():
         fig, ax = plt.subplots(1,1)
         tw.onNewKline(dft.ix[i])
         addLine1(ax, tw.getDf(), color = 'b')
-        addPen(ax, tw.getDf(), tw.getPen(), color = 'r')
+        addPen(ax, tw.getPen(), color = 'r')
         plt.show()
 
 def addLine2(ax, df, **kwargs):
@@ -441,8 +441,8 @@ def picture2():
     plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.show()
 
-#no_picture()
-picture1()
+no_picture()
+#picture3()
 
 #
 # ndt = sq.iloc[1].to_dict()

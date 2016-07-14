@@ -308,14 +308,14 @@ class Chan(object):
         else:
             # 前一趋势是向上时
             if self._PenList[-1].shape == 'u':
-                dh = Toolkit.getUpHighPoint(self._KlineList[int(self._PenList[-2].loc): len(self._KlineList)])
+                dh = Toolkit.getUpHighPoint(self._KlineList[self._PenList[-1].loc:])
                 if dh is None:
                     return False
                 dhLoc = dh.idx
                 if dhLoc > self._PenList[-1].loc:
                     self._PenList[-1].loc = dhLoc
                     self._PenList[-1].value = dh.high
-                dl = Toolkit.getDownLowPoint(self._KlineList[int(dhLoc): len(self._KlineList)])
+                dl = Toolkit.getDownLowPoint(self._KlineList[dhLoc:])
                 if dl is None:
                     return False
                 dlLoc = dl.idx
@@ -325,14 +325,14 @@ class Chan(object):
                     return False
             # 前一趋势是向下时
             else:
-                dl = Toolkit.getDownLowPoint(self._KlineList[int(self._PenList[-2].loc): len(self._KlineList)])
+                dl = Toolkit.getDownLowPoint(self._KlineList[self._PenList[-1].loc:])
                 if dl is None:
                     return False
                 dlLoc = dl.idx
                 if dlLoc > self._PenList[-1].loc:
                     self._PenList[-1].loc= dlLoc
                     self._PenList[-1].value = dl.low
-                dh = Toolkit.getUpHighPoint(self._KlineList[int(dlLoc): len(self._KlineList)])
+                dh = Toolkit.getUpHighPoint(self._KlineList[dlLoc:])
                 if dh is None:
                     return False
                 dhLoc = dh.idx
@@ -469,12 +469,12 @@ def picture1():
 def picture3():
     dft = df5mKline[['high', 'low']]
     # dft = resample('30min',dft)
-    tw = Chan(True)
+    ch = Chan(True)
     for i in xrange(dft.shape[0]):
         fig, ax = plt.subplots(1, 1)
-        tw.onNewKline(dft.ix[i])
-        addLine1(ax, tw.getdf(), color='b')
-        addPen(ax, tw.getdf(), tw.getPen(), color='r')
+        ch.onNewKline(dft.ix[i])
+        addLine1(ax, ch._KlineList, color='b')
+        addPen(ax, ch._PenList, color='r')
         plt.show()
 
 
@@ -519,4 +519,4 @@ def picture2():
 
 
 no_picture()
-#picture1()
+#picture3()
