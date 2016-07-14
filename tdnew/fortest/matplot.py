@@ -360,18 +360,17 @@ def no_picture():
 
     print ('tw cost:%d' % (nanotime.now() - st).milliseconds())
 
-    # print tw.getPen()
+    print tw.getDf()
+    print tw.getPen()
     # print tw.getSequence()
 
 def picture1():
     fig, ax = plt.subplots(3,1)
     dft = df5mKline[['high','low']]
-    #dft = resample('30min',dft)
-
 
     tw = Twine(True)
     for i in xrange(dft.shape[0]):
-        tw.onNewKline(dft.ix[i])
+        tw.onNewKline(dft.iloc[i])
 
     ax[0].set_title(u'原始数据')
     ax[1].set_title(u'处理包含关系并生成笔')
@@ -380,15 +379,15 @@ def picture1():
     addLine1(ax[1], tw.getDf(), color='b')
     addPen(ax[1], tw.getPen(), color='r')
     addPen(ax[2], tw.getPen(), color='r')
-    #addLine1_(ax[1], tw.getDf())
+    #addLine1_(ax[1], tw.getdf())
     # print 'df'
-    # print tw.getDf()
+    # print tw.getdf()
 
     print 'pen'
     print tw.getPen()
 
     # addLine1(ax[2], dft, color = 'r')
-    # addLine1(ax[2], tw.getDf(), color = 'b', linestyle = ':')
+    # addLine1(ax[2], tw.getdf(), color = 'b', linestyle = ':')
     #plt.axhspan(xmin=0, xmax=1.2, facecolor='0.5', alpha=0.5)
     #plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.show()
@@ -442,8 +441,8 @@ def picture2():
     plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.show()
 
-no_picture()
-
+#no_picture()
+picture1()
 
 #
 # ndt = sq.iloc[1].to_dict()
