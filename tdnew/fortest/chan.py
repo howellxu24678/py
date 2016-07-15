@@ -60,8 +60,8 @@ class Kline(Base):
 class Pen(Base):
     def __init__(self, **kwargs):
         super(Pen, self).__init__()
-        # loc在标准k线列表中所处的index，value顶点或者底点的值，shape顶分型还是底分型
-        self.loc = kwargs['loc']
+        # kidx在标准k线列表中所处的index，value顶点或者底点的值，shape顶分型还是底分型
+        self.kidx = kwargs['kidx']
         self.value = kwargs['value']
         self.shape = kwargs['shape'] if 'shape' in kwargs else 'un'
 
@@ -69,8 +69,8 @@ class Pen(Base):
 class Seq(Base):
     def __init__(self, **kwargs):
         super(Pen, self).__init__()
-        self.bloc = kwargs['bloc']
-        self.eloc = kwargs['eloc']
+        self.bkidx = kwargs['bkidx']
+        self.ekidx = kwargs['ekidx']
         self.bvalue = kwargs['bvalue']
         self.evalue = kwargs['evalue']
         self.high = kwargs['high'] if 'high' in kwargs else 'un'
@@ -138,7 +138,7 @@ class Toolkit(object):
         # value_to_set = dict({k: dict_value[k] for k in andSet},
         #                     **{k: 'un' for k in difSet})
         #
-        # list.loc[list.shape[0]] = value_to_set
+        # list.kidx[list.shape[0]] = value_to_set
 
 
     @staticmethod
@@ -194,6 +194,21 @@ class Toolkit(object):
         downSubList = [x for x in subList if x.shape == 'd']
         return min(downSubList, key=lambda x: x.low) if downSubList else None
 
+    @staticmethod
+    def updatePen(penList, idxFrom, kidx, value):
+        lastLoc = penList[idxFrom - 1].kidx if len(penList) > abs(idxFrom) else -4
+        if kidx - lastLoc >= 4:
+            penList[idxFrom].kidx = kidx
+            penList[idxFrom].value = value
+        else:
+            print 'updatePen error'
+
+    @staticmethod
+    def addPen(penList, kidx, value):
+        Toolkit.append(penList, Pen())
+
+
+
 
 class Chan(object):
     def __init__(self, isUp):
@@ -213,15 +228,6 @@ class Chan(object):
 
         self._shapeVariableSet = ['na', 'u', 'd']
         self._penBeginSearch = 0
-
-    # def get_klinelist(self):
-    #     return self._df
-    #
-    # def getPen(self):
-    #     return self._pen
-    #
-    # def getSequence(self):
-    #     return self._sequence
 
     # @profile
     def procKlineContain(self, list, newkline):
@@ -252,34 +258,86 @@ class Chan(object):
 
         if self._line.shape[0] < 2:
             if self._pen.shape[0] % 2 == 0:
-                newpen = {'bloc': self._pen.iloc[-3]['loc'],
-                          'bvalue': self._pen.iloc[-3]['value'],
-                          'eloc': self._pen.iloc[-2]['loc'],
-                          'evalue': self._pen.iloc[-2]['value'],
-                          'high': max(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value']),
-                          'low': min(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value'])
+                newpen = {'bkidx': self._pen.ikidx[-3]['kidx'],
+                          'bvalue': self._pen.ikidx[-3]['value'],
+                          'ekidx': self._pen.ikidx[-2]['kidx'],
+                          'evalue': self._pen.ikidx[-2]['value'],
+                          'high': max(self._pen.ikidx[-3]['value'], self._pen.ikidx[-2]['value']),
+                          'low': min(self._pen.ikidx[-3]['value'], self._pen.ikidx[-2]['value'])
                           }
                 self._procContain(self._sequence,
-                                  True if self._pen.iloc[0, self._pen.columns.get_loc('shape')] == 'd' else False,
+                                  True if self._pen.ikidx[0, self._pen.columns.get_kidx('shape')] == 'd' else False,
                                   newpen)
 
-                # self._sequence.loc[self._sequence.shape[0]] = {'bloc': self._pen.iloc[-3]['loc'],
-                #                                                'bvalue': self._pen.iloc[-3]['value'],
-                #                                                'eloc': self._pen.iloc[-2]['loc'],
-                #                                                'evalue': self._pen.iloc[-2]['value'],
-                #                                                'high': max(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value']),
-                #                                                'low': min(self._pen.iloc[-3]['value'], self._pen.iloc[-2]['value'])
+                # self._sequence.kidx[self._sequence.shape[0]] = {'bkidx': self._pen.ikidx[-3]['kidx'],
+                #                                                'bvalue': self._pen.ikidx[-3]['value'],
+                #                                                'ekidx': self._pen.ikidx[-2]['kidx'],
+                #                                                'evalue': self._pen.ikidx[-2]['value'],
+                #                                                'high': max(self._pen.ikidx[-3]['value'], self._pen.ikidx[-2]['value']),
+                #                                                'low': min(self._pen.ikidx[-3]['value'], self._pen.ikidx[-2]['value'])
                 #                                                }
-                # shape = self._pen.iloc[0, self._pen.columns.get_loc('shape')] == 'u'
+                # shape = self._pen.ikidx[0, self._pen.columns.get_kidx('shape')] == 'u'
                 # #向下笔开始，笔的起点为顶分型
                 # if shape == 'u':
-                #     self._sequence.loc[df.shape[0]] = {'loc': 25, 'shape': 'u', 'value': 2568}
+                #     self._sequence.kidx[df.shape[0]] = {'kidx': 25, 'shape': 'u', 'value': 2568}
                 # #向上笔开始，笔的起点为底分型
                 # elif shape == 'd':
                 #     pass
 
         else:
             pass
+
+
+    def getPenPoint(self, penIdxFrom):
+        fun = Toolkit.getUpHighPoint if self._PenList[penIdxFrom].shape == 'u' else Toolkit.getDownLowPoint
+        return fun(self._KlineList[self._PenList[penIdxFrom].kidx:])
+
+    def checkPenFrom(self, penIdxFrom):
+        kline = self.getPenPoint(penIdxFrom)
+        if kline is None:
+            return False
+
+        if kline.idx > self._PenList[penIdxFrom].kidx:
+            Toolkit.updatePen(self._PenList,
+                              penIdxFrom,
+                              kline.idx,
+                              kline.high if self._PenList[penIdxFrom].shape == 'u' else kline.low)
+            return True
+
+    def addPenPoint(self):
+        while 1:
+            kline = self.getPenPoint(-1)
+            if kline is None:
+                break
+            elif kline.idx - self._PenList[-1].kidx < 4:
+                break
+            else:
+                Toolkit.append(self._PenList,
+                               Pen(kidx=kline.idx,
+                                   shape=kline.shape,
+                                   value= kline.high if kline.shape == 'u' else kline.low))
+
+    def rebuildPen(self, penIdxFrom):
+        for idxF in range(penIdxFrom, 0):
+            if self.checkPenFrom(idxF):
+                for pcount in range(abs(idxF)):
+                    self._PenList.pop()
+                break
+
+        self.addPenPoint()
+
+    #从idxFrom开始检查是否需要修改点的位置，返回需要修改的点的位置，然后删除后续的点
+    def checkPenPoint(self, penIdxFrom):
+        fun = Toolkit.getUpHighPoint if self._PenList[penIdxFrom].shape == 'u' else Toolkit.getDownLowPoint
+        kline = fun(self._KlineList[self._PenList[penIdxFrom].kidx:])
+        if kline is None:
+            return
+        
+        if kline.idx > self._PenList[penIdxFrom].kidx:
+            return penIdxFrom, kline.idx
+
+    def addPenPoint(self):
+        pass
 
     # @profile
     # 返回值为True：有新笔生成，False：没有新笔生成
@@ -292,52 +350,77 @@ class Chan(object):
             dl = Toolkit.getDownLowPoint(self._KlineList)
             if dl is None:
                 return False
-            dhLoc = dh.idx
-            dlLoc = dl.idx
 
-            if abs(dhLoc - dlLoc) >= 4:
-                if dhLoc > dlLoc:
-                    Toolkit.append(self._PenList, Pen(loc=dlLoc, shape=dl.shape, value=dl.low))
-                    Toolkit.append(self._PenList, Pen(loc=dhLoc, shape=dh.shape, value=dh.high))
+            if abs(dh.idx - dl.idx) >= 4:
+                if dh.idx > dl.idx:
+                    Toolkit.append(self._PenList, Pen(kidx=dl.idx, shape=dl.shape, value=dl.low))
+                    Toolkit.append(self._PenList, Pen(kidx=dh.idx, shape=dh.shape, value=dh.high))
                 else:
-                    Toolkit.append(self._PenList, Pen(loc=dhLoc, shape=dh.shape, value=dh.high))
-                    Toolkit.append(self._PenList, Pen(loc=dlLoc, shape=dl.shape, value=dl.low))
+                    Toolkit.append(self._PenList, Pen(kidx=dh.idx, shape=dh.shape, value=dh.high))
+                    Toolkit.append(self._PenList, Pen(kidx=dl.idx, shape=dl.shape, value=dl.low))
+                return True
+            else:
+                return False
+        else:
+            self.rebuildPen(-2)
+
+    # @profile
+    # 返回值为True：有新笔生成，False：没有新笔生成
+    def procPen2(self):
+        # 首次开始
+        if len(self._PenList) < 2:
+            dh = Toolkit.getUpHighPoint(self._KlineList)
+            if dh is None:
+                return False
+            dl = Toolkit.getDownLowPoint(self._KlineList)
+            if dl is None:
+                return False
+            dh.idx = dh.idx
+            dl.idx = dl.idx
+
+            if abs(dh.idx - dl.idx) >= 4:
+                if dh.idx > dl.idx:
+                    Toolkit.append(self._PenList, Pen(kidx=dl.idx, shape=dl.shape, value=dl.low))
+                    Toolkit.append(self._PenList, Pen(kidx=dh.idx, shape=dh.shape, value=dh.high))
+                else:
+                    Toolkit.append(self._PenList, Pen(kidx=dh.idx, shape=dh.shape, value=dh.high))
+                    Toolkit.append(self._PenList, Pen(kidx=dl.idx, shape=dl.shape, value=dl.low))
                 return True
             else:
                 return False
         else:
             # 前一趋势是向上时
             if self._PenList[-1].shape == 'u':
-                dh = Toolkit.getUpHighPoint(self._KlineList[self._PenList[-1].loc:])
+                dh = Toolkit.getUpHighPoint(self._KlineList[self._PenList[-1].kidx:])
                 if dh is None:
                     return False
-                dhLoc = dh.idx
-                if dhLoc > self._PenList[-1].loc:
-                    self._PenList[-1].loc = dhLoc
+                dh.idx = dh.idx
+                if dh.idx > self._PenList[-1].kidx:
+                    self._PenList[-1].kidx = dh.idx
                     self._PenList[-1].value = dh.high
-                dl = Toolkit.getDownLowPoint(self._KlineList[dhLoc:])
+                dl = Toolkit.getDownLowPoint(self._KlineList[dh.idx:])
                 if dl is None:
                     return False
-                dlLoc = dl.idx
-                if abs(dlLoc - self._PenList[-1].loc) >= 4:
-                    Toolkit.append(self._PenList, Pen(loc=dlLoc, shape=dl.shape, value=dl.low))
+                dl.idx = dl.idx
+                if abs(dl.idx - self._PenList[-1].kidx) >= 4:
+                    Toolkit.append(self._PenList, Pen(kidx=dl.idx, shape=dl.shape, value=dl.low))
                 else:
                     return False
             # 前一趋势是向下时
             else:
-                dl = Toolkit.getDownLowPoint(self._KlineList[self._PenList[-1].loc:])
+                dl = Toolkit.getDownLowPoint(self._KlineList[self._PenList[-1].kidx:])
                 if dl is None:
                     return False
-                dlLoc = dl.idx
-                if dlLoc > self._PenList[-1].loc:
-                    self._PenList[-1].loc= dlLoc
+                dl.idx = dl.idx
+                if dl.idx > self._PenList[-1].kidx:
+                    self._PenList[-1].kidx= dl.idx
                     self._PenList[-1].value = dl.low
-                dh = Toolkit.getUpHighPoint(self._KlineList[dlLoc:])
+                dh = Toolkit.getUpHighPoint(self._KlineList[dl.idx:])
                 if dh is None:
                     return False
-                dhLoc = dh.idx
-                if abs(dhLoc - self._PenList[-1].loc) >= 4:
-                    Toolkit.append(self._PenList, Pen(loc=dhLoc, shape=dh.shape, value=dh.high))
+                dh.idx = dh.idx
+                if abs(dh.idx - self._PenList[-1].kidx) >= 4:
+                    Toolkit.append(self._PenList, Pen(kidx=dh.idx, shape=dh.shape, value=dh.high))
                     return True
                 else:
                     return False
@@ -360,12 +443,12 @@ class Chan(object):
 
 
 def resample(timedelta, df):
-    times = int(math.ceil(pd.Timedelta(timedelta) / (df.iloc[1].name - df.iloc[0].name)))
+    times = int(math.ceil(pd.Timedelta(timedelta) / (df.ikidx[1].name - df.ikidx[0].name)))
     newdf = pd.DataFrame(columns=df.columns)
     for i in xrange(0, df.shape[0], times):
         end = i + times
         end = end if end <= df.shape[0] else df.shape[0]
-        newdf.loc[df.ix[end - 1].name] = {'high': max(df[i:i + times].high.values),
+        newdf.kidx[df.ix[end - 1].name] = {'high': max(df[i:i + times].high.values),
                                           'low': min(df[i:i + times].low.values)}
     return newdf
 
@@ -404,17 +487,17 @@ def addLine1(ax, list, **kwargs):
 
 
 def addPen(ax, list, **kwargs):
-    # df.iloc[int(list.iloc[0]['loc'])].high
+    # df.ikidx[int(list.ikidx[0]['kidx'])].high
     if len(list) < 2:
         return
     for i in xrange(len(list) - 1):
         itPen1 = list[i]
         itPen2 = list[i + 1]
-        vline = Line2D(xdata=(itPen1.loc, itPen2.loc), ydata=(itPen1.value, itPen2.value), **kwargs)
+        vline = Line2D(xdata=(itPen1.kidx, itPen2.kidx), ydata=(itPen1.value, itPen2.value), **kwargs)
         ax.add_line(vline)
-        ax.text(itPen1.loc, itPen1.value, i, color='cyan', fontsize='14')
+        ax.text(itPen1.kidx, itPen1.value, i, color='cyan', fontsize='14')
     indexLast = len(list) - 1
-    ax.text(list[indexLast].loc, list[indexLast].value, indexLast, color='cyan', fontsize='14')
+    ax.text(list[indexLast].kidx, list[indexLast].value, indexLast, color='cyan', fontsize='14')
     ax.autoscale_view()
 
 
@@ -437,7 +520,7 @@ def no_picture():
 
     print ('ch cost:%d' % (nanotime.now() - st).milliseconds())
 
-    print ch._KlineList
+    #print ch._KlineList
     print ch._PenList
     # print tw.getSequence()
 
@@ -507,8 +590,8 @@ def picture2():
 
     autodates = AutoDateLocator()
     for _ax in ax:
-        _ax.xaxis.set_major_locator(DayLocator())
-        _ax.xaxis.set_minor_locator(MinuteLocator(interval=30))
+        _ax.xaxis.set_major_kidxator(DayLocator())
+        _ax.xaxis.set_minor_kidxator(MinuteLocator(interval=30))
         _ax.xaxis.set_major_formatter(DateFormatter('%m/%d'))
         _ax.xaxis.set_minor_formatter(DateFormatter('%H:%M'))
         _ax.xaxis_date()
@@ -518,5 +601,5 @@ def picture2():
     plt.show()
 
 
-no_picture()
-#picture3()
+#no_picture()
+picture1()
