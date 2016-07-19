@@ -15,7 +15,10 @@ import numba
 from pylab import *
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
-
+mpl.rcParams['figure.subplot.top'] = 0.96
+mpl.rcParams['figure.subplot.bottom'] = 0.03
+mpl.rcParams['figure.subplot.left'] = 0.03
+mpl.rcParams['figure.subplot.right'] = 0.98
 st = nanotime.now()
 hqdatadir = 'D:\TdxW_HuaTai\T0002\export2'
 code = '999999'
@@ -284,38 +287,13 @@ class Chan(object):
         # 生成笔的最后的两点是会变的，所以只关注笔的最后两点之前的
         # 笔的方向可以通过终点的类型来判断，如果是'u'则是向上笔，如果是'd'则是向下笔
         # 首次开始
-        # 笔的数量小于3时，即笔的端点小于4时，不可能形成线段
-        if len(self._PenPointList) < 4:
+        # 笔的数量小于3时，即笔的端点小于4时，算上最后两点是不确定的，所以这里应该是5，不可能形成线段
+        if len(self._PenPointList) < 5:
             return
 
         #首次开始，第一个线段的生成
         if len(self._LinePointList) < 2:
-            if self._pen.shape[0] % 2 == 0:
-                newpen = {'bkidx': self._pen.ikidx[-3]['kidx'],
-                          'bvalue': self._pen.ikidx[-3]['value'],
-                          'ekidx': self._pen.ikidx[-2]['kidx'],
-                          'evalue': self._pen.ikidx[-2]['value'],
-                          'high': max(self._pen.ikidx[-3]['value'], self._pen.ikidx[-2]['value']),
-                          'low': min(self._pen.ikidx[-3]['value'], self._pen.ikidx[-2]['value'])
-                          }
-                self._procContain(self._sequence,
-                                  True if self._pen.ikidx[0, self._pen.columns.get_kidx('shape')] == 'd' else False,
-                                  newpen)
-
-                # self._sequence.kidx[self._sequence.shape[0]] = {'bkidx': self._pen.ikidx[-3]['kidx'],
-                #                                                'bvalue': self._pen.ikidx[-3]['value'],
-                #                                                'ekidx': self._pen.ikidx[-2]['kidx'],
-                #                                                'evalue': self._pen.ikidx[-2]['value'],
-                #                                                'high': max(self._pen.ikidx[-3]['value'], self._pen.ikidx[-2]['value']),
-                #                                                'low': min(self._pen.ikidx[-3]['value'], self._pen.ikidx[-2]['value'])
-                #                                                }
-                # shape = self._pen.ikidx[0, self._pen.columns.get_kidx('shape')] == 'u'
-                # #向下笔开始，笔的起点为顶分型
-                # if shape == 'u':
-                #     self._sequence.kidx[df.shape[0]] = {'kidx': 25, 'shape': 'u', 'value': 2568}
-                # #向上笔开始，笔的起点为底分型
-                # elif shape == 'd':
-                #     pass
+            self._seqBeginPoint = 0
         else:
             #如果前一线段的结束点的分型为顶分型，说明上一线段的方向是从底到顶的向上线段，所以下一个线段的方向将从顶到底的向下线段
             #前一线段的结束点其实也相当于当前线段的开始点，如果当前线段的开始点为顶分型，则方向将会是从顶到底的向下线段
@@ -323,7 +301,7 @@ class Chan(object):
 
             self._seqBeginPoint = self._LinePointList[-1].pidx if len(self._SeqList) < 1 else self._SeqList[-1].pidx
             #要略去最后两个笔的端点self._seqBeginPoint + 2  < len(self._PenPointList) - 2才符合
-            if self._seqBeginPoint > len(self._PenPointList) - 4:
+            if self._seqBeginPoint > len(self._PenPointList) - 5:
                 return
             else:
                 newsq = Seq(bpidx = self._PenPointList[self._seqBeginPoint + 1].idx,
@@ -332,9 +310,7 @@ class Chan(object):
                             evalue = self._PenPointList[self._seqBeginPoint + 2].value,
                             high = max(self._PenPointList[self._seqBeginPoint + 1].value, self._PenPointList[self._seqBeginPoint + 2].value),
                             low = min(self._PenPointList[self._seqBeginPoint + 1].value, self._PenPointList[self._seqBeginPoint + 2].value))
-
-                
-
+                Toolkit.procContain(self._SeqList, True if self._LinePointList[-1].shape == 'd' else False, newsq)
 
 
 
