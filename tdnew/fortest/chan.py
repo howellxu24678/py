@@ -55,6 +55,7 @@ class Kline(Base):
         self.high = kwargs['high']
         self.low = kwargs['low']
         self.shape = kwargs['shape'] if 'shape' in kwargs else 'un'
+        self.time = kwargs['time']
 
 
 class PenPoint(Base):
@@ -240,7 +241,7 @@ class Chan(object):
 
     # @profile
     def onNewKline(self, newkline_):
-        newkline = Kline(high = newkline_.high, low = newkline_.low)
+        newkline = Kline(high = newkline_.high, low = newkline_.low, time=newkline_.name)
         self.procKlineContain(self._KlineList, newkline)
         if self.procShape():
             self.procPen()
