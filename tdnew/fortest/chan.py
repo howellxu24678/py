@@ -38,7 +38,7 @@ print ('load txt data cost:%d' % (nanotime.now() - st).milliseconds())
 
 
 class Base(object):
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.idx = 0
 
     def __str__(self):
@@ -50,7 +50,7 @@ class Base(object):
 
 class Kline(Base):
     def __init__(self, **kwargs):
-        super(Kline, self).__init__()
+        super(Kline, self).__init__(**kwargs)
         # shape 用于区分是顶分型还是底分型
         self.high = kwargs['high']
         self.low = kwargs['low']
@@ -59,7 +59,7 @@ class Kline(Base):
 
 class PenPoint(Base):
     def __init__(self, **kwargs):
-        super(PenPoint, self).__init__()
+        super(PenPoint, self).__init__(**kwargs)
         # kidx在标准k线列表中所处的index，value顶点或者底点的值，shape顶分型还是底分型
         self.kidx = kwargs['kidx']
         self.value = kwargs['value']
@@ -67,11 +67,19 @@ class PenPoint(Base):
         self.stable = 0
 
 
+class LinePoint(PenPoint):
+    def __init__(self, **kwargs):
+        super(LinePoint, self).__init__(**kwargs)
+        # kidx在标准k线列表中所处的index，pidx在笔列表中所处的index,value顶点或者底点的值，shape顶分型还是底分型
+        self.pidx = kwargs['pidx']
+
+
+
 class Seq(Base):
     def __init__(self, **kwargs):
-        super(Seq, self).__init__()
-        self.bkidx = kwargs['bkidx']
-        self.ekidx = kwargs['ekidx']
+        super(Seq, self).__init__(**kwargs)
+        self.bpidx = kwargs['bpidx']
+        self.epidx = kwargs['epidx']
         self.bvalue = kwargs['bvalue']
         self.evalue = kwargs['evalue']
         self.high = kwargs['high'] if 'high' in kwargs else 'un'
@@ -79,6 +87,8 @@ class Seq(Base):
 
 
 class Toolkit(object):
+    _shapeVariableSet = ['na', 'u', 'd']
+    _shapeUpDown = ['u', 'd']
     def __init__(self):
         pass
 
@@ -108,19 +118,31 @@ class Toolkit(object):
     def getShape(line1, line2, line3):
         # 顶分型
         if line2.high > line1.high \
-                and line2.high > line3.high \
-                and line2.low > line1.low \
-                and line2.low > line3.low:
+                and line2.high > line3.high:
             return 'u'
         # 底分型
-        elif line2.high < line1.high \
-                and line2.high < line3.high \
-                and line2.low < line1.low \
+        elif line2.low < line1.low \
                 and line2.low < line3.low:
             return 'd'
         # 未知情况
         else:
             return 'na'
+
+        # # 顶分型
+        # if line2.high > line1.high \
+        #         and line2.high > line3.high \
+        #         and line2.low > line1.low \
+        #         and line2.low > line3.low:
+        #     return 'u'
+        # # 底分型
+        # elif line2.high < line1.high \
+        #         and line2.high < line3.high \
+        #         and line2.low < line1.low \
+        #         and line2.low < line3.low:
+        #     return 'd'
+        # # 未知情况
+        # else:
+        #     return 'na'
 
 
     @staticmethod
@@ -131,8 +153,8 @@ class Toolkit(object):
 
     @staticmethod
     # @profile
-    def procContain(list, isUp, newkline):
-        if len(list) < 1 or not Toolkit.isContain(list[-1], newkline):
+    def procContain(list, isUp, newkline, needproc = True):
+        if not needproc or len(list) < 1 or not Toolkit.isContain(list[-1], newkline):
             Toolkit.append(list, newkline)
         else:
             # 高点取高值，低点也取高值，简单的说就是“上升取高高”
@@ -148,7 +170,25 @@ class Toolkit(object):
             # 递归处理包含关系，有可能出现处理包含之后的元素和之前的元素还存在包含关系
             return Toolkit.procContain(list, isUp, newkline)
 
+    @staticmethod
+    def procShape(list):
+        has_new_shape = False
+        if len(list) < 3:
+            return has_new_shape
+        for i in xrange(2, len(list)):
+            # 性能优化，只做一次推断，不重复推断
+            if list[-i].shape in Toolkit._shapeVariableSet:
+                break
 
+            _shape = Toolkit.getShape(
+                list[-i - 1],
+                list[-i],
+                list[-i + 1])
+            list[-i].shape = _shape
+            if _shape in Toolkit._shapeUpDown:
+                has_new_shape = True
+
+        return has_new_shape
     # 方向（属于向上笔还是向下笔）
     @staticmethod
     def getDirect(pen_start, pen_end):
@@ -191,9 +231,9 @@ class Toolkit(object):
         else:
             print 'updatePen error'
 
-    @staticmethod
-    def addPen(penList, kidx, value):
-        Toolkit.append(penList, PenPoint())
+    # @staticmethod
+    # def addPen(penList, kidx, value):
+    #     Toolkit.append(penList, PenPoint())
 
 
 
@@ -212,11 +252,11 @@ class Chan(object):
         self._SeqList = []
 
         # 线段
-        self._LineList = []
+        self._LinePointList = []
 
-        self._shapeVariableSet = ['na', 'u', 'd']
+        #self._shapeVariableSet = ['na', 'u', 'd']
         self._shapeUpDown = ['u','d']
-        self._penBeginSearch = 0
+        self._seqBeginPoint = 0
 
     # @profile
     def procKlineContain(self, list, newkline):
@@ -229,7 +269,7 @@ class Chan(object):
     def onNewKline(self, newkline_):
         newkline = Kline(high = newkline_.high, low = newkline_.low)
         self.procKlineContain(self._KlineList, newkline)
-        if self.procShape():
+        if Toolkit.procShape(self._KlineList):
             if self.procPen2():
                 pass
                 #self.procLine()
@@ -240,16 +280,15 @@ class Chan(object):
         #     self.procLine()
 
     def procLine(self):
-        # 生成的最后一笔是会变的
+        # 生成笔的最后的两点是会变的，所以只关注笔的最后两点之前的
         # 笔的方向可以通过终点的类型来判断，如果是'u'则是向上笔，如果是'd'则是向下笔
         # 首次开始
         # 笔的数量小于3时，即笔的端点小于4时，不可能形成线段
         if len(self._PenPointList) < 4:
             return
-        #首次开始，第一个线段的生成
-        if len(self._LineList) < 2:
-            #if self._PenPointList
 
+        #首次开始，第一个线段的生成
+        if len(self._LinePointList) < 2:
             if self._pen.shape[0] % 2 == 0:
                 newpen = {'bkidx': self._pen.ikidx[-3]['kidx'],
                           'bvalue': self._pen.ikidx[-3]['value'],
@@ -277,7 +316,26 @@ class Chan(object):
                 # elif shape == 'd':
                 #     pass
         else:
-            pass
+            #如果前一线段的结束点的分型为顶分型，说明上一线段的方向是从底到顶的向上线段，所以下一个线段的方向将从顶到底的向下线段
+            #前一线段的结束点其实也相当于当前线段的开始点，如果当前线段的开始点为顶分型，则方向将会是从顶到底的向下线段
+            #if len(self._PenPointList) - 2 <
+
+            self._seqBeginPoint = self._LinePointList[-1].pidx if len(self._SeqList) < 1 else self._SeqList[-1].pidx
+            #要略去最后两个笔的端点self._seqBeginPoint + 2  < len(self._PenPointList) - 2才符合
+            if self._seqBeginPoint > len(self._PenPointList) - 4:
+                return
+            else:
+                newsq = Seq(bpidx = self._PenPointList[self._seqBeginPoint + 1].idx,
+                            bvalue= self._PenPointList[self._seqBeginPoint + 1].value,
+                            epidx = self._PenPointList[self._seqBeginPoint + 2].idx,
+                            evalue = self._PenPointList[self._seqBeginPoint + 2].value,
+                            high = max(self._PenPointList[self._seqBeginPoint + 1].value, self._PenPointList[self._seqBeginPoint + 2].value),
+                            low = min(self._PenPointList[self._seqBeginPoint + 1].value, self._PenPointList[self._seqBeginPoint + 2].value))
+
+                
+
+
+
 
     #获取笔所在端点的值，用于判断是否与之前设定的值一致，否则进行修改
     def getPenPoint(self, penIdxFrom):
@@ -414,25 +472,7 @@ class Chan(object):
                 return True
         return False
 
-    # @profile
-    def procShape(self):
-        has_new_shape = False
-        if len(self._KlineList) < 3:
-            return has_new_shape
-        for i in xrange(2, len(self._KlineList)):
-            # 性能优化，只做一次推断，不重复推断
-            if self._KlineList[-i].shape in self._shapeVariableSet:
-                break
 
-            _shape = Toolkit.getShape(
-                self._KlineList[-i - 1],
-                self._KlineList[-i],
-                self._KlineList[-i + 1])
-            self._KlineList[-i].shape = _shape
-            if _shape in self._shapeUpDown:
-                has_new_shape = True
-
-        return has_new_shape
 
 def resample(timedelta, df):
     times = int(math.ceil(pd.Timedelta(timedelta) / (df.ikidx[1].name - df.ikidx[0].name)))
