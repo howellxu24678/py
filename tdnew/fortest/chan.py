@@ -14,6 +14,8 @@ import numba
 
 from pylab import *
 
+MIN_FLOAT = 1e-4
+
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 mpl.rcParams['figure.subplot.top'] = 0.96
 mpl.rcParams['figure.subplot.bottom'] = 0.03
@@ -159,8 +161,8 @@ class Toolkit(object):
 
     @staticmethod
     # @profile
-    def procContain(list, isUp, newkline, needproc = True):
-        if not needproc or len(list) < 1 or not Toolkit.isContain(list[-1], newkline):
+    def procContain(list, isUp, newkline):
+        if len(list) < 1 or not Toolkit.isContain(list[-1], newkline):
             Toolkit.append(list, newkline)
         else:
             # 高点取高值，低点也取高值，简单的说就是“上升取高高”
@@ -175,6 +177,37 @@ class Toolkit(object):
             list.pop()
             # 递归处理包含关系，有可能出现处理包含之后的元素和之前的元素还存在包含关系
             return Toolkit.procContain(list, isUp, newkline)
+
+    @staticmethod
+    # @profile
+    def procSeqContain(list, isUp, newseq, needproc = True):
+        if not needproc or len(list) < 1 or not Toolkit.isContain(list[-1], newseq):
+            Toolkit.append(list, newseq)
+        else:
+            # 高点取高值，低点也取高值，简单的说就是“上升取高高”
+            if isUp:
+                if abs(list[-1].high - newseq.high) > MIN_FLOAT:
+                    newseq.bvalue = newseq.high = list[-1].high
+                    newseq.bpidx = list[-1].bpidx
+                else:
+                    newseq.evalue = newseq.low = list[-1].low
+                    newseq.epidx = list[-1].epidx
+                # newseq.high = max(list[-1].high, newseq.high)
+                # newseq.low = max(list[-1].low, newseq.low)
+            # 高点取低值，低点也取低值，简单的说就是“下降取低低”
+            else:
+                if abs(list[-1].high - newseq.high) > MIN_FLOAT:
+                    newseq.bvalue = newseq.low = list[-1].low
+                    newseq.bpidx = list[-1].bpidx
+                else:
+                    newseq.evalue = newseq.high = list[-1].high
+                    newseq.epidx = list[-1].epidx
+                # newseq.high = min(list[-1].high, newseq.high)
+                # newseq.low = min(list[-1].low, newseq.low)
+            # 处理完包含关系后，将前一个删除，只保留最终处理完的结果
+            list.pop()
+            # 递归处理包含关系，有可能出现处理包含之后的元素和之前的元素还存在包含关系
+            return Toolkit.procSeqContain(list, isUp, newseq, needproc)
 
     @staticmethod
     def procShape(list):
@@ -318,7 +351,7 @@ class Chan(object):
                                  self._PenPointList[self._curFirstSeqBeginPenPoint + 2].value),
                         low=min(self._PenPointList[self._curFirstSeqBeginPenPoint + 1].value,
                                 self._PenPointList[self._curFirstSeqBeginPenPoint + 2].value))
-            Toolkit.procContain(self._FirstSeqList, self.getUp(), newsq)
+            Toolkit.procSeqContain(self._FirstSeqList, self.getUp(), newsq)
             self._curFirstSeqBeginPenPoint += 2
             if Toolkit.procShape(self._FirstSeqList):
                 # 第一种情况（第一第二元素没有缺口）
@@ -340,7 +373,7 @@ class Chan(object):
                                  self._PenPointList[self._curSecondSeqBeginPenPoint + 2].value),
                         low=min(self._PenPointList[self._curSecondSeqBeginPenPoint + 1].value,
                                 self._PenPointList[self._curSecondSeqBeginPenPoint + 2].value))
-            Toolkit.procContain(self._SecondSeqList, not self.getUp(), newsq)
+            Toolkit.procSeqContain(self._SecondSeqList, not self.getUp(), newsq)
             self._curSecondSeqBeginPenPoint += 2
             if Toolkit.procShape(self._SecondSeqList):
                 #第二特征序列出现跟前一线段端点一样的分型，说明第二种情况下的条件成立，线段形成
@@ -373,13 +406,13 @@ class Chan(object):
         else:
             self.addSecondSeq()
 
-        if len(self._FirstSeqList) > 1:
-            print '_FirstSeqList', self._FirstSeqList
-        if len(self._SecondSeqList) > 1:
-            print '_SecondSeqList', self._SecondSeqList
-        if len(self._LinePointList) > 2:
-            print '_LinePointList', self._LinePointList
-        print '----------------------------------------'
+        # if len(self._FirstSeqList) > 1:
+        #     print '_FirstSeqList', self._FirstSeqList
+        # if len(self._SecondSeqList) > 1:
+        #     print '_SecondSeqList', self._SecondSeqList
+        # if len(self._LinePointList) > 2:
+        #     print '_LinePointList', self._LinePointList
+        # print '----------------------------------------'
 
 
 
