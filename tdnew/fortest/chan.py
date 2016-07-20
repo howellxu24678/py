@@ -41,7 +41,7 @@ print ('load txt data cost:%d' % (nanotime.now() - st).milliseconds())
 
 
 class Base(object):
-    def __init__(self, **kwargs):
+    def __init__(self):
         self.idx = 0
 
     def __str__(self):
@@ -53,7 +53,7 @@ class Base(object):
 
 class Kline(Base):
     def __init__(self, **kwargs):
-        super(Kline, self).__init__(**kwargs)
+        super(Kline, self).__init__()
         # shape 用于区分是顶分型还是底分型
         self.high = kwargs['high']
         self.low = kwargs['low']
@@ -63,7 +63,7 @@ class Kline(Base):
 
 class PenPoint(Base):
     def __init__(self, **kwargs):
-        super(PenPoint, self).__init__(**kwargs)
+        super(PenPoint, self).__init__()
         # kidx在标准k线列表中所处的index，value顶点或者底点的值，shape顶分型还是底分型
         self.kidx = kwargs['kidx']
         self.value = kwargs['value']
@@ -71,23 +71,25 @@ class PenPoint(Base):
         self.stable = 0
 
 
-class LinePoint(PenPoint):
+class LinePoint(Base):
     def __init__(self, **kwargs):
-        super(LinePoint, self).__init__(**kwargs)
+        super(LinePoint, self).__init__()
         # kidx在标准k线列表中所处的index，pidx在笔列表中所处的index,value顶点或者底点的值，shape顶分型还是底分型
+        #pidx在笔列表中所处的index
         self.pidx = kwargs['pidx']
 
 
 
 class Seq(Base):
     def __init__(self, **kwargs):
-        super(Seq, self).__init__(**kwargs)
+        super(Seq, self).__init__()
         self.bpidx = kwargs['bpidx']
         self.epidx = kwargs['epidx']
         self.bvalue = kwargs['bvalue']
         self.evalue = kwargs['evalue']
         self.high = kwargs['high'] if 'high' in kwargs else 'un'
         self.low = kwargs['low'] if 'low' in kwargs else 'un'
+        self.shape = kwargs['shape'] if 'shape' in kwargs else 'un'
 
 
 class Toolkit(object):
@@ -235,11 +237,14 @@ class Toolkit(object):
         else:
             print 'updatePen error'
 
-    # @staticmethod
-    # def addPen(penList, kidx, value):
-    #     Toolkit.append(penList, PenPoint())
-
-
+    @staticmethod
+    def checkBeginPoint(penlist, idxFrom):
+        if penlist[idxFrom].shape == 'd' and penlist[idxFrom + 3].value > penlist[idxFrom + 1].value:
+            return True
+        elif penlist[idxFrom].shape == 'u' and penlist[idxFrom + 3].value < penlist[idxFrom + 1].value:
+            return True
+        else:
+            return False
 
 
 class Chan(object):
@@ -252,15 +257,21 @@ class Chan(object):
         #笔的端点list
         self._PenPointList = []
 
-        # 特征序列
-        self._SeqList = []
+        #第一特征序列
+        self._FirstSeqList = []
+
+        #第二特征序列
+        self._SecondSeqList = []
+
+        self._bCheckSecondSeqListFlag = False
 
         # 线段
         self._LinePointList = []
 
         #self._shapeVariableSet = ['na', 'u', 'd']
         self._shapeUpDown = ['u','d']
-        self._seqBeginPoint = 0
+
+        self._print = False
 
     # @profile
     def procKlineContain(self, list, newkline):
@@ -275,13 +286,75 @@ class Chan(object):
         self.procKlineContain(self._KlineList, newkline)
         if Toolkit.procShape(self._KlineList):
             if self.procPen2():
-                pass
-                #self.procLine()
-        # self.procShape()
-        # self.procPen2()
-        # # 有新笔生成才需要进行线段的处理
-        # if self.procPen():
-        #     self.procLine()
+                self.procLine()
+
+    def getUp(self):
+        if len(self._LinePointList) > 0:
+            return True if self._PenPointList[self._LinePointList[-1].pidx].shape == 'd' else False
+        return True
+
+    #判断第一特征序列的第一和第二元素是否存在缺口
+    def hasGap(self):
+        if self._FirstSeqList[-2].shape == 'u'and self._FirstSeqList[-2].low > self._FirstSeqList[-3].high:
+            return True
+        elif self._FirstSeqList[-2].shape == 'd' and self._FirstSeqList[-2].high < self._FirstSeqList[-3].low:
+            return True
+        else:
+            return False
+
+    #添加新的线段端点
+    def addNewLinePoint(self):
+        Toolkit.append(self._LinePointList, LinePoint(pidx=self._FirstSeqList[-2].bpidx))
+        self._curFirstSeqBeginPenPoint = self._FirstSeqList[-2].bpidx
+        self._FirstSeqList = []
+
+    def addFirstSeq(self):
+        while (self._curFirstSeqBeginPenPoint <= len(self._PenPointList) - 5):
+            newsq = Seq(bpidx=self._PenPointList[self._curFirstSeqBeginPenPoint + 1].idx,
+                        bvalue=self._PenPointList[self._curFirstSeqBeginPenPoint + 1].value,
+                        epidx=self._PenPointList[self._curFirstSeqBeginPenPoint + 2].idx,
+                        evalue=self._PenPointList[self._curFirstSeqBeginPenPoint + 2].value,
+                        high=max(self._PenPointList[self._curFirstSeqBeginPenPoint + 1].value,
+                                 self._PenPointList[self._curFirstSeqBeginPenPoint + 2].value),
+                        low=min(self._PenPointList[self._curFirstSeqBeginPenPoint + 1].value,
+                                self._PenPointList[self._curFirstSeqBeginPenPoint + 2].value))
+            Toolkit.procContain(self._FirstSeqList, self.getUp(), newsq)
+            self._curFirstSeqBeginPenPoint += 2
+            if Toolkit.procShape(self._FirstSeqList):
+                # 第一种情况（第一第二元素没有缺口）
+                if not self.hasGap():
+                    self.addNewLinePoint()
+                    break
+                # 第二种情况（第一第二元素有缺口）,判断第二特征序列是否存在分型
+                else:
+                    self._bCheckSecondSeqListFlag = True
+                    self._curSecondSeqBeginPenPoint = self._FirstSeqList[-2].bpidx
+
+    def addSecondSeq(self):
+        while (self._curSecondSeqBeginPenPoint <= len(self._PenPointList) - 5):
+            newsq = Seq(bpidx=self._PenPointList[self._curSecondSeqBeginPenPoint + 1].idx,
+                        bvalue=self._PenPointList[self._curSecondSeqBeginPenPoint + 1].value,
+                        epidx=self._PenPointList[self._curSecondSeqBeginPenPoint + 2].idx,
+                        evalue=self._PenPointList[self._curSecondSeqBeginPenPoint + 2].value,
+                        high=max(self._PenPointList[self._curSecondSeqBeginPenPoint + 1].value,
+                                 self._PenPointList[self._curSecondSeqBeginPenPoint + 2].value),
+                        low=min(self._PenPointList[self._curSecondSeqBeginPenPoint + 1].value,
+                                self._PenPointList[self._curSecondSeqBeginPenPoint + 2].value))
+            Toolkit.procContain(self._SecondSeqList, not self.getUp(), newsq)
+            self._curSecondSeqBeginPenPoint += 2
+            if Toolkit.procShape(self._SecondSeqList):
+                #第二特征序列出现跟前一线段端点一样的分型，说明第二种情况下的条件成立，线段形成
+                #前一线段的分型如果是底分型，则当前线段应该是一个上涨线段，那么第二特征序列应该找一个底分型(原文中没有说明没有找到对应分型时的处理)
+                if self._SecondSeqList[-2].shape == self._PenPointList[self._LinePointList[-1].pidx].shape:
+                    self.addNewLinePoint()
+                    # self._bCheckSecondSeqListFlag = False
+                    # self._SecondSeqList = []
+                    # break
+                #如果第二种情况不成立，也就是想要形成底分型的，却找到了顶分型，说明线段还没有结束，继续往后寻找
+                self._bCheckSecondSeqListFlag = False
+                self._SecondSeqList = []
+                break
+
 
     def procLine(self):
         # 生成笔的最后的两点是会变的，所以只关注笔的最后两点之前的
@@ -291,26 +364,22 @@ class Chan(object):
         if len(self._PenPointList) < 5:
             return
 
-        #首次开始，第一个线段的生成
-        if len(self._LinePointList) < 2:
-            self._seqBeginPoint = 0
-        else:
-            #如果前一线段的结束点的分型为顶分型，说明上一线段的方向是从底到顶的向上线段，所以下一个线段的方向将从顶到底的向下线段
-            #前一线段的结束点其实也相当于当前线段的开始点，如果当前线段的开始点为顶分型，则方向将会是从顶到底的向下线段
-            #if len(self._PenPointList) - 2 <
+        if len(self._LinePointList) < 1:
+            self._curFirstSeqBeginPenPoint = 0 if Toolkit.checkBeginPoint(self._PenPointList, 0) else 1
+            Toolkit.append(self._LinePointList, LinePoint(pidx=self._curFirstSeqBeginPenPoint))
 
-            self._seqBeginPoint = self._LinePointList[-1].pidx if len(self._SeqList) < 1 else self._SeqList[-1].pidx
-            #要略去最后两个笔的端点self._seqBeginPoint + 2  < len(self._PenPointList) - 2才符合
-            if self._seqBeginPoint > len(self._PenPointList) - 5:
-                return
-            else:
-                newsq = Seq(bpidx = self._PenPointList[self._seqBeginPoint + 1].idx,
-                            bvalue= self._PenPointList[self._seqBeginPoint + 1].value,
-                            epidx = self._PenPointList[self._seqBeginPoint + 2].idx,
-                            evalue = self._PenPointList[self._seqBeginPoint + 2].value,
-                            high = max(self._PenPointList[self._seqBeginPoint + 1].value, self._PenPointList[self._seqBeginPoint + 2].value),
-                            low = min(self._PenPointList[self._seqBeginPoint + 1].value, self._PenPointList[self._seqBeginPoint + 2].value))
-                Toolkit.procContain(self._SeqList, True if self._LinePointList[-1].shape == 'd' else False, newsq)
+        if not self._bCheckSecondSeqListFlag:
+            self.addFirstSeq()
+        else:
+            self.addSecondSeq()
+
+        if len(self._FirstSeqList) > 1:
+            print '_FirstSeqList', self._FirstSeqList
+        if len(self._SecondSeqList) > 1:
+            print '_SecondSeqList', self._SecondSeqList
+        if len(self._LinePointList) > 2:
+            print '_LinePointList', self._LinePointList
+        print '----------------------------------------'
 
 
 
@@ -354,6 +423,7 @@ class Chan(object):
                                         value= kline.high if kline.shape == 'u' else kline.low))
                 if len(self._PenPointList) >= 3:
                     self._PenPointList[-3].stable = 1
+
 
     def rebuildPen(self, penIdxFrom):
         for idxF in range(penIdxFrom, 0):
@@ -531,7 +601,7 @@ def no_picture():
 
     #print ch._KlineList
     #print ch._PenPointList
-    # print tw.getSequence()
+    #print tw.getSequence()
 
 
 def picture1():
@@ -610,5 +680,5 @@ def picture2():
     plt.show()
 
 
-#no_picture()
-picture1()
+no_picture()
+#picture1()
