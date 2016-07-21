@@ -622,11 +622,16 @@ def addPen(ax, list, **kwargs):
         itPen2 = list[i + 1]
         vline = Line2D(xdata=(itPen1.kidx, itPen2.kidx), ydata=(itPen1.value, itPen2.value), **kwargs)
         ax.add_line(vline)
-        ax.text(itPen1.kidx, itPen1.value, i, color='cyan', fontsize='14')
+        ax.text(itPen1.kidx, itPen1.value, i, color='cyan', fontsize='10')
     indexLast = len(list) - 1
-    ax.text(list[indexLast].kidx, list[indexLast].value, indexLast, color='cyan', fontsize='14')
+    ax.text(list[indexLast].kidx, list[indexLast].value, indexLast, color='cyan', fontsize='10')
     ax.autoscale_view()
 
+# def addLine(ax, line, pen, **kwargs):
+#     if len(line) < 2 or len(pen) < 2:
+#         return
+#     for i in xrange(len(line) - 1):
+#         itLine1
 
 def addLine1_(ax, df, **kwargs):
     id1, id2 = 3, 10
@@ -668,12 +673,13 @@ def picture1():
     addLineDf(ax[0], dft, color='b')
     addLine1(ax[1], ch._KlineList, color='b')
     addPen(ax[1], ch._PenPointList, color='r')
-    addPen(ax[2], ch._PenPointList, color='r')
+    addPen(ax[2], ch._PenPointList, color='g', linestyle="-.")
+    addPen(ax[2], [ch._PenPointList[lp.pidx] for lp in ch._LinePointList], color='b')
+
 
     #print ch._PenPointList
     print ('ch cost:%d' % (nanotime.now() - st).milliseconds())
-    print ch._KlineList
-    print ch._PenPointList
+    print ch._LinePointList
     plt.show()
 
 def picture3():
@@ -728,5 +734,5 @@ def picture2():
     plt.show()
 
 
-no_picture()
-#picture1()
+#no_picture()
+picture1()
