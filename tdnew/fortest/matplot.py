@@ -386,8 +386,8 @@ def picture1():
     print 'pen'
     print tw.getPen()
 
-    # addLine1(ax[2], dft, color = 'r')
-    # addLine1(ax[2], tw.getdf(), color = 'b', linestyle = ':')
+    # addVerticalLine(ax[2], dft, color = 'r')
+    # addVerticalLine(ax[2], tw.getdf(), color = 'b', linestyle = ':')
     #plt.axhspan(xmin=0, xmax=1.2, facecolor='0.5', alpha=0.5)
     #plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.show()

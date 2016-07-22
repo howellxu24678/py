@@ -580,40 +580,48 @@ def resample(timedelta, df):
     return newdf
 
 
-def addLineDf(ax, df, **kwargs):
+def addVerticalLineDf(ax, df, **kwargs):
     for i in xrange(df.shape[0]):
         itDf = df.ix[i]
-        vline = Line2D(xdata=(i+0.5, i+0.5), ydata=(itDf['low'], itDf['high']), linewidth = 3, **kwargs)
+        vline = Line2D(xdata=(i, i), ydata=(itDf['low'], itDf['high']), **kwargs)
         ax.add_line(vline)
 
         #标识顶/底分型
         if 'shape' in itDf:
             if itDf['shape'] == 'u':
-                ax.text(i+0.5, itDf['high'], 'u', color = 'r')
+                ax.text(i+0.5, itDf['high']+0.5, '^', color = 'r')
             elif itDf['shape'] == 'd':
-                ax.text(i+0.5, itDf['low'], 'd', color = 'g')
+                ax.text(i+0.5, itDf['low']-0.5, '|', color = 'g')
 
     ax.grid(True)
     ax.autoscale_view()
 
-def addLine1(ax, list, **kwargs):
+#垂直线
+def addVerticalLine(ax, list, **kwargs):
     for i in xrange(len(list)):
         item = list[i]
-        vline = Line2D(xdata=(i + 0.5, i + 0.5), ydata=(item.low, item.high), linewidth=3, **kwargs)
+        vline = Line2D(xdata=(i, i), ydata=(item.low, item.high), **kwargs)
         ax.add_line(vline)
 
         # 标识顶/底分型
+        # if item.shape:
+        #     if item.shape == 'u':
+        #         ax.text(i-1, item.high+1, u'↑', color='r')
+        #     elif item.shape == 'd':
+        #         ax.text(i-1, item.low-2, u'↓', color='g')
+
         if item.shape:
             if item.shape == 'u':
-                ax.text(i + 0.5, item.high, 'u', color='r')
+                ax.text(i, item.high, u'↑',  horizontalalignment='center', verticalalignment='bottom', color='r')
             elif item.shape == 'd':
-                ax.text(i + 0.5, item.low, 'd', color='g')
+                ax.text(i, item.low - 1, u'↓', horizontalalignment='center', verticalalignment='top', color='g')
 
     ax.grid(True)
     ax.autoscale_view()
 
 
-def addPen(ax, list, **kwargs):
+#折线
+def addBrokenLine(ax, list, btext = True, **kwargs):
     # df.ikidx[int(list.ikidx[0]['kidx'])].high
     if len(list) < 2:
         return
@@ -622,9 +630,11 @@ def addPen(ax, list, **kwargs):
         itPen2 = list[i + 1]
         vline = Line2D(xdata=(itPen1.kidx, itPen2.kidx), ydata=(itPen1.value, itPen2.value), **kwargs)
         ax.add_line(vline)
-        ax.text(itPen1.kidx, itPen1.value, i, color='cyan', fontsize='10')
+        if btext:
+            ax.text(itPen1.kidx, itPen1.value, i, color='magenta', fontsize='10')
     indexLast = len(list) - 1
-    ax.text(list[indexLast].kidx, list[indexLast].value, indexLast, color='cyan', fontsize='10')
+    if btext:
+        ax.text(list[indexLast].kidx, list[indexLast].value, indexLast, color='magenta', fontsize='10')
     ax.autoscale_view()
 
 # def addLine(ax, line, pen, **kwargs):
@@ -670,11 +680,11 @@ def picture1():
     ax[0].set_title(u'原始数据')
     ax[1].set_title(u'处理包含关系并生成笔')
     ax[2].set_title(u'上一图中的笔')
-    addLineDf(ax[0], dft, color='b')
-    addLine1(ax[1], ch._KlineList, color='b')
-    addPen(ax[1], ch._PenPointList, color='r')
-    addPen(ax[2], ch._PenPointList, color='g', linestyle="-.")
-    addPen(ax[2], [ch._PenPointList[lp.pidx] for lp in ch._LinePointList], color='b')
+    addVerticalLineDf(ax[0], dft, color='b')
+    addVerticalLine(ax[1], ch._KlineList, color='b')
+    addBrokenLine(ax[1], ch._PenPointList, color='g', linestyle="-.")
+    addBrokenLine(ax[2], ch._PenPointList, color='g', linestyle="-.")
+    addBrokenLine(ax[2], [ch._PenPointList[lp.pidx] for lp in ch._LinePointList], False, color='b')
 
 
     #print ch._PenPointList
@@ -689,8 +699,8 @@ def picture3():
     for i in xrange(dft.shape[0]):
         fig, ax = plt.subplots(1, 1)
         ch.onNewKline(dft.ix[i])
-        addLine1(ax, ch._KlineList, color='b')
-        addPen(ax, ch._PenPointList, color='r')
+        addVerticalLine(ax, ch._KlineList, color='b')
+        addBrokenLine(ax, ch._PenPointList, color='r')
         plt.show()
 
 
