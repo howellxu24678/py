@@ -567,6 +567,23 @@ class Chan(object):
                 return True
         return False
 
+    @staticmethod
+    def has_shape(x):
+        return True if x.shape == 'u' or x.shape == 'd' else False
+
+
+    def procPen3(self):
+        #首次开始，从后往前-4的位置找相异的分型,找到之后还要往前找看有没有更高或者更低的
+        if len(self._PenPointList) < 2:
+            hasShapeList = [x for x in self._KlineList if x.shape == 'u' or x.shape == 'd']
+            hasShapeList = filter(has_shape, self._KlineList)
+            if len(hasShapeList) < 2:
+                return False
+
+        else:
+            pass
+
+
 
 
 def resample(timedelta, df):
