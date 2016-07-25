@@ -138,6 +138,25 @@ class Toolkit(object):
         else:
             return 'na'
 
+    @staticmethod
+    def checkIfUpShape(list):
+        if len(list) < 3:
+            return False
+
+        if list[-2].high >= list[-1].high and list[-2].high >= list[-3].high:
+            list[-2].shape = 'u'
+            return True
+        return False
+
+    @staticmethod
+    def checkIfDownShape(list):
+        if len(list) < 3:
+            return False
+
+        if list[-2].low <= list[-1].low and list[-2].low <= list[-3].low:
+            list[-2].shape = 'd'
+            return True
+        return False
 
     @staticmethod
     # @profile
@@ -378,6 +397,7 @@ class Chan(object):
         print '--------------------------'
 
     def addFirstSeq(self):
+        check_fun = Toolkit.checkIfDownShape if self._PenPointList[self._LinePointList[-1].pidx].shape == 'u' else Toolkit.checkIfUpShape
         while (self._curFirstSeqBeginPenPoint <= len(self._PenPointList) - 5):
             newsq = Seq(bpidx=self._PenPointList[self._curFirstSeqBeginPenPoint + 1].idx,
                         bvalue=self._PenPointList[self._curFirstSeqBeginPenPoint + 1].value,
@@ -395,22 +415,22 @@ class Chan(object):
                                                           newsq))
 
             self._curFirstSeqBeginPenPoint += 2
-            if Toolkit.procShape(self._FirstSeqList):
+            if check_fun(self._FirstSeqList):
                 if len(self._FirstSeqList) > 1:
                     print '_FirstSeqList', self._FirstSeqList
-
-                _shape = 'd' if self._PenPointList[self._LinePointList[-1].pidx].shape == 'u' else 'u'
-                if self._FirstSeqList[-2].shape == _shape:
-                    # 第一种情况（第一第二元素没有缺口）
-                    if not self.hasGap():
-                        self.addNewLinePoint()
-                        break
-                    # 第二种情况（第一第二元素有缺口）,判断第二特征序列是否存在分型
-                    else:
-                        self._bCheckSecondSeqListFlag = True
-                        self._curSecondSeqBeginPenPoint = self._FirstSeqList[-2].bpidx
+                # _shape = 'd' if self._PenPointList[self._LinePointList[-1].pidx].shape == 'u' else 'u'
+                # if self._FirstSeqList[-2].shape == _shape:
+                # 第一种情况（第一第二元素没有缺口）
+                if not self.hasGap():
+                    self.addNewLinePoint()
+                    break
+                # 第二种情况（第一第二元素有缺口）,判断第二特征序列是否存在分型
+                else:
+                    self._bCheckSecondSeqListFlag = True
+                    self._curSecondSeqBeginPenPoint = self._FirstSeqList[-2].bpidx
 
     def addSecondSeq(self):
+        check_fun = Toolkit.checkIfUpShape if self._PenPointList[self._LinePointList[-1].pidx].shape == 'u' else Toolkit.checkIfDownShape
         while (self._curSecondSeqBeginPenPoint <= len(self._PenPointList) - 5):
             newsq = Seq(bpidx=self._PenPointList[self._curSecondSeqBeginPenPoint + 1].idx,
                         bvalue=self._PenPointList[self._curSecondSeqBeginPenPoint + 1].value,
@@ -423,14 +443,14 @@ class Chan(object):
             Toolkit.procSeqContain(self._SecondSeqList, not self.getUp(), newsq)
 
             self._curSecondSeqBeginPenPoint += 2
-            if Toolkit.procShape(self._SecondSeqList):
+            if check_fun(self._SecondSeqList):
                 if len(self._SecondSeqList) > 1:
                     print '_SecondSeqList', self._SecondSeqList
                 #第二特征序列出现跟前一线段端点一样的分型，说明第二种情况下的条件成立，线段形成
                 #前一线段的分型如果是底分型，则当前线段应该是一个上涨线段，那么第二特征序列应该找一个底分型(原文中没有说明没有找到对应分型时的处理)
                 #shape = 'd' if self._PenPointList[self._LinePointList[-1].pidx].shape == 'u' else 'u'
-                if self._SecondSeqList[-2].shape == self._PenPointList[self._LinePointList[-1].pidx].shape:
-                    self.addNewLinePoint()
+                #if self._SecondSeqList[-2].shape == self._PenPointList[self._LinePointList[-1].pidx].shape:
+                self.addNewLinePoint()
                     # self._bCheckSecondSeqListFlag = False
                     # self._SecondSeqList = []
                     # break
