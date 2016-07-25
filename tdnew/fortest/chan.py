@@ -611,7 +611,7 @@ def picture1():
     ax[2].set_title(u'上一图中的笔')
     addVerticalLineDf(ax[0], dft, color='b')
     addVerticalLine(ax[1], ch._KlineList, color='cyan')
-    addBrokenLine(ax[1], ch._PenPointList, color='b', linestyle="-.")
+    addBrokenLine(ax[1], ch._PenPointList, color='b', linestyle="-")
     addBrokenLine(ax[2], ch._PenPointList, color='g', linestyle="-.")
     addBrokenLine(ax[2], [ch._PenPointList[lp.pidx] for lp in ch._LinePointList], False, color='b')
 
