@@ -15,6 +15,8 @@ import numba
 from pylab import *
 
 MIN_FLOAT = 1e-4
+#顶分型（含）与底分型（含）的连接线上必须至少有5根蜡烛线才能构成一笔, i+1>=5,即i>=4
+DISTANCE = 4
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 mpl.rcParams['figure.subplot.top'] = 0.96
@@ -136,22 +138,6 @@ class Toolkit(object):
         else:
             return 'na'
 
-        # # 顶分型
-        # if line2.high > line1.high \
-        #         and line2.high > line3.high \
-        #         and line2.low > line1.low \
-        #         and line2.low > line3.low:
-        #     return 'u'
-        # # 底分型
-        # elif line2.high < line1.high \
-        #         and line2.high < line3.high \
-        #         and line2.low < line1.low \
-        #         and line2.low < line3.low:
-        #     return 'd'
-        # # 未知情况
-        # else:
-        #     return 'na'
-
 
     @staticmethod
     # @profile
@@ -243,9 +229,9 @@ class Toolkit(object):
 
     @staticmethod
     def lineBreakByPen(seqlist, lineBeginShape, newsq):
-        if len(seqlist) < 2:
+        if len(seqlist) < 1:
             return False
-        for i in xrange(2, len(seqlist) + 1):
+        for i in xrange(1, len(seqlist) + 1):
             if (lineBeginShape == 'd' and newsq.low < seqlist[-i].high) \
                 or (lineBeginShape == 'u' and newsq.high > seqlist[-i].low):
                 return True
@@ -255,7 +241,7 @@ class Toolkit(object):
     @staticmethod
     # @profile
     def getUpHighPoint(subList):
-        upSubList = [x for x in subList if x.shape == 'u']
+        upSubList = filter(Toolkit.up_shape, subList)
         return max(upSubList, key=lambda x: x.high) if upSubList else None
 
 
@@ -263,17 +249,14 @@ class Toolkit(object):
     @staticmethod
     # @profile
     def getDownLowPoint(subList):
-        downSubList = [x for x in subList if x.shape == 'd']
+        downSubList = filter(Toolkit.down_shape, subList)
         return min(downSubList, key=lambda x: x.low) if downSubList else None
 
     @staticmethod
-    def updatePen(penList, idxFrom, kidx, value):
-        lastLoc = penList[idxFrom - 1].kidx if len(penList) > abs(idxFrom) else -4
-        if kidx - lastLoc >= 4:
-            penList[idxFrom].kidx = kidx
-            penList[idxFrom].value = value
-        else:
-            print 'updatePen error'
+    def updatePen(penList, idxFrom, kline):
+        value_ = kline.high if kline.shape == 'u' else kline.low
+        penList[idxFrom].kidx = kline.idx
+        penList[idxFrom].value = value_
 
     @staticmethod
     def checkBeginPoint(penlist, idxFrom):
@@ -283,6 +266,50 @@ class Toolkit(object):
             return True
         else:
             return False
+
+    @staticmethod
+    def has_shape(x):
+        return True if x.shape == 'u' or x.shape == 'd' else False
+
+    @staticmethod
+    def up_shape(x):
+        return True if x.shape == 'u' else False
+
+    @staticmethod
+    def down_shape(x):
+        return True if x.shape == 'd' else False
+
+    @staticmethod
+    def appendPen(penlist, kline):
+        value_ = kline.high if kline.shape == 'u' else kline.low
+        Toolkit.append(penlist, PenPoint(kidx=kline.idx, shape=kline.shape, value=value_))
+
+    #首次形成第一笔，从后往前找能形成笔(距离>=4)的相异分型
+    @staticmethod
+    def getFirstTwoPenPoint(penlist, klist):
+        hasShapeList = filter(Toolkit.has_shape, klist)
+        if len(hasShapeList) < 2:
+            return
+
+        secondKlineToAdd = hasShapeList[-1]
+        preOppoShapeList = filter(Toolkit.up_shape, hasShapeList) \
+            if secondKlineToAdd.shape == 'd' \
+            else filter(Toolkit.down_shape, hasShapeList)
+
+        if len(preOppoShapeList) < 1:
+            return
+
+        for i in range(1, len(preOppoShapeList) + 1):
+            #找到距离满足成笔条件的k线
+            if secondKlineToAdd.idx - preOppoShapeList[-i].idx >= DISTANCE:
+                #查看有没有地点更低或者高点更高的
+                subOppoShapeList = preOppoShapeList[:len(preOppoShapeList) - i + 1]
+                preKline = Toolkit.getUpHighPoint(subOppoShapeList) \
+                    if secondKlineToAdd.shape == 'd' \
+                    else Toolkit.getDownLowPoint(subOppoShapeList)
+                firstKlineToAdd = preKline if preKline.idx < preOppoShapeList[-i].idx else preOppoShapeList[-i]
+                Toolkit.appendPen(penlist, firstKlineToAdd)
+                Toolkit.appendPen(penlist, secondKlineToAdd)
 
 
 class Chan(object):
@@ -323,7 +350,7 @@ class Chan(object):
         newkline = Kline(high = newkline_.high, low = newkline_.low, time=newkline_.name)
         self.procKlineContain(self._KlineList, newkline)
         if Toolkit.procShape(self._KlineList):
-            if self.procPen2():
+            if self.procPen():
                 self.procLine()
 
     def getUp(self):
@@ -441,149 +468,46 @@ class Chan(object):
         fun = Toolkit.getUpHighPoint if self._PenPointList[penIdxFrom].shape == 'd' else Toolkit.getDownLowPoint
         return fun(self._KlineList[self._PenPointList[penIdxFrom].kidx:])
 
-    def checkPenFrom(self, penIdxFrom):
-        #如果该端点已经被确认过，则不需再进行修正
-        if self._PenPointList[penIdxFrom].stable:
-            return False
-
-        kline = self.getPenPoint(penIdxFrom)
-        if kline is None:
-            return False
-
-        if kline.idx > self._PenPointList[penIdxFrom].kidx:
-            Toolkit.updatePen(self._PenPointList,
-                              penIdxFrom,
-                              kline.idx,
-                              kline.high if self._PenPointList[penIdxFrom].shape == 'u' else kline.low)
-            return True
-
-    def addPenPoint(self):
-        while 1:
-            kline = self.getPenPointNext(-1)
-            if kline is None:
-                break
-            elif kline.idx - self._PenPointList[-1].kidx < 4:
-                break
-            else:
-                Toolkit.append(self._PenPointList,
-                               PenPoint(kidx=kline.idx,
-                                        shape=kline.shape,
-                                        value= kline.high if kline.shape == 'u' else kline.low))
-                if len(self._PenPointList) >= 3:
-                    self._PenPointList[-3].stable = 1
-
-
-    def rebuildPen(self, penIdxFrom):
-        for idxF in range(penIdxFrom, 0):
-            if self.checkPenFrom(idxF):
-                for pcount in range(1, abs(idxF)):
-                    self._PenPointList.pop()
-                break
-
-        self.addPenPoint()
-
-    #从idxFrom开始检查是否需要修改点的位置，返回需要修改的点的位置，然后删除后续的点
-    def checkPenPoint(self, penIdxFrom):
-        fun = Toolkit.getUpHighPoint if self._PenPointList[penIdxFrom].shape == 'u' else Toolkit.getDownLowPoint
-        kline = fun(self._KlineList[self._PenPointList[penIdxFrom].kidx:])
-        if kline is None:
+    #获取笔所在端点的下一个值，主要用于笔新端点的添加
+    def getPenPointNextDistance(self, penIdxFrom):
+        if self._PenPointList[penIdxFrom].kidx + DISTANCE > len(self._KlineList) - 1:
             return
-        
-        if kline.idx > self._PenPointList[penIdxFrom].kidx:
-            return penIdxFrom, kline.idx
 
-    # @profile
-    # 返回值为True：有新笔生成，False：没有新笔生成
+        fun = Toolkit.getUpHighPoint if self._PenPointList[penIdxFrom].shape == 'd' else Toolkit.getDownLowPoint
+        return fun(self._KlineList[self._PenPointList[penIdxFrom].kidx + DISTANCE:])
+
     def procPen(self):
-        # 首次开始
+        #首次开始，从后往前-4的位置找相异的分型,找到之后还要往前找看有没有更高或者更低的
         if len(self._PenPointList) < 2:
-            dh = Toolkit.getUpHighPoint(self._KlineList)
-            if dh is None:
-                return False
-            dl = Toolkit.getDownLowPoint(self._KlineList)
-            if dl is None:
-                return False
-
-            if abs(dh.idx - dl.idx) >= 4:
-                if dh.idx > dl.idx:
-                    Toolkit.append(self._PenPointList, PenPoint(kidx=dl.idx, shape=dl.shape, value=dl.low))
-                    Toolkit.append(self._PenPointList, PenPoint(kidx=dh.idx, shape=dh.shape, value=dh.high))
-                else:
-                    Toolkit.append(self._PenPointList, PenPoint(kidx=dh.idx, shape=dh.shape, value=dh.high))
-                    Toolkit.append(self._PenPointList, PenPoint(kidx=dl.idx, shape=dl.shape, value=dl.low))
-                return True
-            else:
-                return False
-        else:
-            self.rebuildPen(-1)
-
-    #@profile
-    # 返回值为True：有新笔生成，False：没有新笔生成
-    def procPen2(self):
-        # 首次开始
-        if len(self._PenPointList) < 2:
-            dh = Toolkit.getUpHighPoint(self._KlineList)
-            if dh is None:
-                return False
-            dl = Toolkit.getDownLowPoint(self._KlineList)
-            if dl is None:
-                return False
-
-            if abs(dh.idx - dl.idx) >= 4:
-                if dh.idx > dl.idx:
-                    Toolkit.append(self._PenPointList, PenPoint(kidx=dl.idx, shape=dl.shape, value=dl.low))
-                    Toolkit.append(self._PenPointList, PenPoint(kidx=dh.idx, shape=dh.shape, value=dh.high))
-                else:
-                    Toolkit.append(self._PenPointList, PenPoint(kidx=dh.idx, shape=dh.shape, value=dh.high))
-                    Toolkit.append(self._PenPointList, PenPoint(kidx=dl.idx, shape=dl.shape, value=dl.low))
-                return True
+            Toolkit.getFirstTwoPenPoint(self._PenPointList, self._KlineList)
         else:
             #先看当前高点或者地点是否有更新
             kline = self.getPenPoint(-1)
             if kline.idx > self._PenPointList[-1].kidx:
-                Toolkit.updatePen(self._PenPointList,
-                                  -1,
-                                  kline.idx,
-                                  kline.high if self._PenPointList[-1].shape == 'u' else kline.low)
+                Toolkit.updatePen(self._PenPointList, -1, kline)
                 return True
 
             kline = self.getPenPointNext(-1)
             if kline is None:
                 return False
+            #如果下一个高点或者低点与倒数第一个点构不成笔，但是比倒数第二个点更高或者更低，则删除倒数第一个点，更新倒数第二个点
             elif kline.idx - self._PenPointList[-1].kidx < 4:
                 if (self._PenPointList[-2].shape == 'u' and kline.high > self._PenPointList[-2].value) or \
                     (self._PenPointList[-2].shape == 'd' and kline.low < self._PenPointList[-2].value):
                     self._PenPointList.pop()
-                    Toolkit.updatePen(self._PenPointList,
-                                      -1,
-                                      kline.idx,
-                                      kline.high if self._PenPointList[-1].shape == 'u' else kline.low)
+                    Toolkit.updatePen(self._PenPointList, -1, kline)
                     return True
             else:
-                Toolkit.append(self._PenPointList,
-                               PenPoint(kidx=kline.idx,
-                                        shape=kline.shape,
-                                        value=kline.high if kline.shape == 'u' else kline.low))
+                Toolkit.appendPen(self._PenPointList, kline)
                 return True
-        return False
 
-    @staticmethod
-    def has_shape(x):
-        return True if x.shape == 'u' or x.shape == 'd' else False
-
-
-    def procPen3(self):
-        #首次开始，从后往前-4的位置找相异的分型,找到之后还要往前找看有没有更高或者更低的
-        if len(self._PenPointList) < 2:
-            hasShapeList = [x for x in self._KlineList if x.shape == 'u' or x.shape == 'd']
-            hasShapeList = filter(has_shape, self._KlineList)
-            if len(hasShapeList) < 2:
+            #解决下一个最高点或者最低点距离小于4，但是其实大于4的距离有合适的点存在的情况，这个时候存在笔（之前遗漏了）
+            kline = self.getPenPointNextDistance(-1)
+            if kline is None:
                 return False
-
-        else:
-            pass
-
-
+            else:
+                Toolkit.appendPen(self._PenPointList, kline)
+                return True
 
 
 def resample(timedelta, df):
@@ -620,13 +544,6 @@ def addVerticalLine(ax, list, **kwargs):
         vline = Line2D(xdata=(i, i), ydata=(item.low, item.high), **kwargs)
         ax.add_line(vline)
 
-        # 标识顶/底分型
-        # if item.shape:
-        #     if item.shape == 'u':
-        #         ax.text(i-1, item.high+1, u'↑', color='r')
-        #     elif item.shape == 'd':
-        #         ax.text(i-1, item.low-2, u'↓', color='g')
-
         if item.shape:
             if item.shape == 'u':
                 ax.text(i, item.high, u'↑',  horizontalalignment='center', verticalalignment='bottom', color='r')
@@ -654,12 +571,6 @@ def addBrokenLine(ax, list, btext = True, **kwargs):
         ax.text(list[indexLast].kidx, list[indexLast].value, indexLast, color='magenta', fontsize='10')
     ax.autoscale_view()
 
-# def addLine(ax, line, pen, **kwargs):
-#     if len(line) < 2 or len(pen) < 2:
-#         return
-#     for i in xrange(len(line) - 1):
-#         itLine1
-
 def addLine1_(ax, df, **kwargs):
     id1, id2 = 3, 10
     itDf1 = df.ix[id1]
@@ -679,6 +590,7 @@ def no_picture():
 
     print ('ch cost:%d' % (nanotime.now() - st).milliseconds())
 
+    #print ch._PenPointList
     #print ch._KlineList
     #print ch._LinePointList
     #print tw.getSequence()
@@ -698,15 +610,15 @@ def picture1():
     ax[1].set_title(u'处理包含关系并生成笔')
     ax[2].set_title(u'上一图中的笔')
     addVerticalLineDf(ax[0], dft, color='b')
-    addVerticalLine(ax[1], ch._KlineList, color='b')
-    addBrokenLine(ax[1], ch._PenPointList, color='g', linestyle="-.")
+    addVerticalLine(ax[1], ch._KlineList, color='cyan')
+    addBrokenLine(ax[1], ch._PenPointList, color='b', linestyle="-.")
     addBrokenLine(ax[2], ch._PenPointList, color='g', linestyle="-.")
     addBrokenLine(ax[2], [ch._PenPointList[lp.pidx] for lp in ch._LinePointList], False, color='b')
 
 
     #print ch._PenPointList
     print ('ch cost:%d' % (nanotime.now() - st).milliseconds())
-    print ch._LinePointList
+    print ch._PenPointList
     plt.show()
 
 def picture3():
