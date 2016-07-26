@@ -408,6 +408,9 @@ class Chan(object):
                         low=min(self._PenPointList[self._curFirstSeqBeginPenPoint + 1].value,
                                 self._PenPointList[self._curFirstSeqBeginPenPoint + 2].value))
 
+            # todo：目前线段的生成中，遇到笔破坏线段的情况时
+            # 原著中的条件是“一笔破坏了线段并这一笔后面延伸出成为线段的走势（也即形成新的线段）”
+            # 目前的判断逻辑只判断是否有笔对线段的破坏，并没有进行是否有新的线段生成的判断，从7月20~25 1分钟k线生成的结果来看不准确，需要进行更改
             Toolkit.procSeqContain(self._FirstSeqList,
                                    self.getUp(), newsq,
                                    not Toolkit.lineBreakByPen(self._FirstSeqList,
@@ -446,18 +449,12 @@ class Chan(object):
             if check_fun(self._SecondSeqList):
                 if len(self._SecondSeqList) > 1:
                     print '_SecondSeqList', self._SecondSeqList
-                #第二特征序列出现跟前一线段端点一样的分型，说明第二种情况下的条件成立，线段形成
-                #前一线段的分型如果是底分型，则当前线段应该是一个上涨线段，那么第二特征序列应该找一个底分型(原文中没有说明没有找到对应分型时的处理)
-                #shape = 'd' if self._PenPointList[self._LinePointList[-1].pidx].shape == 'u' else 'u'
-                #if self._SecondSeqList[-2].shape == self._PenPointList[self._LinePointList[-1].pidx].shape:
                 self.addNewLinePoint()
-                    # self._bCheckSecondSeqListFlag = False
-                    # self._SecondSeqList = []
-                    # break
-                #如果第二种情况不成立，也就是想要形成底分型的，却找到了顶分型，说明线段还没有结束，继续往后寻找
                 self._bCheckSecondSeqListFlag = False
                 self._SecondSeqList = []
                 break
+            #todo：else的情况如果第二种情况不成立，要去找顶底分型却一直没有找到的情况，应该如何应对？原著中没有对此情况进行阐述
+            # 目前我想到的合理的解决方案应该是从后续端点去判断新线段的形成。从而形成对原线段的破坏，通过这个因素来确定退出条件
 
 
     def procLine(self):
@@ -628,7 +625,7 @@ def picture1():
 
     ax[0].set_title(u'原始数据')
     ax[1].set_title(u'处理包含关系并生成笔')
-    ax[2].set_title(u'上一图中的笔')
+    ax[2].set_title(u'上图中的笔生成的线段')
     addVerticalLineDf(ax[0], dft, color='b')
     addVerticalLine(ax[1], ch._KlineList, color='cyan')
     addBrokenLine(ax[1], ch._PenPointList, color='b', linestyle="-")
