@@ -68,4 +68,21 @@ class CenterCalc(object):
         self._lastIndex = 0
         #self.
 
-    #def
+    def calc(self, penlist):
+        #形成一个中枢，需要6个端点
+        if len(penlist) < 6:
+            return
+
+        for i in range(self._lastIndex, len(penlist)):
+            if penlist[i].shape == 'd':
+                min_ = min(penlist[i+1].value, penlist[i+3].value)
+                max_ = max(penlist[i+2].value, penlist[i+4].value)
+            else:
+                min_ = min(penlist[i+2].value, penlist[i+4].value)
+                max_ = max(penlist[i+1].value, penlist[i+3].value)
+
+            #中枢成立
+            if min_ > max_:
+                pass
+
+
