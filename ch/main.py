@@ -147,5 +147,5 @@ def picture3():
         plt.show()
 
 
-no_picture()
-#picture1()
+#no_picture()
+picture1()
