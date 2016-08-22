@@ -96,8 +96,7 @@ class Chan(object):
             if check_fun(self._FirstSeqList):
                 if len(self._FirstSeqList) > 1:
                     print '_FirstSeqList', self._FirstSeqList
-                # _shape = 'd' if self._PenPointList[self._LinePointList[-1].pidx].shape == 'u' else 'u'
-                # if self._FirstSeqList[-2].shape == _shape:
+
                 # 第一种情况（第一第二元素没有缺口）
                 if not self.hasGap():
                     self.addNewLinePoint()
