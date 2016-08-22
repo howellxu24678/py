@@ -35,6 +35,8 @@ class Monitor(MainEngine):
             self._ip = cf.get("ma", "ip")
             self._port = cf.get("ma", "port")
 
+            self._account = cf.get("ma", "account")
+
             #记录上一个账号状态
             self._lastAccState = None
             self._haveSendMail = False
@@ -107,7 +109,7 @@ class Monitor(MainEngine):
         elif state == 1:
             content = u"交易网关连接正常"
 
-        event.dict_['content'] = u'%s 网关参数:[ip:%s, port:%s]' % (content, self._ip, self._port)
+        event.dict_['content'] = u'%s 网关参数:[account:%s, ip:%s, port:%s]' % (content, self._account, self._ip, self._port)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
