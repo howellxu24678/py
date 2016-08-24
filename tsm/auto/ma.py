@@ -302,6 +302,7 @@ class Ma(object):
             self.setRegular(hHandle, funid_)
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_SetValueC(hHandle, c_char('0'), fixDict['CUACCT_TYPE'])
 
             if funid_ in requireFixColDict:
                 for k,v in requireFixColDict[funid_].items():
@@ -717,6 +718,8 @@ class Ma(object):
                 #logger.debug("ret:%s", json.dumps(ret, ensure_ascii=False, indent=2))
 
                 event = Event(type_= EVENT_QUERY_RET + funid.value)
+                event.dict_['funid'] = funid.value
+                event.dict_['name'] = funNameDict[funid.value]
                 event.dict_['ret'] = ret
                 self._eventEngine.put(event)
 
@@ -726,6 +729,14 @@ class Ma(object):
                 logger.info("reply funid:%s name:%s success without second table result",
                             funid.value,
                             funNameDict[funid.value])
+
+                # 监控模式需要监听返回成功的消息以便只在状态更改的时候发邮件通知
+                event = Event(type_= EVENT_QUERY_RET + funid.value)
+                event.dict_['funid'] = funid.value
+                event.dict_['name'] = funNameDict[funid.value]
+                event.dict_['ret'] = None
+                self._eventEngine.put(event)
+
             else:
                 logger.error("reply funid:%s name:%s failed errcode:%s",
                              funid.value,

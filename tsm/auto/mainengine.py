@@ -30,6 +30,10 @@ class Monitor(MainEngine):
     def __init__(self, cf):
         try:
             super(Monitor, self).__init__(cf)
+
+            #保存每个查询funid的最新查询状态，True为成功，False为失败，None为未初始化
+            self._funQueryState = {}
+
             self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
             self._name = cf.get("ma", "name")
             self._ip = cf.get("ma", "ip")
@@ -47,6 +51,9 @@ class Monitor(MainEngine):
 
             self._funidCosOnlyList = cf.get("monitor", "cos_only").strip().split(",")
             self._funidCosOrCounterList = cf.get("monitor", "cos_or_counter").strip().split(",")
+
+
+
         except BaseException,e:
             logger.exception(e)
             raise e
@@ -59,6 +66,9 @@ class Monitor(MainEngine):
 
         self._todolist = cf.get("monitor", "todolist").strip().split(',')
         for todofunid in self._todolist:
+            #记录每一个查询funid的状态
+            self._funQueryState[todofunid] = None
+
             self._eventEngine.register(EVENT_QUERY_RET + todofunid, self.onQueryRet)
 
             if todofunid in requireFixColDict:
@@ -82,12 +92,27 @@ class Monitor(MainEngine):
             self._worktimerange.append(worktime[i].split('~'))
         logger.info("worktimerange:%s", self._worktimerange)
 
+
+    def updateFunQueryState(self, curQueryState, event_):
+        funid = event_.dict_['funid']
+        # 状态发生更改的情况处理
+        if funid in self._funQueryState and self._funQueryState[funid] != curQueryState:
+            # if not self._funQueryState[funid] is None:
+            #     # 通过邮件发送状态正常
+            self.sendMailQueryState(curQueryState, event_)
+            self._funQueryState[funid] = curQueryState
+
     def onQueryRet(self, event_):
-        funid = event_.type_.split('.')[1]
+        self.updateFunQueryState(True, event_)
+
+        funid = event_.dict_['funid']
         if not funid in self._replyFixCol:
             return
 
         ret = event_.dict_['ret']
+        if ret is None:
+            return
+
         tinyret = []
         for r in ret:
             tinyretdict = {}
@@ -100,27 +125,49 @@ class Monitor(MainEngine):
                     funNameDict[funid],
                     json.dumps(tinyret,ensure_ascii=False, indent=2))
 
-    def sendMail(self, state):
+    def sendMailAccState(self, acc_state):
         event = Event(type_=EVENT_SENDMAIL)
         event.dict_['remarks'] = 'Monitor ' + self._name
         content = ""
-        if state == 0:
+        if acc_state == 0:
             content = u"交易网关连接断开！可能原因：1.交易网关没有正常运行;2.到交易网关的网络不稳定或者不连通"
-        elif state == 1:
+        elif acc_state == 1:
             content = u"交易网关连接正常"
 
         event.dict_['content'] = u'%s 网关参数:[account:%s, ip:%s, port:%s]' % (content, self._account, self._ip, self._port)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
+    def sendMailQueryState(self, cur_query_state, event_):
+        event = Event(type_=EVENT_SENDMAIL)
+        event.dict_['remarks'] = 'Monitor ' + self._name
+
+        if cur_query_state:
+            content = u"功能编号:%s,名称:%s,执行成功" % (event_.dict_['funid'],event_.dict_['name'])
+        else:
+
+            content = u"功能编号:%s,名称:%s,返回错误结果:[错误码:%s, 错误级别:%s, 错误信息:%s],可能原因:" % (event_.dict_['funid'],
+                                                                                  event_.dict_['name'],
+                                                                                  event_.dict_['msgcode'],
+                                                                                  event_.dict_['msglevel'],
+                                                                                  event_.dict_['msgtext'])
+            if event_.dict_['funid'] in self._funidCosOnlyList:
+                content += u"cos 交易服务运行异常"
+            elif event_.dict_['funid'] in self._funidCosOrCounterList:
+                content += u"cos 交易服务运行异常或者柜台运行异常"
+
+        event.dict_['content'] = u'%s 网关参数:[ip:%s, port:%s]' % (content, self._ip, self._port)
+        event.dict_['to_addr'] = self._to_addr_list
+        self._eventEngine.put(event)
+
     def checkAccStata(self):
         curAccState = self._trade.getAccState()
         if curAccState == 0 and not self._haveSendMail:
-            self.sendMail(curAccState)
+            self.sendMailAccState(curAccState)
             self._haveSendMail = True
             self._lastAccState = curAccState
         elif curAccState != self._lastAccState:
-            self.sendMail(curAccState)
+            self.sendMailAccState(curAccState)
             self._lastAccState = curAccState
 
     def checkisworkingtime(self):
@@ -144,32 +191,10 @@ class Monitor(MainEngine):
             logger.debug("onTimer fundid:%s", fundid)
             self._trade.monitorQuery(fundid)
 
-        # #for test
-        # event = Event(type_=EVENT_FIRST_TABLE_ERROR)
-        # event.dict_['funid'] = '10303001'
-        # event.dict_['name'] = funNameDict['10388301']
-        # event.dict_['msgcode'] = '123'
-        # event.dict_['msglevel'] = '3'
-        # event.dict_['msgtext'] = u"查询股份异常"
-        # self._eventEngine.put(event)
-
     def onFirstTableError(self, event_):
-        event = Event(type_=EVENT_SENDMAIL)
-        event.dict_['remarks'] = 'Monitor ' + self._name
-        content = u"功能编号:%s 名称:%s,返回错误结果:[错误码:%s, 错误级别:%s, 错误信息:%s],可能原因:" % (event_.dict_['funid'],
-                                                       event_.dict_['name'],
-                                                       event_.dict_['msgcode'],
-                                                       event_.dict_['msglevel'],
-                                                       event_.dict_['msgtext'])
+        self.updateFunQueryState(False, event_)
 
-        if event_.dict_['funid'] in self._funidCosOnlyList:
-            content += u"cos 交易服务运行异常"
-        elif event_.dict_['funid'] in self._funidCosOrCounterList:
-            content += u"cos 交易服务运行异常或者柜台运行异常"
 
-        event.dict_['content'] = u'%s 网关参数:[ip:%s, port:%s]' % (content, self._ip, self._port)
-        event.dict_['to_addr'] = self._to_addr_list
-        self._eventEngine.put(event)
 
 
 class BatchOrder(MainEngine):
