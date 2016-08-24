@@ -200,6 +200,10 @@ class Ma(object):
         loginfo.servers[0].nPort = c_int(self._port)
         self._ea.AxE_NewMultiLogin(byref(loginfo))
 
+    def closeEa(self):
+        self._ea.AxE_Close(self._acc)
+        #self._ea.AxE_Release()
+
     def logonBackend(self):
         try:
             hHandle = c_void_p(0)

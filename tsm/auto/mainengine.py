@@ -15,15 +15,23 @@ class MainEngine(object):
         self._eventEngine = EventEngine(cf.getint("main", "timer"))
         self._trade = Ma(cf, self._eventEngine)
         self._mail = SendMail(cf, self._eventEngine)
+
+
+    def onTimer(self, event):
+        logger.debug("onTimer")
+
+    def start(self):
         self._trade.logonEa()
         time.sleep(5)
 
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
         self._eventEngine.start()
 
+    def stop(self):
+        self._eventEngine.unregister(EVENT_TIMER, self.onTimer)
+        self._eventEngine.stop()
 
-    def onTimer(self, event):
-        pass
+        self._trade.closeEa()
 
 
 class Monitor(MainEngine):
@@ -41,9 +49,7 @@ class Monitor(MainEngine):
 
             self._account = cf.get("ma", "account")
 
-            #记录上一个账号状态
-            self._lastAccState = None
-            self._haveSendMail = False
+
             self._to_addr_list = cf.get("monitor", "reveiver").strip().split(",")
             self.processRequireInput(cf)
             self.processReplyFixCol(cf)
@@ -52,11 +58,27 @@ class Monitor(MainEngine):
             self._funidCosOnlyList = cf.get("monitor", "cos_only").strip().split(",")
             self._funidCosOrCounterList = cf.get("monitor", "cos_or_counter").strip().split(",")
 
-
-
         except BaseException,e:
             logger.exception(e)
             raise e
+
+    def reinit(self):
+        # 记录上一个账号状态
+        self._lastAccState = None
+        self._haveSendMail = False
+
+        for todofunid in self._funQueryState:
+            self._funQueryState[todofunid] = None
+
+    def start(self):
+        super(Monitor, self).start()
+        self.reinit()
+        self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
+
+    def stop(self):
+        self._eventEngine.unregister(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
+        super(Monitor, self).stop()
+
 
     def processRequireInput(self,cf):
         self._requireconfig = {}
@@ -178,6 +200,8 @@ class Monitor(MainEngine):
         return False
 
     def onTimer(self, event):
+        super(Monitor, self).onTimer(event)
+
         if not self.checkisworkingtime():
             logger.debug("now is not working time")
             return

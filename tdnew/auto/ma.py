@@ -468,6 +468,7 @@ class Ma(object):
 
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUST_CODE'])
             self._ma.maCli_SetValueS(hHandle, self._acc, fixDict['CUACCT_CODE'])
+            self._ma.maCli_SetValueS(hHandle, c_char_p("0"), fixDict["CUACCT_TYPE"])
             stkex,stkbd, trdacct = self.getStkExBdTrdAcc(code)
             self._ma.maCli_SetValueS(hHandle, stkex, fixDict["STKEX"])
             self._ma.maCli_SetValueS(hHandle, stkbd, fixDict['STKBD'])

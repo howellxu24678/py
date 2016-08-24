@@ -115,6 +115,9 @@ class EventEngine:
     
     #----------------------------------------------------------------------
     def stop(self):
+        if not self.__active:
+            return
+
         """停止引擎"""
         # 将引擎设为停止
         self.__active = False
@@ -152,7 +155,7 @@ class EventEngine:
 
             # 如果函数列表为空，则从引擎中移除该事件类型
             if not handlerList:
-                del self.handlers[type_]
+                del self.__handlers[type_]
         except KeyError:
             pass     
         
