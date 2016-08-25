@@ -58,6 +58,9 @@ from PyQt4.QtCore import QCoreApplication
 logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
 logger = logging.getLogger("run")
 
+cf = ConfigParser.ConfigParser()
+cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
+
 
 def start():
     try:
@@ -67,8 +70,6 @@ def start():
         global me
         me.start()
 
-        global app
-        app.exec_()
     except BaseException,e:
         logger.exception(e)
 
@@ -79,35 +80,25 @@ def stop():
         global me
         me.stop()
 
-        global app
-        app.quit()
-        app.deleteLater()
     except BaseException,e:
         logger.exception(e)
 
 
 if __name__ == '__main__':
     try:
-        from apscheduler.schedulers.blocking import BlockingScheduler
-
-        cf = ConfigParser.ConfigParser()
-        cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
-
+        from apscheduler.schedulers.qt import QtScheduler
+        app = QCoreApplication(sys.argv)
         global me
         me = Monitor(cf)
-
-        global app
-        app = QCoreApplication(sys.argv)
-
-        sched = BlockingScheduler()
+        sched = QtScheduler()
         # m = Main()
         # sched.add_job(start, 'cron', id='first', day_of_week ='0-4', hour = 9, minute = 11)
         # sched.add_job(stop, 'cron', id='second', day_of_week ='0-4', hour = 15, minute = 20)
     #    sched.add_job(start, 'cron', id='first',  hour = 9, minute = 16)
     #    sched.add_job(stop, 'cron', id='second',  hour = 15, minute = 10)
         sched.add_job(start, 'cron', id='first', second = 10)
-        #sched.add_job(stop, 'cron', id='second', second = 50)
+        sched.add_job(stop, 'cron', id='second', second = 50)
         sched.start()
-
+        app.exec_()
     except BaseException,e:
         logger.exception(e)

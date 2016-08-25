@@ -15,6 +15,7 @@ class MainEngine(object):
         self._eventEngine = EventEngine(cf.getint("main", "timer"))
         self._trade = Ma(cf, self._eventEngine)
         self._mail = SendMail(cf, self._eventEngine)
+        self._eventEngine.start()
 
 
     def onTimer(self, event):
@@ -25,11 +26,11 @@ class MainEngine(object):
         time.sleep(5)
 
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
-        self._eventEngine.start()
+
 
     def stop(self):
         self._eventEngine.unregister(EVENT_TIMER, self.onTimer)
-        self._eventEngine.stop()
+        # self._eventEngine.stop()
 
         self._trade.closeEa()
 
