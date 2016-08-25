@@ -59,6 +59,8 @@ class Monitor(MainEngine):
             self._funidCosOnlyList = cf.get("monitor", "cos_only").strip().split(",")
             self._funidCosOrCounterList = cf.get("monitor", "cos_or_counter").strip().split(",")
 
+            self._todolistalltrue = [True for x in range(len(self._todolist))]
+
         except BaseException,e:
             logger.exception(e)
             raise e
@@ -66,7 +68,8 @@ class Monitor(MainEngine):
     def reinit(self):
         # 记录上一个账号状态
         self._lastAccState = None
-        self._haveSendMail = False
+        self._haveSendLoginMail = False
+        self._haveSendAllOKMail = False
 
         for todofunid in self._funQueryState:
             self._funQueryState[todofunid] = None
@@ -118,12 +121,19 @@ class Monitor(MainEngine):
 
     def updateFunQueryState(self, curQueryState, event_):
         funid = event_.dict_['funid']
-        # 状态发生更改的情况处理
-        if funid in self._funQueryState and self._funQueryState[funid] != curQueryState:
-            # if not self._funQueryState[funid] is None:
-            #     # 通过邮件发送状态正常
-            self.sendMailQueryState(curQueryState, event_)
+        #首次查询时，一开始 self._funQueryState 中所有的状态都为None,此时要等到所有的查询结果都过来
+        # 非初始赋值，并且状态发生更改时则发送邮件
+        if funid in self._funQueryState:
+            # if not curQueryState or \
+            #         (not self._funQueryState[funid] is None and self._funQueryState[funid] != curQueryState):
+            if self._funQueryState[funid] != curQueryState and \
+                    (not curQueryState or not self._funQueryState[funid] is None):
+                self.sendMailQueryState(curQueryState, event_)
             self._funQueryState[funid] = curQueryState
+
+            if not self._haveSendAllOKMail and self._funQueryState.values() == self._todolistalltrue:
+                self.sendMailAllOk()
+                self._haveSendAllOKMail = True
 
     def onQueryRet(self, event_):
         self.updateFunQueryState(True, event_)
@@ -157,7 +167,8 @@ class Monitor(MainEngine):
         elif acc_state == 1:
             content = u"交易网关连接正常"
 
-        event.dict_['content'] = u'%s 网关参数:[account:%s, ip:%s, port:%s]' % (content, self._account, self._ip, self._port)
+        event.dict_['content'] = u'%s 网关参数:[account:%s, ip:%s, port:%s]' % \
+                                 (content, self._account, self._ip, self._port)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
@@ -179,15 +190,25 @@ class Monitor(MainEngine):
             elif event_.dict_['funid'] in self._funidCosOrCounterList:
                 content += u"cos 交易服务运行异常或者柜台运行异常"
 
-        event.dict_['content'] = u'%s 网关参数:[ip:%s, port:%s]' % (content, self._ip, self._port)
+        event.dict_['content'] = u'%s 网关参数:[account:%s, ip:%s, port:%s]' % \
+                                 (content, self._account, self._ip, self._port)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
+    def sendMailAllOk(self):
+        event = Event(type_=EVENT_SENDMAIL)
+        event.dict_['remarks'] = 'Monitor ' + self._name
+        event.dict_['content'] = u'网关参数:[account:%s, ip:%s, port:%s],功能编号:[%s]执行成功' % \
+                                 (self._account, self._ip, self._port, ','.join(self._todolist))
+        event.dict_['to_addr'] = self._to_addr_list
+        self._eventEngine.put(event)
+
+
     def checkAccStata(self):
         curAccState = self._trade.getAccState()
-        if curAccState == 0 and not self._haveSendMail:
+        if curAccState == 0 and not self._haveSendLoginMail:
             self.sendMailAccState(curAccState)
-            self._haveSendMail = True
+            self._haveSendLoginMail = True
             self._lastAccState = curAccState
         elif curAccState != self._lastAccState:
             self.sendMailAccState(curAccState)
