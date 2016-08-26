@@ -60,9 +60,9 @@ class Monitor(MainEngine):
             self._funidCosOrCounterList = cf.get("monitor", "cos_or_counter").strip().split(",")
 
             self._todolistalltrue = [True for x in range(len(self._todolist))]
-            #发送邮件的开头
-            self._same_content = u'\n资金账号:[%s],网关参数:[ip:%s, port:%s]' % \
-                                 (self._account, self._ip, self._port)
+            #发送邮件附带的系统参数
+            self._sys_content = u'\n资金账号:[%s],网关参数:[ip:%s, port:%s]' % \
+                                (self._account, self._ip, self._port)
 
         except BaseException,e:
             logger.exception(e)
@@ -168,7 +168,7 @@ class Monitor(MainEngine):
         elif acc_state == 1:
             content = u"交易网关连接正常"
 
-        event.dict_['content'] = u'%s%s' % (content, self._same_content)
+        event.dict_['content'] = u'%s%s' % (content, self._sys_content)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
@@ -191,7 +191,7 @@ class Monitor(MainEngine):
                 content += u"cos 交易服务运行异常或者柜台运行异常"
 
         event.dict_['content'] = u'%s%s' % \
-                                 (content, self._same_content)
+                                 (content, self._sys_content)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
@@ -199,7 +199,7 @@ class Monitor(MainEngine):
         event = Event(type_=EVENT_SENDMAIL)
         event.dict_['remarks'] = 'Monitor ' + self._name
         event.dict_['content'] = u'功能编号:[%s]执行成功%s' % \
-                                 (','.join(self._todolist), self._same_content)
+                                 (','.join(self._todolist), self._sys_content)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
