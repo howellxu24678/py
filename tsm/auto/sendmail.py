@@ -14,6 +14,11 @@ from eventengine import *
 import logging
 logger = logging.getLogger("run")
 
+def _format_addr(s):
+    name, addr = parseaddr(s)
+    return formataddr(( \
+        Header(name, 'utf-8').encode(), \
+        addr.encode('utf-8') if isinstance(addr, unicode) else addr))
 
 class SendMail(object):
     def __init__(self, cf, eventEngine_):
@@ -37,7 +42,7 @@ class SendMail(object):
             logger.info('sendmail %s:%s, to_addr:%s', remarks, content, to_addr)
 
             msg = MIMEText(content, 'plain', 'utf-8')
-            msg['From'] = u'%s' % self._from_name
+            msg['From'] = _format_addr(u'%s <%s>' % (self._from_name, self._from_addr))
             msg['To'] = ', '.join(to_addr)
             msg['Subject'] = Header(u'%s 的提醒……' % remarks, 'utf-8').encode()
 
@@ -54,10 +59,11 @@ if __name__ == '__main__':
     smtp_server = 'smtp.qq.com'
     from_addr = '3043334314@qq.com'
     password = 'bxpanqsjkglrdecd'
+    to_addr = '727513059@qq.com'
 
     msg = MIMEText('test', 'plain', 'utf-8')
-    msg['From'] = u'cos监控'
-    msg['To'] = from_addr
+    msg['From'] = _format_addr(u'cos监控 <%s> ' % from_addr)
+    msg['To'] = to_addr
     msg['Subject'] = Header(u'%s 的提醒……' % 'ddd', 'utf-8').encode()
 
 
@@ -65,5 +71,5 @@ if __name__ == '__main__':
     server.starttls()
     server.set_debuglevel(1)
     server.login(from_addr, password)
-    server.sendmail(from_addr, from_addr, msg.as_string())
+    server.sendmail(from_addr, to_addr, msg.as_string())
     server.quit()

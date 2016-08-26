@@ -60,6 +60,9 @@ class Monitor(MainEngine):
             self._funidCosOrCounterList = cf.get("monitor", "cos_or_counter").strip().split(",")
 
             self._todolistalltrue = [True for x in range(len(self._todolist))]
+            #发送邮件的开头
+            self._same_content = u'\n资金账号:[%s],网关参数:[ip:%s, port:%s]' % \
+                                 (self._account, self._ip, self._port)
 
         except BaseException,e:
             logger.exception(e)
@@ -124,8 +127,6 @@ class Monitor(MainEngine):
         #首次查询时，一开始 self._funQueryState 中所有的状态都为None,此时要等到所有的查询结果都过来
         # 非初始赋值，并且状态发生更改时则发送邮件
         if funid in self._funQueryState:
-            # if not curQueryState or \
-            #         (not self._funQueryState[funid] is None and self._funQueryState[funid] != curQueryState):
             if self._funQueryState[funid] != curQueryState and \
                     (not curQueryState or not self._funQueryState[funid] is None):
                 self.sendMailQueryState(curQueryState, event_)
@@ -167,8 +168,7 @@ class Monitor(MainEngine):
         elif acc_state == 1:
             content = u"交易网关连接正常"
 
-        event.dict_['content'] = u'%s 网关参数:[account:%s, ip:%s, port:%s]' % \
-                                 (content, self._account, self._ip, self._port)
+        event.dict_['content'] = u'%s%s' % (content, self._same_content)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
@@ -190,29 +190,30 @@ class Monitor(MainEngine):
             elif event_.dict_['funid'] in self._funidCosOrCounterList:
                 content += u"cos 交易服务运行异常或者柜台运行异常"
 
-        event.dict_['content'] = u'%s 网关参数:[account:%s, ip:%s, port:%s]' % \
-                                 (content, self._account, self._ip, self._port)
+        event.dict_['content'] = u'%s%s' % \
+                                 (content, self._same_content)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
     def sendMailAllOk(self):
         event = Event(type_=EVENT_SENDMAIL)
         event.dict_['remarks'] = 'Monitor ' + self._name
-        event.dict_['content'] = u'网关参数:[account:%s, ip:%s, port:%s],功能编号:[%s]执行成功' % \
-                                 (self._account, self._ip, self._port, ','.join(self._todolist))
+        event.dict_['content'] = u'功能编号:[%s]执行成功%s' % \
+                                 (','.join(self._todolist), self._same_content)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
 
     def checkAccStata(self):
         curAccState = self._trade.getAccState()
+        #1.初始时登录状态为异常（0）并且还没有发送邮件，则发送邮件并将发送状态置为已发送
+        #2.其中状态发生改变时，发送邮件
         if curAccState == 0 and not self._haveSendLoginMail:
             self.sendMailAccState(curAccState)
             self._haveSendLoginMail = True
-            self._lastAccState = curAccState
-        elif curAccState != self._lastAccState:
+        elif curAccState != self._lastAccState and not self._lastAccState is None:
             self.sendMailAccState(curAccState)
-            self._lastAccState = curAccState
+        self._lastAccState = curAccState
 
     def checkisworkingtime(self):
         time = datetime.now().strftime("%H:%M")
@@ -239,8 +240,6 @@ class Monitor(MainEngine):
 
     def onFirstTableError(self, event_):
         self.updateFunQueryState(False, event_)
-
-
 
 
 class BatchOrder(MainEngine):
