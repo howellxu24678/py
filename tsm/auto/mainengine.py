@@ -49,6 +49,7 @@ class Monitor(MainEngine):
             self._port = cf.get("ma", "port")
 
             self._account = cf.get("ma", "account")
+            self._node = cf.get("ma", "node")
 
 
             self._to_addr_list = cf.get("monitor", "reveiver").strip().split(",")
@@ -85,7 +86,6 @@ class Monitor(MainEngine):
     def stop(self):
         self._eventEngine.unregister(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
         super(Monitor, self).stop()
-
 
     def processRequireInput(self,cf):
         self._requireconfig = {}
@@ -159,27 +159,26 @@ class Monitor(MainEngine):
                     funNameDict[funid],
                     json.dumps(tinyret,ensure_ascii=False, indent=2))
 
-    def sendMailAccState(self, acc_state):
+    def sendMailEvent(self, state, content):
         event = Event(type_=EVENT_SENDMAIL)
-        event.dict_['remarks'] = 'Monitor ' + self._name
-        content = ""
-        if acc_state == 0:
-            content = u"交易网关连接断开！可能原因：1.交易网关没有正常运行;2.到交易网关的网络不稳定或者不连通"
-        elif acc_state == 1:
-            content = u"交易网关连接正常"
-
+        event.dict_['remarks'] = u'%s,节点:%s,状态:%s' % (self._name, self._node, u'正常' if state else u'异常')
         event.dict_['content'] = u'%s%s' % (content, self._sys_content)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
-    def sendMailQueryState(self, cur_query_state, event_):
-        event = Event(type_=EVENT_SENDMAIL)
-        event.dict_['remarks'] = 'Monitor ' + self._name
+    def sendMailAccState(self, acc_state):
+        if acc_state == 0:
+            self.sendMailEvent(False, u"交易网关连接断开！可能原因：1.交易网关没有正常运行;2.到交易网关的网络不稳定或者不连通")
+        elif acc_state == 1:
+            self.sendMailEvent(True, u"交易网关连接正常")
 
+
+    def sendMailQueryState(self, cur_query_state, event_):
         if cur_query_state:
+            state = True
             content = u"功能编号:%s,名称:%s,执行成功" % (event_.dict_['funid'],event_.dict_['name'])
         else:
-
+            state = False
             content = u"功能编号:%s,名称:%s,返回错误结果:[错误码:%s, 错误级别:%s, 错误信息:%s],可能原因:" % (event_.dict_['funid'],
                                                                                   event_.dict_['name'],
                                                                                   event_.dict_['msgcode'],
@@ -190,18 +189,11 @@ class Monitor(MainEngine):
             elif event_.dict_['funid'] in self._funidCosOrCounterList:
                 content += u"cos 交易服务运行异常或者柜台运行异常"
 
-        event.dict_['content'] = u'%s%s' % \
-                                 (content, self._sys_content)
-        event.dict_['to_addr'] = self._to_addr_list
-        self._eventEngine.put(event)
+        self.sendMailEvent(state, content)
+
 
     def sendMailAllOk(self):
-        event = Event(type_=EVENT_SENDMAIL)
-        event.dict_['remarks'] = 'Monitor ' + self._name
-        event.dict_['content'] = u'功能编号:[%s]执行成功%s' % \
-                                 (','.join(self._todolist), self._sys_content)
-        event.dict_['to_addr'] = self._to_addr_list
-        self._eventEngine.put(event)
+        self.sendMailEvent(True, u'功能编号:[%s]执行成功' % ','.join(self._todolist))
 
 
     def checkAccStata(self):

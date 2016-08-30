@@ -84,7 +84,7 @@ def stop():
         logger.exception(e)
 
 
-if __name__ == '__main__':
+def monitor():
     try:
         from apscheduler.schedulers.qt import QtScheduler
         app = QCoreApplication(sys.argv)
@@ -96,9 +96,28 @@ if __name__ == '__main__':
         # sched.add_job(stop, 'cron', id='second', day_of_week ='0-4', hour = 15, minute = 20)
     #    sched.add_job(start, 'cron', id='first',  hour = 9, minute = 16)
     #    sched.add_job(stop, 'cron', id='second',  hour = 15, minute = 10)
-        sched.add_job(start, 'cron', id='first', second = 10)
-        sched.add_job(stop, 'cron', id='second', second = 50)
+        #如有显式配置调度时间，则根据调度时间来设置调度计划
+        #如果没有配置，则分别取工作时间的最前和最后时间作为任务计划的开始和结束时间
+        if cf.has_option('monitor','schedtime'):
+            schedtime = cf.get('monitor', 'schedtime').strip().split('~')
+            startime = schedtime[0].split(':')
+            stoptime = schedtime[1].split(':')
+
+        else:
+            workingtimelist = []
+            for x in cf.get('monitor', 'workingtime').strip().split(','):
+                for x1 in x.split('~'):
+                    workingtimelist.append(x1)
+            workingtimelist.sort()
+            startime = workingtimelist[0].split(':')
+            stoptime = workingtimelist[-1].split(':')
+
+        sched.add_job(start, 'cron', id='first', day_of_week='0-4', hour=int(startime[0]), minute=int(startime[1]))
+        sched.add_job(stop, 'cron', id='second', day_of_week='0-4', hour=int(stoptime[0]), minute=int(stoptime[1]))
         sched.start()
         app.exec_()
     except BaseException,e:
         logger.exception(e)
+
+if __name__ == '__main__':
+    monitor()
