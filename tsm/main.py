@@ -108,16 +108,44 @@ def monitor():
             for x in cf.get('monitor', 'workingtime').strip().split(','):
                 for x1 in x.split('~'):
                     workingtimelist.append(x1)
-            workingtimelist.sort()
+            #workingtimelist.sort()
             startime = workingtimelist[0].split(':')
             stoptime = workingtimelist[-1].split(':')
 
         sched.add_job(start, 'cron', id='first', day_of_week='0-4', hour=int(startime[0]), minute=int(startime[1]))
         sched.add_job(stop, 'cron', id='second', day_of_week='0-4', hour=int(stoptime[0]), minute=int(stoptime[1]))
+        logger.info('schedulers startime:%s stoptime:%s', startime, stoptime)
         sched.start()
         app.exec_()
     except BaseException,e:
         logger.exception(e)
 
+def test():
+    try:
+        from apscheduler.schedulers.qt import QtScheduler
+        app = QCoreApplication(sys.argv)
+        global me
+        me = Monitor(cf)
+        sched = QtScheduler()
+        # m = Main()
+        # sched.add_job(start, 'cron', id='first', day_of_week ='0-4', hour = 9, minute = 11)
+        # sched.add_job(stop, 'cron', id='second', day_of_week ='0-4', hour = 15, minute = 20)
+        sched.add_job(start, 'cron', id='first',  hour = 17, minute = 21,second = 0)
+        sched.add_job(stop, 'cron', id='second',  hour = 21, minute = 10)
+        sched.start()
+        app.exec_()
+    except BaseException,e:
+        logger.exception(e)
+
+
+def runow():
+    try:
+        app = QCoreApplication(sys.argv)
+        me = Monitor(cf)
+        me.start()
+        sys.exit(app.exec_())
+    except BaseException, e:
+        logger.exception(e)
+
 if __name__ == '__main__':
-    monitor()
+    runow()

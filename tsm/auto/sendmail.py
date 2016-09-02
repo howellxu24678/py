@@ -9,10 +9,11 @@ from email import encoders
 from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
-import smtplib
+
 from eventengine import *
 import logging
 logger = logging.getLogger("run")
+import smtplib
 
 def _format_addr(s):
     name, addr = parseaddr(s)

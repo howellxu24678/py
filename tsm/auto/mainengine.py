@@ -15,24 +15,71 @@ class MainEngine(object):
         self._eventEngine = EventEngine(cf.getint("main", "timer"))
         self._trade = Ma(cf, self._eventEngine)
         self._mail = SendMail(cf, self._eventEngine)
+
+        self._logonBackendState = None
+
         self._eventEngine.start()
 
+
+    #此函数会被Monito派生类重载，因为Monitor派生类需要根据状态变化发送提醒邮件
+    def onLogonBackendRet(self, event_):
+        logger.debug('onLogonBackendRet event type:%s', event_.type_)
+
+        #EVENT_EA_ERROR
+        if event_.type_ == EVENT_EA_ERROR:
+            self._logonBackendState = False
+        #EVENT_QUERY_RET EVENT_FIRST_TABLE_ERROR
+        else:
+            funid = event_.dict_['funid']
+            if funid != '10301105':
+                return
+
+            if event_.type_ == EVENT_QUERY_RET + '10301105':
+                self._logonBackendState = True
+            elif event_.type_ == EVENT_FIRST_TABLE_ERROR:
+                self._logonBackendState = False
 
     def onTimer(self, event):
         logger.debug("onTimer")
 
-    def start(self):
-        self._trade.logonEa()
-        time.sleep(5)
+    def reinit(self):
+        #后台登录状态，只有在后台登录状态为成功时，才可以其他业务操作（比如定时轮询业务功能或者批量下单）
+        self._logonBackendState = None
 
+    def start(self):
+        self.reinit()
+
+        self._eventEngine.register(EVENT_QUERY_RET + '10301105', self.onLogonBackendRet)
+        self._eventEngine.register(EVENT_EA_ERROR, self.onLogonBackendRet)
+        self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onLogonBackendRet)
         self._eventEngine.register(EVENT_TIMER, self.onTimer)
+
+        #调用trade登录Ea接口，接口返回后会自动进行登录后台动作
+        self._trade.logonEa()
 
 
     def stop(self):
+        self._eventEngine.unregister(EVENT_QUERY_RET + '10301105', self.onLogonBackendRet)
+        self._eventEngine.unregister(EVENT_EA_ERROR, self.onLogonBackendRet)
+        self._eventEngine.unregister(EVENT_FIRST_TABLE_ERROR, self.onLogonBackendRet)
         self._eventEngine.unregister(EVENT_TIMER, self.onTimer)
         # self._eventEngine.stop()
 
         self._trade.closeEa()
+
+'''
+异常情况1：登录交易网关失败，会自动尝试登录，OnTime检测到当前网关连接状态为异常会发送邮件
+异常情况2：登录交易网关成功，登录后台失败，需要定时尝试登录后台直到成功为止
+            2.1 交易网关没有连上cos的GTU网关，会报“连接交易后台失败”，“交易服务发送指令失败”
+            2.2 交易网关连上了cos的GTU网关，但是cos BPU或者柜台没有正常运行
+            2.3 当mid正常运行时，getAccState获得的状态是正常状态，不管此时mid是否有成功连上后面的GTU网关
+            会报“不存在路由信息”，“811处于非交易状态”
+异常情况3：定时执行业务功能查询，出现状态变动时发送邮件提醒
+
+需要处理的状态有：
+1. 登录交易网关成功与否状态。如果状态为失败，不进行
+2. 登录后台成功与否状态。如果状态为失败，不进行后续业务功能查询
+'''
 
 
 class Monitor(MainEngine):
@@ -43,7 +90,6 @@ class Monitor(MainEngine):
             #保存每个查询funid的最新查询状态，True为成功，False为失败，None为未初始化
             self._funQueryState = {}
 
-            self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
             self._name = cf.get("ma", "name")
             self._ip = cf.get("ma", "ip")
             self._port = cf.get("ma", "port")
@@ -70,10 +116,14 @@ class Monitor(MainEngine):
             raise e
 
     def reinit(self):
-        # 记录上一个账号状态
+        # 记录上一个账户状态（也即为登录交易网关Ea成功与否的状态）
         self._lastAccState = None
-        self._haveSendLoginMail = False
-        self._haveSendAllOKMail = False
+        # 是否已经发送登录交易网关Ea是否成功的邮件
+        self._haveSendLogonEaMail = False
+        # 是否已经发送登录后台是否成功的邮件
+        self._haveSendLogonBackendMail = False
+        # 是否已经发送登录后台成功后所有定时业务执行成功的邮件
+        self._haveSendAllBisOKMail = False
 
         for todofunid in self._funQueryState:
             self._funQueryState[todofunid] = None
@@ -94,6 +144,7 @@ class Monitor(MainEngine):
         self._requireconfig['CUACCT_CODE'] = cf.get("ma", "account")
 
         self._todolist = cf.get("monitor", "todolist").strip().split(',')
+
         for todofunid in self._todolist:
             #记录每一个查询funid的状态
             self._funQueryState[todofunid] = None
@@ -132,9 +183,9 @@ class Monitor(MainEngine):
                 self.sendMailQueryState(curQueryState, event_)
             self._funQueryState[funid] = curQueryState
 
-            if not self._haveSendAllOKMail and self._funQueryState.values() == self._todolistalltrue:
+            if not self._haveSendAllBisOKMail and self._funQueryState.values() == self._todolistalltrue:
                 self.sendMailAllOk()
-                self._haveSendAllOKMail = True
+                self._haveSendAllBisOKMail = True
 
     def onQueryRet(self, event_):
         self.updateFunQueryState(True, event_)
@@ -159,9 +210,38 @@ class Monitor(MainEngine):
                     funNameDict[funid],
                     json.dumps(tinyret,ensure_ascii=False, indent=2))
 
+    #重载自基类，需要处理状态变化发送提醒邮件
+    def onLogonBackendRet(self, event_):
+        logger.debug('onLogonBackendRet event type:%s', event_.type_)
+        err_msg = None
+
+        #EVENT_EA_ERROR
+        if event_.type_ == EVENT_EA_ERROR:
+            curBackendState = False
+            err_msg = event_.dict_['msgtext']
+        #EVENT_QUERY_RET EVENT_FIRST_TABLE_ERROR
+        else:
+            funid = event_.dict_['funid']
+            if funid != '10301105':
+                return
+
+            if event_.type_ == EVENT_QUERY_RET + '10301105':
+                curBackendState = True
+            elif event_.type_ == EVENT_FIRST_TABLE_ERROR:
+                curBackendState = False
+                err_msg = event_.dict_['msgtext']
+
+
+        if not curBackendState and not self._haveSendLogonBackendMail:
+            self.sendLogonBackendState(curBackendState, err_msg)
+            self._haveSendLogonBackendMail = True
+        elif curBackendState != self._logonBackendState and self._logonBackendState is not None:
+            self.sendLogonBackendState(curBackendState, err_msg)
+        self._logonBackendState = curBackendState
+
     def sendMailEvent(self, state, content):
         event = Event(type_=EVENT_SENDMAIL)
-        event.dict_['remarks'] = u'%s,节点:%s,状态:%s' % (self._name, self._node, u'正常' if state else u'异常')
+        event.dict_['remarks'] = u'%s,节点:%s,%s状态告知消息' % (self._name, self._node, u'正常' if state else u'异常')
         event.dict_['content'] = u'%s%s' % (content, self._sys_content)
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
@@ -172,6 +252,11 @@ class Monitor(MainEngine):
         elif acc_state == 1:
             self.sendMailEvent(True, u"交易网关连接正常")
 
+    def sendLogonBackendState(self, backend_state, err_msg):
+        if not backend_state:
+            self.sendMailEvent(False, u"登录后台失败！%s" % err_msg if err_msg is not None else '')
+        else:
+            self.sendMailEvent(True, u"登录后台成功")
 
     def sendMailQueryState(self, cur_query_state, event_):
         if cur_query_state:
@@ -200,10 +285,10 @@ class Monitor(MainEngine):
         curAccState = self._trade.getAccState()
         #1.初始时登录状态为异常（0）并且还没有发送邮件，则发送邮件并将发送状态置为已发送
         #2.其中状态发生改变时，发送邮件
-        if curAccState == 0 and not self._haveSendLoginMail:
+        if curAccState == 0 and not self._haveSendLogonEaMail:
             self.sendMailAccState(curAccState)
-            self._haveSendLoginMail = True
-        elif curAccState != self._lastAccState and not self._lastAccState is None:
+            self._haveSendLogonEaMail = True
+        elif curAccState != self._lastAccState and self._lastAccState is not None:
             self.sendMailAccState(curAccState)
         self._lastAccState = curAccState
 
@@ -226,6 +311,12 @@ class Monitor(MainEngine):
         #断线时不进行定时的业务查询
         if self._trade.getAccState() == 0:
             return
+
+        #没有成功登录后台，不会自动重新登录，需要在这里定时尝试登录
+        if not self._logonBackendState:
+            self._trade.logonBackend()
+            return
+
         for fundid in self._todolist:
             logger.debug("onTimer fundid:%s", fundid)
             self._trade.monitorQuery(fundid)

@@ -563,26 +563,35 @@ class Ma(object):
         self._ma.maCli_Exit(hHandle_)
         return  b64bizdata
 
-    def onRecvMsg(self,event):
-        msgSplitList = event.dict_["pMsg"].split('\1')
-        cmdId = msgSplitList[0]
-        errno = msgSplitList[2]
+    def onRecvMsg(self, event_):
+        try:
+            msgSplitList = event_.dict_["pMsg"].split('\1')
+            cmdId = msgSplitList[0]
+            errno = msgSplitList[2]
 
-        if int(errno) != 0:
-            logger.error("%s", event.dict_["pMsg"])
-            return
+            if int(errno) != 0:
+                logger.error("%s", event_.dict_["pMsg"].decode("gbk"))
+                event = Event(type_=EVENT_EA_ERROR)
+                event.dict_['funid'] = cmdId
+                event.dict_['msgcode'] = errno
+                event.dict_['msgtext'] = msgSplitList[5].decode("gbk")
+                self._eventEngine.put(event)
+                return
 
-        if cmdId == "40002" or cmdId == "40020":
-            msgstr = base64.decodestring(msgSplitList[5])
-            logger.debug("pMsg:%s, iLen:%s, pAccount:%s",
-                        msgstr.decode("gbk"),
-                        event.dict_["iLen"],
-                        event.dict_["pAccount"])
+            #msgstr.decode("gbk"),
+            if cmdId == "40002" or cmdId == "40020":
+                msgstr = base64.decodestring(msgSplitList[5])
+                logger.debug("pMsg:%s, iLen:%s, pAccount:%s",
+                             msgstr.decode("gbk"),
+                             event_.dict_["iLen"],
+                             event_.dict_["pAccount"])
 
-            self.parseMsg(msgstr)
+                self.parseMsg(msgstr)
 
-        if cmdId == "40000":
-            self.logonBackend()
+            if cmdId == "40000":
+                self.logonBackend()
+        except BaseException,e:
+            logger.exception(e)
 
     def parseTsuOrderMsg(self, hHandle_):
         cuacc = c_int64(0)
@@ -740,7 +749,6 @@ class Ma(object):
                 event.dict_['name'] = funNameDict[funid.value]
                 event.dict_['ret'] = None
                 self._eventEngine.put(event)
-
             else:
                 logger.error("reply funid:%s name:%s failed errcode:%s",
                              funid.value,
