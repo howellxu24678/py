@@ -40,6 +40,7 @@
 import logging
 import logging.config
 
+from datetime import datetime
 import os
 import ConfigParser
 import sys
@@ -116,6 +117,21 @@ def monitor():
         sched.add_job(stop, 'cron', id='second', day_of_week='0-4', hour=int(stoptime[0]), minute=int(stoptime[1]))
         logger.info('schedulers startime:%s stoptime:%s', startime, stoptime)
         sched.start()
+
+
+        #上面的任务调度只有在未来时间才会触发
+        #这里加上判断当前时间如果在工作时间，则要开启
+        worktime = cf.get("monitor", "workingtime").split(',')
+        worktimerange = []
+        for i in range(len(worktime)):
+            worktimerange.append(worktime[i].split('~'))
+
+        time_now = datetime.now().strftime("%H:%M")
+        for i in range(len(worktimerange)):
+            if time_now > worktimerange[i][0] and time_now < worktimerange[i][1]:
+                logger.info('now:%s is in the worktimerange,will start the job immediately', time_now)
+                start()
+
         app.exec_()
     except BaseException,e:
         logger.exception(e)
@@ -148,4 +164,4 @@ def runow():
         logger.exception(e)
 
 if __name__ == '__main__':
-    runow()
+    monitor()
