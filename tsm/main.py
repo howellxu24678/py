@@ -1,42 +1,4 @@
 # -*- coding: utf-8 -*-
-# import logging
-# import logging.config
-#
-# import os
-# import ConfigParser
-# import sys
-# reload(sys)
-# sys.setdefaultencoding('utf8')
-#
-# baseconfdir="conf"
-# loggingconf= "logging.config"
-# businessconf= "business.ini"
-#
-# def main():
-#     try:
-#         from auto.mainengine import Monitor
-#         from auto.mainengine import BatchOrder
-#         from PyQt4.QtCore import QCoreApplication
-#         """主程序入口"""
-#         app = QCoreApplication(sys.argv)
-#
-#         logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
-#         logger = logging.getLogger("run")
-#
-#         cf = ConfigParser.ConfigParser()
-#         cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
-#
-#         me = Monitor(cf)
-#         #bo = BatchOrder(cf)
-#
-#         sys.exit(app.exec_())
-#     except BaseException,e:
-#         logger.exception(e)
-#
-#
-# if __name__ == '__main__':
-#     main()
-
 import logging
 import logging.config
 
@@ -87,9 +49,6 @@ def stop():
         logger.exception(e)
 
 
-
-
-
 def monitor():
     try:
         from apscheduler.schedulers.qt import QtScheduler
@@ -98,6 +57,8 @@ def monitor():
         global me
         me = Monitor(cf)
         sched = QtScheduler()
+
+        working_time_range = parse_work_time(cf.get("monitor", "workingtime"))
         #如有显式配置调度时间，则根据调度时间来设置调度计划
         #如果没有配置，则分别取工作时间的最前和最后时间作为任务计划的开始和结束时间
         if cf.has_option('monitor','schedtime'):
@@ -106,8 +67,7 @@ def monitor():
             stoptime = schedtime[1].split(':')
 
         else:
-            workingtimelist = [y for x in cf.get('monitor', 'workingtime').strip().split(',')
-                               for y in x.strip().split('~')]
+            workingtimelist = [y for x in working_time_range for y in x ]
             startime = workingtimelist[0].split(':')
             stoptime = workingtimelist[-1].split(':')
 
@@ -123,17 +83,13 @@ def monitor():
 
         #上面的任务调度只有在未来时间才会触发
         #这里加上判断当前时间如果在工作时间(时间段和交易日都要符合)，则要开启
-        worktimerange = [x.split('~') for x in cf.get("monitor", "workingtime").split(',')]
-
-        time_now = datetime.datetime.now().strftime("%H:%M")
-        for x in worktimerange:
-            if time_now > x[0] and time_now < x[1]:
-                logger.info('now:%s is in the worktimerange:%s,will start the job immediately', time_now, x)
-                start()
+        if is_trade_day(cf) and is_working_time(working_time_range):
+            start()
 
         app.exec_()
     except BaseException,e:
         logger.exception(e)
+
 
 def test():
     try:

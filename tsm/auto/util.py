@@ -106,13 +106,15 @@ def GetTimeSlice(curTickDatetime, min_offset):
     
 def GetSMA(data):
     return round(np.mean(data),2)
+
+
 #将传入的时间加上当前的日期返回
 def GetDatetimeFromTime(strTime):
     return Str2Datetime(datetime.datetime.strftime(datetime.date.today(),'%Y-%m-%d') + ' ' + strTime)
 
 
 #检测连通性
-def connectable(host, port):
+def is_connectable(host, port):
     try:
         sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sk.settimeout(1)
@@ -136,21 +138,33 @@ def get_outer_ip():
         logger.exception(e)
 
 
-#解析工作时间
-def parse_work_time(workingtimestr):
-    return [x.split('~') for x in workingtimestr.split(',')]
-
 #结合是否周末及当年的交易所放假安排判断当天是否为交易日
+#需要根据当前年份获取相应配置文件中的值（跨年时要配置临近两个年份）
 def is_trade_day(_cf):
-    curDate = datetime.datetime.now().date()
+    cur_date = datetime.datetime.now().date()
     #isoweekday 从周一到周日 为1~7
-    if curDate.isoweekday() > 5:
+    if cur_date.isoweekday() > 5:
         return False
 
     #将当前日期转成字符串并且去掉前补0（因为配置的休市日期为了方便统一没有前补0）
-    curdatestr = curDate.strftime('%m.%d').lstrip('0').replace('.0', '.')
-    market_colse_list = _cf.get('main', 'market_close_' + curDate.strftime('%Y')).strip().split(',')
-    if curdatestr in market_colse_list:
+    cur_date_str = cur_date.strftime('%m.%d').lstrip('0').replace('.0', '.')
+    market_close_list = _cf.get('main', 'market_close_' + cur_date.strftime('%Y')).strip().split(',')
+    if cur_date_str in market_close_list:
         return False
 
     return True
+
+
+#解析工作时间
+def parse_work_time(working_time_str):
+    return [x.split('~') for x in working_time_str.split(',')]
+
+
+#判断当前时间是否工作时间
+def is_working_time(_working_time_range):
+    now_time = datetime.datetime.now().strftime("%H:%M")
+    for x in _working_time_range:
+        if x[0] <= now_time <= x[1]:
+            return True
+    return False
+

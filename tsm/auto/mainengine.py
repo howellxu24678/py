@@ -13,6 +13,7 @@ logger = logging.getLogger("run")
 
 class MainEngine(object):
     def __init__(self, cf):
+        self._cf = cf
         self._eventEngine = EventEngine(cf.getint("main", "timer"))
         self._trade = Ma(cf, self._eventEngine)
         self._mail = SendMail(cf, self._eventEngine)
@@ -43,12 +44,12 @@ class MainEngine(object):
     def onTimer(self, event):
         logger.debug("onTimer")
 
-    def reinit(self):
+    def re_init(self):
         #后台登录状态，只有在后台登录状态为成功时，才可以其他业务操作（比如定时轮询业务功能或者批量下单）
         self._logonBackendState = None
 
     def start(self):
-        self.reinit()
+        self.re_init()
 
         self._eventEngine.register(EVENT_QUERY_RET + '10301105', self.onLogonBackendRet)
         self._eventEngine.register(EVENT_EA_ERROR, self.onLogonBackendRet)
@@ -98,11 +99,10 @@ class Monitor(MainEngine):
             self._account = cf.get("ma", "account")
             self._node = cf.get("ma", "node")
 
-
+            self._worktimerange = parse_work_time(cf.get("monitor", "workingtime"))
             self._to_addr_list = cf.get("monitor", "reveiver").strip().split(",")
             self.processRequireInput(cf)
             self.processReplyFixCol(cf)
-            self.parseWorkTime(cf)
 
             self._funidCosOnlyList = cf.get("monitor", "cos_only").strip().split(",")
             self._funidCosOrCounterList = cf.get("monitor", "cos_or_counter").strip().split(",")
@@ -120,8 +120,8 @@ class Monitor(MainEngine):
             logger.exception(e)
             raise e
 
-    def reinit(self):
-        super(Monitor, self).reinit()
+    def re_init(self):
+        super(Monitor, self).re_init()
         # 记录当前的外网ip
         logger.info('the outer ip:%s', get_outer_ip())
         # 记录上一个账户状态（也即为登录交易网关Ea成功与否的状态）
@@ -137,6 +137,10 @@ class Monitor(MainEngine):
             self._funQueryState[todofunid] = None
 
     def start(self):
+        #如果发现当天并不是交易日的话，不启动监控
+        if not is_trade_day(self._cf):
+            logger.info('today is not a trade day, so the monitor will not be started')
+            return
         super(Monitor, self).start()
         self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
 
@@ -171,13 +175,6 @@ class Monitor(MainEngine):
             self._replyFixCol[i[0]] = i[1]
 
         logger.info("replyFixCol:%s", self._replyFixCol)
-
-    def parseWorkTime(self,cf):
-        worktime = cf.get("monitor", "workingtime").split(',')
-        self._worktimerange = []
-        for i in range(len(worktime)):
-            self._worktimerange.append(worktime[i].split('~'))
-        logger.info("worktimerange:%s", self._worktimerange)
 
 
     def updateFunQueryState(self, curQueryState, event_):
@@ -299,22 +296,15 @@ class Monitor(MainEngine):
             self.sendMailAccState(curAccState)
         self._lastAccState = curAccState
 
-    def checkisworkingtime(self):
-        time = datetime.datetime.now().strftime("%H:%M")
-        for i in range(len(self._worktimerange)):
-            if time >= self._worktimerange[i][0] and time <= self._worktimerange[i][1]:
-                return True
-        return False
-
     #连通性测试
     def check_connect(self):
         for x in self.connect_addr_list:
-            logger.info("connect to %s:%s %s", x[0],x[1], 'success' if connectable(x[0], int(x[1])) else 'failed')
+            logger.info("connect to %s:%s %s", x[0], x[1], 'success' if is_connectable(x[0], int(x[1])) else 'failed')
 
     def onTimer(self, event):
         super(Monitor, self).onTimer(event)
 
-        if not self.checkisworkingtime():
+        if not is_working_time(self._worktimerange):
             logger.debug("now is not working time")
             return
 
