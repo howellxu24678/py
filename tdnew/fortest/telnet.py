@@ -87,3 +87,25 @@ except Exception:
   print 'Server port 80 not connect!'
 
 sk.close()
+
+
+# encoding=utf-8
+# author: walker
+# date: 2016-03-07
+# function: 获取自己的外网IP
+
+import requests
+from bs4 import BeautifulSoup
+
+
+# 获取外网IP
+def GetOuterIP():
+    url = r'http://ip.cn/'
+    r = requests.get(url)
+    bTag = BeautifulSoup(r.text, 'html.parser', from_encoding='utf-8').find('code')
+    ip = ''.join(bTag.stripped_strings)
+    print('ip:' + ip)
+
+
+if __name__ == '__main__':
+    GetOuterIP()
