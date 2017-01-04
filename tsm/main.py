@@ -88,6 +88,7 @@ def stop():
 def monitor():
     try:
         from apscheduler.schedulers.qt import QtScheduler
+        from apscheduler.triggers.cron import CronTrigger
         app = QCoreApplication(sys.argv)
         global me
         me = Monitor(cf)
@@ -113,11 +114,14 @@ def monitor():
             startime = workingtimelist[0].split(':')
             stoptime = workingtimelist[-1].split(':')
 
-        sched.add_job(start, 'cron', id='first', day_of_week='0-4', hour=int(startime[0]), minute=int(startime[1]))
-        sched.add_job(stop, 'cron', id='second', day_of_week='0-4', hour=int(stoptime[0]), minute=int(stoptime[1]))
+        trigger_start = CronTrigger(day_of_week='mon-fri', hour=int(startime[0]), minute=int(startime[1]))
+        trigger_stop = CronTrigger(day_of_week='mon-fri', hour=int(stoptime[0]), minute=int(stoptime[1]))
+        #sched.add_job(start, 'cron', id='first', day_of_week='0-4', hour=int(startime[0]), minute=int(startime[1]))
+        #sched.add_job(stop, 'cron', id='second', day_of_week='0-4', hour=int(stoptime[0]), minute=int(stoptime[1]))
         logger.info('schedulers startime:%s stoptime:%s', startime, stoptime)
+        sched.add_job(start, trigger_start)
+        sched.add_job(stop, trigger_stop)
         sched.start()
-
 
         #上面的任务调度只有在未来时间才会触发
         #这里加上判断当前时间如果在工作时间，则要开启
