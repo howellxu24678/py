@@ -74,19 +74,20 @@ while True:
     #     print "Sorry your check_host_list_file not exist!"
 
 
-import ping
-
-
 import socket
-sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sk.settimeout(1)
-try:
-  sk.connect(('172.24.182.45',3389))
-  print 'Server port 80 OK!'
-except Exception:
-  print 'Server port 80 not connect!'
 
-sk.close()
+
+def connect(host, port):
+    sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sk.settimeout(1)
+    s = 'connect to host:%s,port:%s ' % (host,port)
+    try:
+        sk.connect((host, port))
+        print s + "success"
+    except Exception:
+        pass
+        #print s + "failed"
+    sk.close()
 
 
 # encoding=utf-8
@@ -99,7 +100,7 @@ from bs4 import BeautifulSoup
 
 
 # 获取外网IP
-def GetOuterIP():
+def get_outer_ip():
     url = r'http://ip.cn/'
     r = requests.get(url)
     bTag = BeautifulSoup(r.text, 'html.parser', from_encoding='utf-8').find('code')
@@ -108,4 +109,10 @@ def GetOuterIP():
 
 
 if __name__ == '__main__':
-    GetOuterIP()
+    get_outer_ip()
+
+for i in range(1,1000):
+    connect('192.168.30.66', i)
+
+for i in range(1, 65535):
+    connect('www.baidu.com', i)
