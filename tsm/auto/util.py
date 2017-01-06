@@ -8,6 +8,10 @@ Created on Fri Oct 16 15:14:32 2015
 import datetime
 import tushare as ts
 import numpy as np
+import socket
+import requests
+from bs4 import BeautifulSoup
+
 import logging
 logger = logging.getLogger("run")
 
@@ -63,7 +67,7 @@ def GetDayBefore(dayoffset):
     return datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=dayoffset), '%Y-%m-%d')
         
 def GetRehabGene(code):
-        #无复权日线        
+    #无复权日线
     dfnfq1d = ts.get_hist_data(code,start=GetDayBefore(30),end=GetDayBefore(1))
         
     dffq1d = ts.get_h_data(code,start=GetDayBefore(30),end=GetDayBefore(1))
@@ -105,3 +109,28 @@ def GetSMA(data):
 #将传入的时间加上当前的日期返回
 def GetDatetimeFromTime(strTime):
     return Str2Datetime(datetime.datetime.strftime(datetime.date.today(),'%Y-%m-%d') + ' ' + strTime)
+
+
+#检测连通性
+def connectable(host, port):
+    try:
+        sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sk.settimeout(1)
+        sk.connect((host, port))
+        ret = True
+    except Exception,e:
+        ret = False
+        logger.exception(e)
+    sk.close()
+    return ret
+
+
+# 获取外网IP
+def get_outer_ip():
+    try:
+        url = r'http://ip.cn/'
+        r = requests.get(url)
+        bTag = BeautifulSoup(r.text, 'html.parser', from_encoding='utf-8').find('code')
+        return ''.join(bTag.stripped_strings)
+    except Exception,e:
+        logger.exception(e)

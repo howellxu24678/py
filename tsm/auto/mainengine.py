@@ -3,10 +3,11 @@ __author__ = 'xujh'
 
 from eventengine import *
 from ma import *
-from datetime import datetime
+#from datetime import datetime
 from sendmail import *
 from data_type import *
-import time
+from util import *
+#import time
 import json
 logger = logging.getLogger("run")
 
@@ -111,11 +112,18 @@ class Monitor(MainEngine):
             self._sys_content = u'\n资金账号:[%s],网关参数:[ip:%s, port:%s]' % \
                                 (self._account, self._ip, self._port)
 
+            #检车网络连通性
+            self.connect_addr_list = \
+                [x.strip().split(':') for x in cf.get("monitor", "check_connect_addr").strip().split(",")]
+
         except BaseException,e:
             logger.exception(e)
             raise e
 
     def reinit(self):
+        super(Monitor, self).reinit()
+        # 记录当前的外网ip
+        logger.info('the outer ip:%s', get_outer_ip())
         # 记录上一个账户状态（也即为登录交易网关Ea成功与否的状态）
         self._lastAccState = None
         # 是否已经发送登录交易网关Ea是否成功的邮件
@@ -130,7 +138,6 @@ class Monitor(MainEngine):
 
     def start(self):
         super(Monitor, self).start()
-        self.reinit()
         self._eventEngine.register(EVENT_FIRST_TABLE_ERROR, self.onFirstTableError)
 
     def stop(self):
@@ -293,11 +300,16 @@ class Monitor(MainEngine):
         self._lastAccState = curAccState
 
     def checkisworkingtime(self):
-        time = datetime.now().strftime("%H:%M")
+        time = datetime.datetime.now().strftime("%H:%M")
         for i in range(len(self._worktimerange)):
             if time >= self._worktimerange[i][0] and time <= self._worktimerange[i][1]:
                 return True
         return False
+
+    #连通性测试
+    def check_connect(self):
+        for x in self.connect_addr_list:
+            logger.info("connect to %s:%s %s", x[0],x[1], 'success' if connectable(x[0], int(x[1])) else 'failed')
 
     def onTimer(self, event):
         super(Monitor, self).onTimer(event)
@@ -310,6 +322,10 @@ class Monitor(MainEngine):
 
         #断线时不进行定时的业务查询
         if self._trade.getAccState() == 0:
+            # 记录当前的外网ip
+            logger.info('the outer ip:%s', get_outer_ip())
+
+            self.check_connect()
             return
 
         #没有成功登录后台，不会自动重新登录，需要在这里定时尝试登录

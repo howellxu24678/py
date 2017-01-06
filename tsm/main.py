@@ -40,12 +40,14 @@
 import logging
 import logging.config
 
-from datetime import datetime
+
 import os
 import ConfigParser
 import sys
+import datetime
 reload(sys)
 sys.setdefaultencoding('utf8')
+
 
 baseconfdir="conf"
 loggingconf= "logging.config"
@@ -125,15 +127,12 @@ def monitor():
 
         #上面的任务调度只有在未来时间才会触发
         #这里加上判断当前时间如果在工作时间，则要开启
-        worktime = cf.get("monitor", "workingtime").split(',')
-        worktimerange = []
-        for i in range(len(worktime)):
-            worktimerange.append(worktime[i].split('~'))
+        worktimerange = [x.split('~') for x in cf.get("monitor", "workingtime").split(',')]
 
-        time_now = datetime.now().strftime("%H:%M")
-        for i in range(len(worktimerange)):
-            if time_now > worktimerange[i][0] and time_now < worktimerange[i][1]:
-                logger.info('now:%s is in the worktimerange,will start the job immediately', time_now)
+        time_now = datetime.datetime.now().strftime("%H:%M")
+        for x in worktimerange:
+            if time_now > x[0] and time_now < x[1]:
+                logger.info('now:%s is in the worktimerange:%s,will start the job immediately', time_now, x)
                 start()
 
         app.exec_()

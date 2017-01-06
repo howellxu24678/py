@@ -2,9 +2,14 @@
 from lxml import etree
 import  os
 import  sys
-xml_file_name = os.path.join(os.getcwd(), "maServer.xml")
-doc = etree.parse(xml_file_name)
-root = doc.getroot()
+
+try:
+    xml_file_dir = os.path.join(os.getcwd(), "maServer.xml")
+    print('xml_file_dir:%s' % xml_file_dir)
+    doc = etree.parse(xml_file_dir)
+    root = doc.getroot()
+except BaseException, e:
+    print e
 
 needToDealList = []
 
