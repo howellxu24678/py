@@ -134,3 +134,23 @@ def get_outer_ip():
         return ''.join(bTag.stripped_strings)
     except Exception,e:
         logger.exception(e)
+
+
+#解析工作时间
+def parse_work_time(workingtimestr):
+    return [x.split('~') for x in workingtimestr.split(',')]
+
+#结合是否周末及当年的交易所放假安排判断当天是否为交易日
+def is_trade_day(_cf):
+    curDate = datetime.datetime.now().date()
+    #isoweekday 从周一到周日 为1~7
+    if curDate.isoweekday() > 5:
+        return False
+
+    #将当前日期转成字符串并且去掉前补0（因为配置的休市日期为了方便统一没有前补0）
+    curdatestr = curDate.strftime('%m.%d').lstrip('0').replace('.0', '.')
+    market_colse_list = _cf.get('main', 'market_close_' + curDate.strftime('%Y')).strip().split(',')
+    if curdatestr in market_colse_list:
+        return False
+
+    return True
