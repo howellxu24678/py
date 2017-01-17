@@ -117,7 +117,7 @@ def GetDatetimeFromTime(strTime):
 def is_connectable(host, port):
     try:
         sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sk.settimeout(1)
+        sk.settimeout(3)
         sk.connect((host, port))
         ret = True
     except Exception,e:

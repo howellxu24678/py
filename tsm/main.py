@@ -49,6 +49,7 @@ def stop():
         logger.exception(e)
 
 
+
 def monitor():
     try:
         from apscheduler.schedulers.qt import QtScheduler
@@ -58,29 +59,16 @@ def monitor():
         me = Monitor(cf)
         sched = QtScheduler()
 
-        working_time_range = parse_work_time(cf.get("monitor", "workingtime"))
-        #如有显式配置调度时间，则根据调度时间来设置调度计划
-        #如果没有配置，则分别取工作时间的最前和最后时间作为任务计划的开始和结束时间
-        if cf.has_option('monitor','schedtime'):
-            schedtime = cf.get('monitor', 'schedtime').strip().split('~')
-            startime = schedtime[0].split(':')
-            stoptime = schedtime[1].split(':')
-
-        else:
-            workingtimelist = [y for x in working_time_range for y in x ]
-            startime = workingtimelist[0].split(':')
-            stoptime = workingtimelist[-1].split(':')
-
-        dayofweek = cf.get('monitor', 'dayofweek').strip()
-        trigger_start = CronTrigger(day_of_week=dayofweek, hour=int(startime[0]), minute=int(startime[1]))
-        trigger_stop = CronTrigger(day_of_week=dayofweek, hour=int(stoptime[0]), minute=int(stoptime[1]))
-        #sched.add_job(start, 'cron', id='first', day_of_week='0-4', hour=int(startime[0]), minute=int(startime[1]))
-        #sched.add_job(stop, 'cron', id='second', day_of_week='0-4', hour=int(stoptime[0]), minute=int(stoptime[1]))
-        logger.info('schedulers dayofweek:%s startime:%s stoptime:%s', dayofweek, startime, stoptime)
+        schedtime = [y.split(':') for x in cf.get('monitor', 'schedtime').strip().split('|') for y in x.split(',')]
+        trigger_start = CronTrigger(day_of_week=schedtime[0][0], hour=int(schedtime[1][0]), minute=int(schedtime[1][1]))
+        logger.info('schedulers:start dayofweek:%s startime:%s ', schedtime[0][0], schedtime[1])
+        trigger_stop = CronTrigger(day_of_week=schedtime[2][0], hour=int(schedtime[3][0]), minute=int(schedtime[3][1]))
+        logger.info('schedulers:stop dayofweek:%s stoptime:%s', schedtime[2][0], schedtime[3])
         sched.add_job(start, trigger_start)
         sched.add_job(stop, trigger_stop)
         sched.start()
 
+        working_time_range = parse_work_time(cf.get("monitor", "workingtime"))
         #上面的任务调度只有在未来时间才会触发
         #这里加上判断当前时间如果在工作时间(时间段和交易日都要符合)，则要开启
         if is_trade_day(cf) and is_working_time(working_time_range):

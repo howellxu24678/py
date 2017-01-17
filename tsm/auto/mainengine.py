@@ -113,8 +113,12 @@ class Monitor(MainEngine):
                                 (self._account, self._ip, self._port)
 
             #检车网络连通性
-            self.connect_addr_list = \
+            self._connect_addr_list = \
                 [x.strip().split(':') for x in cf.get("monitor", "check_connect_addr").strip().split(",")]
+
+            #容许连续发现连接断开的次数
+            self._max_broken_times = cf.getint("monitor", "brokentimes")
+            self._broken_count = 0
 
         except BaseException,e:
             logger.exception(e)
@@ -123,7 +127,7 @@ class Monitor(MainEngine):
     def re_init(self):
         super(Monitor, self).re_init()
         # 记录当前的外网ip
-        logger.info('the outer ip:%s', get_outer_ip())
+        #logger.info('the outer ip:%s', get_outer_ip())
         # 记录上一个账户状态（也即为登录交易网关Ea成功与否的状态）
         self._lastAccState = None
         # 是否已经发送登录交易网关Ea是否成功的邮件
@@ -287,6 +291,16 @@ class Monitor(MainEngine):
 
     def checkAccStata(self):
         curAccState = self._trade.getAccState()
+
+        #以下逻辑用于判断是否出现连续监测到与交易网关断开的情况
+        if curAccState == 0 and curAccState == curAccState:
+            self._broken_count += 1
+            if self._broken_count < self._max_broken_times:
+                logger.info("Acc is not connceted, but count:%s is less than max_times:%s",
+                            self._broken_count, self._max_broken_times)
+                return
+        self._broken_count = 0
+
         #1.初始时登录状态为异常（0）并且还没有发送邮件，则发送邮件并将发送状态置为已发送
         #2.其中状态发生改变时，发送邮件
         if curAccState == 0 and not self._haveSendLogonEaMail:
@@ -294,11 +308,12 @@ class Monitor(MainEngine):
             self._haveSendLogonEaMail = True
         elif curAccState != self._lastAccState and self._lastAccState is not None:
             self.sendMailAccState(curAccState)
+
         self._lastAccState = curAccState
 
     #连通性测试
     def check_connect(self):
-        for x in self.connect_addr_list:
+        for x in self._connect_addr_list:
             logger.info("connect to %s:%s %s", x[0], x[1], 'success' if is_connectable(x[0], int(x[1])) else 'failed')
 
     def onTimer(self, event):
@@ -313,7 +328,7 @@ class Monitor(MainEngine):
         #断线时不进行定时的业务查询
         if self._trade.getAccState() == 0:
             # 记录当前的外网ip
-            logger.info('the outer ip:%s', get_outer_ip())
+            #logger.info('the outer ip:%s', get_outer_ip())
 
             self.check_connect()
             return
