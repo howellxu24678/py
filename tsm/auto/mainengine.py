@@ -254,6 +254,8 @@ class Monitor(MainEngine):
         event.dict_['to_addr'] = self._to_addr_list
         self._eventEngine.put(event)
 
+        logger.info("send mail %s to %s", event.dict_['content'], event.dict_['to_addr'])
+
     def sendMailAccState(self, acc_state):
         if acc_state == 0:
             self.sendMailEvent(False, u"交易网关连接断开！可能原因：1.交易网关没有正常运行;2.到交易网关的网络不稳定或者不连通")
@@ -293,10 +295,10 @@ class Monitor(MainEngine):
         curAccState = self._trade.getAccState()
 
         #以下逻辑用于判断是否出现连续监测到与交易网关断开的情况
-        if curAccState == 0 and curAccState == curAccState:
+        if curAccState == 0:
             self._broken_count += 1
             if self._broken_count < self._max_broken_times:
-                logger.info("Acc is not connceted, but count:%s is less than max_times:%s",
+                logger.info("Axeagle gateway is not connected, but count:%s is less than max_times:%s",
                             self._broken_count, self._max_broken_times)
                 return
         self._broken_count = 0

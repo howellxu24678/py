@@ -64,8 +64,8 @@ def monitor():
         logger.info('schedulers:start dayofweek:%s startime:%s ', schedtime[0][0], schedtime[1])
         trigger_stop = CronTrigger(day_of_week=schedtime[2][0], hour=int(schedtime[3][0]), minute=int(schedtime[3][1]))
         logger.info('schedulers:stop dayofweek:%s stoptime:%s', schedtime[2][0], schedtime[3])
-        sched.add_job(start, trigger_start)
-        sched.add_job(stop, trigger_stop)
+        sched.add_job(start, trigger_start, misfire_grace_time = 10)
+        sched.add_job(stop, trigger_stop, misfire_grace_time = 10)
         sched.start()
 
         working_time_range = parse_work_time(cf.get("monitor", "workingtime"))
