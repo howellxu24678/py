@@ -14,6 +14,7 @@ class JdSpider(scrapy.Spider):
 
     def parse(self, response):
         item = JandanItem()
+        #//*[@id="comment-3373245"]/div[1]/div/div[2]/p/a[1]
         image_urls = response.xpath('//img//@src').extract()#提取图片链接
         self.logger.info('image_urls:%s', image_urls)
         item['image_urls'] = image_urls
