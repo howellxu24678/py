@@ -14,7 +14,7 @@ BOT_NAME = 'jandan'
 SPIDER_MODULES = ['jandan.spiders']
 NEWSPIDER_MODULE = 'jandan.spiders'
 
-IMAGES_STORE='F:\code\git\py\scrapy\pic'
+IMAGES_STORE='E:\pan\work\code\github\py\scrapy\pic'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'jandan (+http://www.yourdomain.com)'

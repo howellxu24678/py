@@ -40,11 +40,14 @@ class JandanPipeline(ImagesPipeline):
 
     def get_media_requests(self, item, info):
         for image_url in item['image_urls']:
-            yield scrapy.Request(image_url)
+            print 'JandanPipeline image_url',image_url
+            #self.logger.info('image_url:%s', image_url)
+            yield scrapy.Request(u'http://' + image_url)
 
     def item_completed(self, results, item, info):
         image_paths = [x['path'] for ok, x in results if ok]
-        print 'image_paths', image_paths
+        #self.logger.info('image_paths:%s', image_paths)
+        print 'JandanPipeline image_paths', image_paths
         if not image_paths:
             raise DropItem("Item contains no images")
         item['image_paths'] = image_paths
