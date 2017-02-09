@@ -7,6 +7,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 import time
+import os
+import datetime
 
 driver = webdriver.Chrome()
 #driver.implicitly_wait(10)
@@ -61,14 +63,39 @@ def book(book_href):
         #勾选医院预约规则
         input_locator = (By.XPATH, "//div[@class='order-con']/div[@class='block p10']//input")
         wait.until(EC.presence_of_element_located(input_locator))
-        driver.find_element(*input_locator).click()
+        inp = driver.find_element(*input_locator)
+        if not inp.is_selected():
+            inp.click()
 
         #勾选现场支付 //div[@class='pay-list']/input[@name='pay_online' and @type='radio' and @value='0']/following-sibling::label
         pay_locator = (By.XPATH, "//div[@class='pay-list']/input[@name='pay_online' and @type='radio' and @value='0']/following-sibling::label")
         wait.until(EC.presence_of_element_located(pay_locator))
-        driver.find_element(*pay_locator).click()
+        pay = driver.find_element(*pay_locator)
+        if not pay.is_selected():
+            pay.click()
 
         #不勾选领取保险
+        cb_locator = (By.XPATH, "//div[@class='order-con fn-clear']//input[@type='checkbox']")
+        wait.until(EC.presence_of_element_located(cb_locator))
+        cb = driver.find_element(*cb_locator)
+        if cb.is_selected():
+            cb.click()
+
+        #处理验证码
+        verifycode_img_locator = (By.XPATH, "//div[@class='fn-clear block tj-order']/div[@class='tjecode']/img")
+        wait.until(EC.presence_of_element_located(verifycode_img_locator))
+        verifycode_img_src = driver.find_element(*verifycode_img_locator).get_property("src")
+
+
+        verifycode_input_locator = (By.XPATH, "//div[@class='tjecode']/input[@name='captcha']")
+        wait.until(EC.presence_of_element_located(verifycode_input_locator))
+        verifycode_input = driver.find_element(*verifycode_input_locator)
+        verifycode_input.click()
+
+        screenshot_filename = datetime.datetime.now().strftime("%H%M%S%f")[:-3] + ".jpg"
+        path_screenshot = os.path.join(os.getcwd(), screenshot_filename)
+        driver.save_screenshot(path_screenshot)
+
 
         return True
     except BaseException,e:
@@ -102,7 +129,7 @@ def autobook(link, ap):
         #driver.close()
 
 login("18719286683", "0730xujhao")
-autobook("https://www.91160.com/doctors/index/docid-20428.html", 1)
+autobook("https://www.91160.com/doctors/index/docid-100214968.html", 2)
 
 
 #driver.close()
