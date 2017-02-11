@@ -16,7 +16,11 @@ loggingconf = "logging.config"
 businessconf = "tumblr.ini"
 MIN_PAGE_SOURCE_LENGTH = 300
 MAX_GET_NUM = 10000
+FILE_MAX_NUM = 1000
 baseurldir = "url"
+
+VIDEO_STR = "video"
+IMAGE_STR = "image"
 
 
 
@@ -25,78 +29,97 @@ logger = logging.getLogger("run")
 cf = ConfigParser.ConfigParser()
 cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
 
-d = webdriver.PhantomJS()
-video_set = set()
-image_set = set()
+driver = webdriver.PhantomJS()
 
-
-# def get_media_url(reg, xpath, container):
-#     video_re = re.compile(reg)
-#
-#     vls = d.find_elements_by_xpath(xpath)
-#     logger.info("find %s elements", len(vls))
-#     #video_list = re.findall(video_re, tx)
-#     for vl in vls:
-#         vl_url_list = re.findall(video_re, vl.text)
-#         container |= set(vl_url_list)
-#     logger.info("container size:%s", len(container))
-
-
-def get_video_url():
+def get_video_url(_site, _set):
     #get_media_url(r'src="(http://.*)" type="video/mp4"', "//video-player", video_set)
-    reg = r'src="(http://.*)" type="video/mp4"'
+    reg = r'src="(.*)" type="video/mp4"'
     video_re = re.compile(reg)
 
-    vls = d.find_elements_by_xpath("//video-player")
-    logger.info("find %s videos", len(vls))
+    vls = driver.find_elements_by_xpath("//video-player")
     for vl in vls:
         vl_url_list = re.findall(video_re, vl.text)
-        global video_set
-        video_set |= set(vl_url_list)
-    logger.info("video_set size:%s", len(video_set))
+        _set |= set(vl_url_list)
+    logger.info("site:%s elements:%s current video_set size:%s", _site, len(vls), len(_set))
+
 
 #d.find_elements_by_xpath("//photoset/photo/photo-url[@max-width='1280']")
-def get_image_url():
-    imgs = d.find_elements_by_xpath("//photoset/photo/photo-url[@max-width='1280']")
-    logger.info("find %s images", len(imgs))
+def get_image_url(_site, _set):
+    imgs = driver.find_elements_by_xpath("//photo-url[@max-width='1280']")
     for img in imgs:
-        global image_set
-        image_set.add(img.text)
-    logger.info("image_set size:%s", len(image_set))
+        _set.add(img.text)
+    logger.info("site:%s elements:%s current image_set size:%s", _site, len(imgs), len(_set))
 
 
-def get_download_url(site, begin, end, num):
+def get_download_url(_site, _dt, begin, end, num):
     try:
         cur_begin = begin
         while True:
-            cur_url = "http://%s.tumblr.com/api/read?start=%d&num=%d" % (site, cur_begin, num)
+            cur_url = "http://%s.tumblr.com/api/read?start=%d&num=%d" % (_site, cur_begin, num)
             logger.info("cur_url:%s", cur_url)
-            d.get(cur_url)
-            if len(d.page_source) < MIN_PAGE_SOURCE_LENGTH or cur_begin >= end:
+            driver.get(cur_url)
+            if len(driver.page_source) < MIN_PAGE_SOURCE_LENGTH:
                 break
-            get_video_url()
-            get_image_url()
+
+            get_video_url(_site, _dt[VIDEO_STR])
+            get_image_url(_site, _dt[IMAGE_STR])
             cur_begin += num
+            if cur_begin >= end:
+                break
             time.sleep(2)
 
     except BaseException, e:
         logger.exception(e)
 
-def write_file(namepre, container):
-    url_dir = os.path.join(os.getcwd(), baseurldir)
-    if not os.path.isdir(url_dir):
-        os.mkdir(url_dir)
-    filename = namepre + "_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".txt"
-    file_path = os.path.join(url_dir, filename)
+
+def get_filename(_site):
+    return _site + "_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + "_0.txt"
+
+def new_file(_site, _dir):
+    file_path = os.path.join(_dir, get_filename(_site))
+
+    #确保不覆盖原有的文件
+    index = 1
+    while os.path.isfile(file_path):
+        file_path = file_path[:file_path.rfind('_') + 1] + str(index) + ".txt"
+        index += 1
 
     logger.info("begin to write file:%s", file_path)
-    fpy = open(file_path, 'w')
-    for element in container:
+    return open(file_path, 'w')
+
+def write_file(_site, _dir, _set):
+    if len(_set) < 1:
+        return
+
+    fpy = new_file(_site, _dir)
+    count = 0
+    for element in _set:
+        if count != 0 and count % FILE_MAX_NUM == 0 and fpy is not None:
+            fpy.close()
+            fpy = new_file(_site, _dir)
         fpy.write(element)
         fpy.write("\n")
+        count += 1
     fpy.close()
 
 
+def write_files(_site, _dt):
+    url_dir = os.path.join(os.getcwd(), baseurldir)
+    if not os.path.isdir(url_dir):
+        os.mkdir(url_dir)
+
+    video_dir = os.path.join(url_dir, VIDEO_STR)
+    if not os.path.isdir(video_dir):
+        os.mkdir(video_dir)
+
+    image_dir = os.path.join(url_dir, IMAGE_STR)
+    if not os.path.isdir(image_dir):
+        os.mkdir(image_dir)
+
+    logger.info("site:%s total video_set:%s", _site, len(_dt[VIDEO_STR]))
+    write_file(_site, video_dir, _dt[VIDEO_STR])
+    logger.info("site:%s total image_set:%s", _site, len(_dt[IMAGE_STR]))
+    write_file(_site, image_dir, _dt[IMAGE_STR])
 
 
 try:
@@ -107,20 +130,22 @@ try:
     num = cf.getint("main", "num")
     logger.info("sites:%s,begin:%s,end:%s,num:%s", sites, begin, end, num)
 
+    g_dt = {}
     for site in sites:
-        get_download_url(site, begin, end, num)
-    d.close()
-    d.quit()
+        dt = {}
+        dt[IMAGE_STR] = set()
+        dt[VIDEO_STR] = set()
+        g_dt[site] = dt
+        get_download_url(site, g_dt[site], begin, end, num)
+    driver.close()
+    driver.quit()
 
-    logger.info("total video_set:%s", len(video_set))
-    write_file("video", video_set)
-    logger.info("total image_set:%s", len(image_set))
-    write_file("image", image_set)
+
+    for k,v in g_dt.iteritems():
+        write_files(k, v)
 
 except BaseException,e:
     logger.exception(e)
-
-#todo:生成url文件时按照域名分目录，每1000个记录生成一个文件
 
 
 
