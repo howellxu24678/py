@@ -147,9 +147,24 @@ try:
 except BaseException,e:
     logger.exception(e)
 
+import os
+import re
+to_delete_path = r"E:\TDDOWNLOAD\tumblr\video"
+def delete_duplicate_file(_path):
+    file_paths = filter(os.path.isfile, map(lambda x: os.path.join(_path, x), os.listdir(_path)))
+    dir_paths = filter(os.path.isdir, map(lambda x: os.path.join(_path, x), os.listdir(_path)))
+    for file_path in file_paths:
+        rf = re.findall(r'.*\(\d+\).*', file_path)
+        #满足正则表达式并且存在去掉括号的文件名，表明文件确实重复了，需要删除
+        if len(rf) > 0:
+            fpath = rf[0]
+            if os.path.isfile(fpath[:fpath.rfind('(')] + fpath[fpath.rfind(')') + 1:]):
+                print "remove file:%s" % fpath
+                os.remove(fpath)
 
-
-
+    for dir_path in dir_paths:
+        delete_duplicate_file(dir_path)
+delete_duplicate_file(to_delete_path)
 
 
 # d = webdriver.PhantomJS()
