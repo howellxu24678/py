@@ -11,33 +11,46 @@ import time
 import os
 import datetime
 
-driver = webdriver.Chrome()
+#driver = webdriver.Chrome()
+chromeOptions = webdriver.ChromeOptions()
+prefs = {"profile.managed_default_content_settings.images":2}
+chromeOptions.add_experimental_option("prefs",prefs)
+driver = webdriver.Chrome(chrome_options=chromeOptions)
 
-def get_filename():
-    return "airasia_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".txt"
 
-def write_file(_d):
-    if len(_d) < 1:
+def get_filename(_begin_date, _src, _dst):
+    return "airasia_%s%s%s_%s.txt" % \
+           (_begin_date, _src, _dst, datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+    #return "airasia_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".txt"
+
+def write_file(_begin_date, _src, _dst, _l):
+    if len(_l) < 1:
         return
 
     _dir = os.path.join(os.getcwd(), 'lowest_price')
     if not os.path.isdir(_dir):
         os.mkdir(_dir)
         
-    file_path = os.path.join(_dir, get_filename())
+    file_path = os.path.join(_dir, get_filename(_begin_date, _src, _dst))
     fpy = open(file_path, 'w')
 
-    for k,v in _d.items():
-        line = "date:%s lowest price:%.2f" % (k,v)
+    for i in _l:
+        line = "date:%s lowest price:%.2f" % (i[0],i[1])
         fpy.write(line)
         fpy.write("\n")
 
+    #对value进行排序
+    _l_sorted = sorted(_l, lambda x,y:cmp(x[1],y[1]))
+    line = "the lowest price during the quantum is date:%s, price:%.2f" \
+           % (_l_sorted[0][0], _l_sorted[0][1])
+    fpy.write(line)
+    fpy.write("\n")
     fpy.close()
 
 
 def get_lowest_price(_begin_date, _src, _dst, _count):
     try:
-        d = {}
+        l = []
         wait = WebDriverWait(driver, 5)
         date_locator = (By.XPATH, "//li[@class='active']//h3[@class='low-fare-date']")
         price_locator = (By.XPATH, "//div[@class='avail-fare-price']")
@@ -56,24 +69,28 @@ def get_lowest_price(_begin_date, _src, _dst, _count):
             #wait.until(EC.)
             _date = driver.find_element(*date_locator).text.encode('utf-8')
 
-            #wait.until(EC.presence_of_element_located(price_locator))
+            wait.until(EC.presence_of_element_located(price_locator))
             price_list = [float(x.text.split(' ')[0].encode('utf-8').replace('≈', '').replace(',', ''))
                           for x in driver.find_elements(*price_locator)]
-            d[_date] = min(price_list)
+            l.append((_date, min(price_list)))
 
-            #wait.until(EC.presence_of_element_located(next_url_locator))
+            wait.until(EC.presence_of_element_located(next_url_locator))
             url_ = driver.find_element(*next_url_locator).get_attribute("href")
 
-        print d
+        print l
         #write_file(d)
     except BaseException, e:
         print e
-        driver.close()
+        # driver.close()
+        # driver.quit()
     finally:
-        write_file(d)
-
-get_lowest_price('2017-06-08', 'HKG', 'DMK', 100)
+        write_file(_begin_date, _src, _dst, l)
+#香港：HKG
+#曼谷廊曼：DMK
+#深圳：SZX
+get_lowest_price('2017-06-11', 'SZX', 'DMK', 365)
 driver.close()
+driver.quit()
 
 
 
