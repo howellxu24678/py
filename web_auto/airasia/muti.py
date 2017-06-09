@@ -12,11 +12,8 @@ import time
 import os
 import datetime
 
-#禁用图片加载
-# chromeOptions = webdriver.ChromeOptions()
-# prefs = {"profile.managed_default_content_settings.images":2}
-# chromeOptions.add_experimental_option("prefs",prefs)
-# driver = webdriver.Chrome(chrome_options=chromeOptions)
+
+#global driver
 
 
 def get_filename(_begin_date, _src, _dst):
@@ -48,97 +45,88 @@ def write_file(_begin_date, _src, _dst, _l):
     fpy.write("\n")
     fpy.close()
 
+def gen_url( _src, _dst, _date):
+    return (_date, r'https://booking.airasia.com/Flight/Select?o1=%s&d1=%s&dd1=%s&cc=CNY' % (_src, _dst, _date))
 
-def get_lowest_price(_begin_date, _src, _dst, _day_delta):
-    print 'get_lowest_price', _day_delta
-    return _day_delta
-    # try:
-    #     wait = WebDriverWait(driver, 5)
-    #     date_locator = (By.XPATH, "//li[@class='active']//h3[@class='low-fare-date']")
-    #     price_locator = (By.XPATH, "//div[@class='avail-fare-price']")
-    #     next_url_locator = (By.XPATH, "//li[@class='not-active'][4]//a")
-    #
-    #     driver.get(r'http://www.airasia.com/cn/zh/home.page')
-    #     # title_contains(u'亚洲')
-    #     wait.until(EC.presence_of_element_located((By.XPATH, "//title")))
-    #
-    #     url_ = r'https://booking.airasia.com/Flight/Select?o1=%s&d1=%s&dd1=%s&cc=CNY' % (_src, _dst, _begin_date)
-    #     for i in range(_count):
-    #         print 'get url:%s' % url_
-    #         driver.get(url_)
-    #
-    #         wait.until(EC.presence_of_element_located(date_locator))
-    #         # wait.until(EC.)
-    #         _date = driver.find_element(*date_locator).text.encode('utf-8')
-    #
-    #         wait.until(EC.presence_of_element_located(price_locator))
-    #         price_list = [float(x.text.split(' ')[0].encode('utf-8').replace('≈', '').replace(',', ''))
-    #                       for x in driver.find_elements(*price_locator)]
-    #         l.append((_date, min(price_list)))
-    #
-    #         wait.until(EC.presence_of_element_located(next_url_locator))
-    #         url_ = driver.find_element(*next_url_locator).get_attribute("href")
-    #
-    #     print l
-    #     # write_file(d)
-    # except BaseException, e:
-    #     print e
-    #     # driver.close()
-    #     # driver.quit()
+def gen_urls(_begin_date, _src, _dst, _count):
+    begin_date = datetime.datetime.strptime(_begin_date, '%Y-%m-%d')
+    return [gen_url(_src, _dst, (begin_date + datetime.timedelta(days = x)).strftime('%Y-%m-%d')) for x in range(_count)]
+
+def get_lowest_price(_arg):
+    try:
+        _date, _url = _arg
+        global driver
+        wait = WebDriverWait(driver, 5)
+        price_locator = (By.XPATH, "//div[@class='avail-fare-price']")
+        driver.get(_url)
+        wait.until(EC.presence_of_element_located(price_locator))
+        price_list = [float(x.text.split(' ')[0].encode('utf-8').replace('≈', '').replace(',', ''))
+                      for x in driver.find_elements(*price_locator)]
+        return (_date, min(price_list))
+    except BaseException, e:
+        print e
+        # driver.close()
+        # driver.quit()
     # finally:
     #     write_file(_begin_date, _src, _dst, l)
 
+def get_lowest_price2(_arg):
+    pass
 
 def init():
-    pass
-    # try:
-    #     driver.get(r'http://www.airasia.com/cn/zh/home.page')
-    #     # title_contains(u'亚洲')
-    #     WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//title")))
-    # except BaseException, e:
-    #     print e
+    try:
+        global driver
+        # 禁用图片加载
+        chromeOptions = webdriver.ChromeOptions()
+        prefs = {"profile.managed_default_content_settings.images": 2}
+        chromeOptions.add_experimental_option("prefs", prefs)
+        driver = webdriver.Chrome(chrome_options=chromeOptions)
+        driver.get(r'http://www.airasia.com/cn/zh/home.page')
+        # title_contains(u'亚洲')
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//title")))
+    except BaseException, e:
+        print e
+
+def init2():
+    try:
+        global driver
+        # 禁用图片加载
+        chromeOptions = webdriver.ChromeOptions()
+        prefs = {"profile.managed_default_content_settings.images": 2}
+        chromeOptions.add_experimental_option("prefs", prefs)
+        driver = webdriver.Chrome(chrome_options=chromeOptions)
+        driver.get(r'http://www.baidu.com')
+        # # title_contains(u'亚洲')
+        # WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//title")))
+    except BaseException, e:
+        print e
+
+
+def close(x):
+    global driver
+    driver.close()
+    driver.quit()
 
 
 def get_lowest_price_multi(_begin_date, _src, _dst, _count):
     try:
-        #init()
 
-        l = []
-        #pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-        pool = multiprocessing.Pool(processes=3)
-        for i in xrange(_count):
-            l.append(pool.apply_async(get_lowest_price, (_begin_date, _src, _dst, i)))
+        #pool = multiprocessing.Pool(processes=multiprocessing.cpu_count(), initializer=init)
+        cpu_count = multiprocessing.cpu_count()
+        pool = multiprocessing.Pool(processes=cpu_count, initializer=init2)
+        ll = pool.map(get_lowest_price2, gen_urls(_begin_date, _src, _dst, _count))
+        print ll
+        pool.map(close, [x for x in range(cpu_count)])
 
         print "Started processes"
-        pool.close()
+
+        pool.terminate()
+        #pool.close()
         pool.join()
         print "Subprocess done."
-        print l
+
     except BaseException, e:
         print e
-
-# class MutiGetPrice(object):
-#     def __init__(self):
-#         pass
-#         # self._date_locator = (By.XPATH, "//li[@class='active']//h3[@class='low-fare-date']")
-#         # self._price_locator = (By.XPATH, "//div[@class='avail-fare-price']")
-#         # self._next_url_locator = (By.XPATH, "//li[@class='not-active'][4]//a")
-#         #
-#         # # 警用图片加载
-#         # chromeOptions = webdriver.ChromeOptions()
-#         # prefs = {"profile.managed_default_content_settings.images": 2}
-#         # chromeOptions.add_experimental_option("prefs", prefs)
-#         # self._driver = webdriver.Chrome(chrome_options=chromeOptions)
-#         # self._wait = WebDriverWait(self._driver, 5)
-#
-#     def get_lowest_price(self, msg):
-#         print 'receive', msg
-#         #return _day_delta
-#
-#     def run(self, _begin_date, _src, _dst, _count):
-#         pass
-#         # self._driver.get(r'http://www.airasia.com/cn/zh/home.page')
-#         # self._wait.until(EC.presence_of_element_located((By.XPATH, "//title")))
 
 
 
@@ -147,10 +135,3 @@ if __name__ == '__main__':
     # 曼谷廊曼：DMK
     # 深圳：SZX
     get_lowest_price_multi('2017-06-15', 'SZX', 'DMK', 10)
-
-
-
-    #d.run('2017-06-15', 'SZX', 'DMK', 10)
-    # get_lowest_price_multi('2017-06-15', 'SZX', 'DMK', 365)
-    # driver.close()
-    # driver.quit()
