@@ -11,7 +11,7 @@ import time
 import os
 import datetime
 
-#driver = webdriver.Chrome()
+#禁用图片加载
 chromeOptions = webdriver.ChromeOptions()
 prefs = {"profile.managed_default_content_settings.images":2}
 chromeOptions.add_experimental_option("prefs",prefs)
@@ -88,7 +88,7 @@ def get_lowest_price(_begin_date, _src, _dst, _count):
 #香港：HKG
 #曼谷廊曼：DMK
 #深圳：SZX
-get_lowest_price('2017-06-11', 'SZX', 'DMK', 365)
+get_lowest_price('2017-06-15', 'SZX', 'DMK', 365)
 driver.close()
 driver.quit()
 
