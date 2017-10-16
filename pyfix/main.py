@@ -38,11 +38,9 @@ class Test(object):
         group2.setField(fix.Symbol('au1712'))
         msg.addGroup(group2)
 
-        # msg.setField(fix.OnBehalfOfCompID("BLP1"))
-        #msg.setField(fix.Account("FUT_ACCT"))
+        msg.getHeader().setField(fix.OnBehalfOfCompID("BLP1"))
+        msg.setField(fix.Account("FUT_ACCT"))
         fix.Session.sendToTarget(msg, self._session)
-
-
 
 
 settings = fix.SessionSettings(os.path.join(os.getcwd(), baseconfdir, fixConf))
