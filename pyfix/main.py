@@ -7,7 +7,7 @@ import ConfigParser
 
 baseconfdir = "config"
 loggingconf = "logging.config"
-fixConf = "Fix.cfg"
+fixConf = "FixInit.cfg"
 
 print "getcwd:" + os.getcwd()
 
@@ -47,9 +47,10 @@ settings = fix.SessionSettings(os.path.join(os.getcwd(), baseconfdir, fixConf))
 application = application.Application()
 factory = fix.FileStoreFactory("log")
 log = fix.FileLogFactory("log")
-acpt = fix.SocketAcceptorBase(application, factory, settings, log)
-
-acpt.start()
+# acpt = fix.SocketAcceptorBase(application, factory, settings, log)
+# acpt.start()
+init = fix.SocketInitiatorBase(application, factory, settings, log)
+init.start()
 test = Test(cf)
 #time.sleep(4)
 
