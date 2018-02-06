@@ -6,8 +6,8 @@ Created on Fri Oct 16 15:14:32 2015
 """
 
 import datetime
-import tushare as ts
-import numpy as np
+# import tushare as ts
+# import numpy as np
 import socket
 import requests
 from bs4 import BeautifulSoup
@@ -15,43 +15,43 @@ from bs4 import BeautifulSoup
 import logging
 logger = logging.getLogger("run")
 
-def td(kline):
-    iCount = -1
-    isNeedBuy = False
-    isNeedSell = False
-    
-    curRow = kline.ix[iCount]
-    #第n根，close >= ma60 且为阳线或者十字星，然后开始从后往前看是否满足要求
-    if curRow['close'] >= curRow['ma60'] and curRow['close'] >= curRow['open']:
-        iCount = iCount - 1
-        curRow = kline.ix[iCount]
-        #从第n-1一直到倒数第2根，close >= ma60
-        while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
-            dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
-            #第1根K线 open <= ma60 <= close (即第一根为被ma60穿过实体的阳线或者十字星)
-            if abs(iCount) >= 3 and dMin <= curRow['ma60'] and curRow['ma60'] <= curRow['close']:
-                isNeedBuy = True
-                break
-            else:
-                iCount = iCount - 1
-                curRow = kline.ix[iCount]
-                
-    #第n根，close <= ma60 且为阴线或者十字星，然后开始从后往前看是否满足要求
-    elif curRow['close'] <= curRow['ma60'] and curRow['close'] <= curRow['open']:
-        iCount = iCount - 1
-        curRow = kline.ix[iCount]
-        #从第n-1一直到倒数第2根，close <= ma60
-        while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
-            dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
-            #第1根K线 open >= ma60 >= close (即第一根为被ma60穿过实体的阴线或者十字星)
-            if abs(iCount) >= 3 and dMax >= curRow['ma60'] and curRow['ma60'] >= curRow['close']:
-                isNeedSell = True
-                break
-            else:
-                iCount = iCount - 1
-                curRow = kline.ix[iCount]
-                
-    return isNeedBuy,isNeedSell
+# def td(kline):
+#     iCount = -1
+#     isNeedBuy = False
+#     isNeedSell = False
+#
+#     curRow = kline.ix[iCount]
+#     #第n根，close >= ma60 且为阳线或者十字星，然后开始从后往前看是否满足要求
+#     if curRow['close'] >= curRow['ma60'] and curRow['close'] >= curRow['open']:
+#         iCount = iCount - 1
+#         curRow = kline.ix[iCount]
+#         #从第n-1一直到倒数第2根，close >= ma60
+#         while (curRow['close'] >= curRow['ma60'] and abs(iCount) < 10):
+#             dMin = min(curRow['open'], kline.ix[iCount - 1]['close'])
+#             #第1根K线 open <= ma60 <= close (即第一根为被ma60穿过实体的阳线或者十字星)
+#             if abs(iCount) >= 3 and dMin <= curRow['ma60'] and curRow['ma60'] <= curRow['close']:
+#                 isNeedBuy = True
+#                 break
+#             else:
+#                 iCount = iCount - 1
+#                 curRow = kline.ix[iCount]
+#
+#     #第n根，close <= ma60 且为阴线或者十字星，然后开始从后往前看是否满足要求
+#     elif curRow['close'] <= curRow['ma60'] and curRow['close'] <= curRow['open']:
+#         iCount = iCount - 1
+#         curRow = kline.ix[iCount]
+#         #从第n-1一直到倒数第2根，close <= ma60
+#         while (curRow['close'] <= curRow['ma60'] and abs(iCount) < 10):
+#             dMax = max(curRow['open'], kline.ix[iCount - 1]['close'])
+#             #第1根K线 open >= ma60 >= close (即第一根为被ma60穿过实体的阴线或者十字星)
+#             if abs(iCount) >= 3 and dMax >= curRow['ma60'] and curRow['ma60'] >= curRow['close']:
+#                 isNeedSell = True
+#                 break
+#             else:
+#                 iCount = iCount - 1
+#                 curRow = kline.ix[iCount]
+#
+#     return isNeedBuy,isNeedSell
     
 def IsLastTradingDay(day):
     todayweekday = datetime.date.today().weekday()
@@ -66,24 +66,24 @@ def IsLastTradingDay(day):
 def GetDayBefore(dayoffset):
     return datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=dayoffset), '%Y-%m-%d')
         
-def GetRehabGene(code):
-    #无复权日线
-    dfnfq1d = ts.get_hist_data(code,start=GetDayBefore(30),end=GetDayBefore(1))
-        
-    dffq1d = ts.get_h_data(code,start=GetDayBefore(30),end=GetDayBefore(1))
-        
-    rate = dffq1d['close'] / dfnfq1d['close']
-    print rate
+# def GetRehabGene(code):
+#     #无复权日线
+#     dfnfq1d = ts.get_hist_data(code,start=GetDayBefore(30),end=GetDayBefore(1))
+#
+#     dffq1d = ts.get_h_data(code,start=GetDayBefore(30),end=GetDayBefore(1))
+#
+#     rate = dffq1d['close'] / dfnfq1d['close']
+#     print rate
     
-def GetRealTimeQuote(code):
-    logger.debug("GetRealTimeQuote %s", code)
-    df = ts.get_realtime_quotes(code)
-    return df[['code','name','price','bid','ask','volume','amount','time']]    
-    
-    
-def GetHistData(code,_ktype):
-    df = ts.get_hist_data(code, ktype=_ktype)
-    return df[['open','high','close','low','volume']]
+# def GetRealTimeQuote(code):
+#     logger.debug("GetRealTimeQuote %s", code)
+#     df = ts.get_realtime_quotes(code)
+#     return df[['code','name','price','bid','ask','volume','amount','time']]
+#
+#
+# def GetHistData(code,_ktype):
+#     df = ts.get_hist_data(code, ktype=_ktype)
+#     return df[['open','high','close','low','volume']]
     
 def Datetime2Str(_datetime):
     return datetime.datetime.strftime(_datetime, "%Y-%m-%d %H:%M:%S")
@@ -104,8 +104,8 @@ def GetTimeSlice(curTickDatetime, min_offset):
                       curTimeTuple.tm_mday, curTimeTuple.tm_hour, 
                       minSlice, 0)
     
-def GetSMA(data):
-    return round(np.mean(data),2)
+# def GetSMA(data):
+#     return round(np.mean(data),2)
 
 
 #将传入的时间加上当前的日期返回
