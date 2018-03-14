@@ -1,9 +1,13 @@
 import quickfix as fix
 import logging
 
-logger = logging.getLogger("run")
+logger = logging.getLogger()
 
 class Application(fix.Application):
+    def setUserIDPasswd(self, userID, passwd):
+        self._userID = userID
+        self._passwd = passwd
+
     def onCreate(self, sessionID):
         logger.info("%s", sessionID)
 
@@ -14,14 +18,14 @@ class Application(fix.Application):
         logger.info("%s", sessionID)
 
     def toAdmin(self, message, sessionID):
-        logger.info("message:%s", message)
         msgType = fix.MsgType()
         message.getHeader().getField(msgType)
         if msgType.getValue() == fix.MsgType_Reject:
             logger.info("message:%s", message)
         elif msgType.getValue() == fix.MsgType_Logon:
-            logger.info("logon msg will add rawdata")
-            message.setField(fix.RawData("testrawdata"))
+            message.getHeader().setField(fix.SenderSubID(self._userID))
+            message.setField(fix.RawData(self._passwd))
+        logger.info("message:%s", message)
 
     def fromAdmin(self, message, sessionID):
         logger.info("message:%s", message)

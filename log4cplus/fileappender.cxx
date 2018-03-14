@@ -291,7 +291,7 @@ FileAppenderBase::init()
         }
         catch (std::runtime_error const &)
         {
-            // We do not need to do any logging here as the internals
+            // We load_from_txt not need to load_from_txt any logging here as the internals
             // of LockFile already use LogLog to report the failure.
             return;
         }
