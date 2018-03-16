@@ -18,34 +18,37 @@ class Test(object):
                                       fix_cf.get("SESSION", "TargetCompID"))
 
         self._order_section = 'order'
-        self._clordid_tag = '11'
-        self._clordid_value = self._cf.getint(self._order_section, self._clordid_tag)
+        self._market_section = 'market'
+        #self._clordid_tag = '11'
+        #self._clordid_value = self._cf.getint(self._order_section, self._clordid_tag)
+
 
     def marketDataRequest(self):
-        msg = fix42.MarketDataRequest()
-        msg.setField(fix.MDReqID("1234"))
-        msg.setField(fix.SubscriptionRequestType(fix.SubscriptionRequestType_SNAPSHOT_PLUS_UPDATES))
-        msg.setField(fix.MarketDepth(0))
+        self._cf.read(self._cf_path)
 
-        group1 = fix42.MarketDataRequest().NoMDEntryTypes()
-        group1.setField(fix.MDEntryType(fix.MDEntryType_BID))
-        msg.addGroup(group1)
+        msg = fix42.Message()
+        for name, value in self._cf.items(self._market_section):
+            if name == '35' or name == '115':
+                msg.getHeader().setField(fix.StringField(int(name), value))
+            elif name.isdigit():
+                msg.setField(fix.StringField(int(name), value))
+            elif name == 'entrytypes':
+                type_group = fix42.MarketDataRequest().NoMDEntryTypes()
+                for entry in value.split(';'):
+                    type_group.setField(fix.MDEntryType(entry))
+                    msg.addGroup(type_group)
+            elif name == 'symbols':
+                sym_group = fix42.MarketDataRequest().NoRelatedSym()
+                for sym in value.split(';'):
+                    sym_group.setField(fix.Symbol(sym))
+                    msg.addGroup(sym_group)
 
-        group2 = fix42.MarketDataRequest().NoRelatedSym()
-        group2.setField(fix.Symbol('IF1712'))
-        msg.addGroup(group2)
-        group2.setField(fix.Symbol('au1801'))
-        msg.addGroup(group2)
-        group2.setField(fix.Symbol('i1805'))
-        msg.addGroup(group2)
-        group2.setField(fix.Symbol('MA801'))
-        msg.addGroup(group2)
-
-        # msg.getHeader().setField(fix.OnBehalfOfCompID("BLP1"))
-        # msg.setField(fix.Account("FUT_ACCT"))
         fix.Session.sendToTarget(msg, self._session)
 
+
     def orderRequest(self):
+        self._cf.read(self._cf_path)
+
         msg = fix42.Message()
         for name, value in self._cf.items(self._order_section):
             if name == '35' or name == '115':
@@ -54,11 +57,11 @@ class Test(object):
                 msg.setField(fix.StringField(int(name), value))
         #now = dt.datetime.utcnow()
         #now.strftime("%Y%m%d-%H:%M:%S")
-        msg.setField(fix.StringField(11, str(self._clordid_value)))
-        self._clordid_value += 1
-        self._cf.set(self._order_section, self._clordid_tag, str(self._clordid_value))
-        with open(self._cf_path, 'w') as fw:
-            self._cf.write(self._cf_path)
+        #msg.setField(fix.StringField(11, str(self._clordid_value)))
+        # self._clordid_value += 1
+        # self._cf.set(self._order_section, self._clordid_tag, str(self._clordid_value))
+        # with open(self._cf_path, 'w') as fw:
+        #     self._cf.write(fw)
         msg.setField(fix.StringField(60, dt.datetime.utcnow().strftime("%Y%m%d-%H:%M:%S")))
 
         fix.Session.sendToTarget(msg, self._session)
@@ -74,6 +77,7 @@ def tips():
     print('')
     print("{}".format("-" * ch_count))
     print("1:order")
+    print("2:marketdata")
     print('q:quit')
     print("{}".format("-" * ch_count))
     print('')
@@ -103,9 +107,11 @@ ch = 0
 while 1:
     tips()
     try:
-        ch = input(u"your choice:\n\n")
-        if ch == 1:
+        ch = raw_input(u"your choice:\n\n")
+        if ch == '1':
             test.orderRequest()
+        elif ch == '2':
+            test.marketDataRequest()
         elif ch == 'q':
             os._exit(0)
     except BaseException,e:
