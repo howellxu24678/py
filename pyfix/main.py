@@ -19,8 +19,7 @@ class Test(object):
 
         self._order_section = 'order'
         self._market_section = 'market'
-        #self._clordid_tag = '11'
-        #self._clordid_value = self._cf.getint(self._order_section, self._clordid_tag)
+        self._contract_query_section = 'contractQry'
 
 
     def marketDataRequest(self):
@@ -55,16 +54,22 @@ class Test(object):
                 msg.getHeader().setField(fix.StringField(int(name), value))
             else:
                 msg.setField(fix.StringField(int(name), value))
-        #now = dt.datetime.utcnow()
-        #now.strftime("%Y%m%d-%H:%M:%S")
-        #msg.setField(fix.StringField(11, str(self._clordid_value)))
-        # self._clordid_value += 1
-        # self._cf.set(self._order_section, self._clordid_tag, str(self._clordid_value))
-        # with open(self._cf_path, 'w') as fw:
-        #     self._cf.write(fw)
+
         msg.setField(fix.StringField(60, dt.datetime.utcnow().strftime("%Y%m%d-%H:%M:%S")))
 
         fix.Session.sendToTarget(msg, self._session)
+
+    def contractQuery(self):
+        self._cf.read(self._cf_path)
+
+        msg = fix42.Message()
+        for name, value in self._cf.items(self._contract_query_section):
+            if name == '35' or name == '115':
+                msg.getHeader().setField(fix.StringField(int(name), value))
+            else:
+                msg.setField(fix.StringField(int(name), value))
+        fix.Session.sendToTarget(msg, self._session)
+
 
 
 baseconfdir = "config"
@@ -78,6 +83,7 @@ def tips():
     print("{}".format("-" * ch_count))
     print("1:order")
     print("2:marketdata")
+    print("3:contractquery")
     print('q:quit')
     print("{}".format("-" * ch_count))
     print('')
@@ -112,6 +118,8 @@ while 1:
             test.orderRequest()
         elif ch == '2':
             test.marketDataRequest()
+        elif ch == '3':
+            test.contractQuery()
         elif ch == 'q':
             os._exit(0)
     except BaseException,e:
