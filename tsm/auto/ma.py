@@ -11,7 +11,7 @@ import socket
 import re
 import json
 import time
-logger = logging.getLogger("run")
+logger = logging.getLogger()
 
 maHeadDict = {}
 maHeadDict['MACLI_HEAD_FID_PKT_LEN'] = c_int(0)
@@ -180,7 +180,7 @@ class Ma(object):
         return int(datetime.datetime.now().strftime("%H%M%S%f")[0:-3])
 
     def sendReqMsg(self, b64bizdata_, reqid_, funid_, msgid_, cmdid_ = 40002):
-        msg = "%d\1%d\1%s\1%s\1%s\1%s"%(cmdid_,
+        msg = "%d\1%d\1%s\1%s\1%s\1%s\1"%(cmdid_,
                                         reqid_,
                                         self._acc.value,
                                         funid_,
@@ -206,6 +206,7 @@ class Ma(object):
 
     def logonBackend(self):
         try:
+            logger.info("attempt to login %s", self._acc)
             hHandle = c_void_p(0)
             self._ma.maCli_Init(byref(hHandle))
             self._ma.maCli_BeginWrite(hHandle)

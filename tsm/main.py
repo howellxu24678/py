@@ -16,12 +16,12 @@ loggingconf= "logging.config"
 businessconf= "business.ini"
 
 
-from auto.mainengine import Monitor
+from auto.mainengine import *
 from PyQt4.QtCore import QCoreApplication
 
 
 logging.config.fileConfig(os.path.join(os.getcwd(), baseconfdir, loggingconf))
-logger = logging.getLogger("run")
+logger = logging.getLogger()
 
 cf = ConfigParser.ConfigParser()
 cf.read(os.path.join(os.getcwd(), baseconfdir, businessconf))
@@ -100,11 +100,11 @@ def test():
 def runow():
     try:
         app = QCoreApplication(sys.argv)
-        me = Monitor(cf)
+        me = BatchOrder(cf)
         me.start()
-        sys.exit(app.exec_())
+        #sys.exit(app.exec_())
     except BaseException, e:
         logger.exception(e)
 
 if __name__ == '__main__':
-    monitor()
+    runow()

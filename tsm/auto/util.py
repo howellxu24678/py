@@ -13,7 +13,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import logging
-logger = logging.getLogger("run")
+logger = logging.getLogger()
 
 # def td(kline):
 #     iCount = -1

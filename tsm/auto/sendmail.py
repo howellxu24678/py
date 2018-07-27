@@ -12,7 +12,7 @@ from email.utils import parseaddr, formataddr
 
 from eventengine import *
 import logging
-logger = logging.getLogger("run")
+logger = logging.getLogger()
 import smtplib
 
 def _format_addr(s):

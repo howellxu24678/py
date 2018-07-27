@@ -9,18 +9,21 @@ from data_type import *
 from util import *
 #import time
 import json
-logger = logging.getLogger("run")
+logger = logging.getLogger()
 
 class MainEngine(object):
     def __init__(self, cf):
-        self._cf = cf
-        self._eventEngine = EventEngine(cf.getint("main", "timer"))
-        self._trade = Ma(cf, self._eventEngine)
-        self._mail = SendMail(cf, self._eventEngine)
+        try:
+            self._cf = cf
+            self._eventEngine = EventEngine(cf.getint("main", "timer"))
+            self._trade = Ma(cf, self._eventEngine)
+            self._mail = SendMail(cf, self._eventEngine)
 
-        self._logonBackendState = None
+            self._logonBackendState = None
 
-        self._eventEngine.start()
+            self._eventEngine.start()
+        except BaseException, e:
+            logger.exception(e)
 
 
     #此函数会被Monito派生类重载，因为Monitor派生类需要根据状态变化发送提醒邮件
@@ -352,11 +355,14 @@ class BatchOrder(MainEngine):
     def __init__(self, cf):
         try:
             super(BatchOrder, self).__init__(cf)
-            time.sleep(30)
+            super(BatchOrder, self).start()
+            time.sleep(5)
             #self.orderByPricePerent(cf)
             #self.test()
             #self.orderByTime(cf)
-            self.orderByPriceGrad(cf)
+            #self.orderByPriceGrad(cf)
+
+            self.test1()
 
         except BaseException,e:
             logger.exception(e)
